@@ -1,26 +1,139 @@
 @import "tailwindcss";
+@plugin "tailwindcss-animate";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+/* Shadcn UI base layer  */
+@custom-variant dark (&:is(.dark *));
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
+@theme {
+    /* ---- THEME COLORS ---- */
+    --color-text: #F8FAFC;
+    --color-background: #090B10; /* Obsidian */
+    --color-primary: #0EA5E9; /* Sky Blue  */
+    --color-secondary: #10B981; /* Emerald green */
+    --color-tertiary: #8B5CF6; /* violet */
+    --color-accent: #F59E0B; /* Amber gold */
+    
+    --color-danger: #EF4444; /* Rose red */
+    --color-gray: #64748B;
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+    /* ---- BADGE COLORS ---- */
+    --color-badge-default: #CBD5E1;
+    --color-badge-bgdefault: #334155;
+    --color-badge-wishlist: #D8B4FE;
+    --color-badge-bgwishlist: #4C1D95;
+    --color-badge-queue: #C4B5FD;
+    --color-badge-bgqueue: #312E81;
+    --color-badge-playing: #67E8F9;
+    --color-badge-bgplaying: #164E63;
+    --color-badge-completed: #86EFAC;
+    --color-badge-bgcompleted: #14532D;
+    --color-badge-dropped: #FCA5A5;
+    --color-badge-bgdropped: #7F1D1D;
+
+    /* ---- BUTTON COLORS ---- */
+    --color-primarybutton-text: #FFFFFF;
+    --color-primarybutton-bg: #0284C7;       
+    --color-primarybutton-bghover: #0369A1;  
+    --color-primarybutton-bgactive: #075985;
+    --color-secondarybutton-text: #FFFFFF;
+    --color-secondarybutton-bg: #047857;       
+    --color-secondarybutton-bghover: #065F46;  
+    --color-secondarybutton-bgactive: #064E3B;
+    --color-dangerbutton-text: #FFFFFF;
+    --color-dangerbutton-bg: #B91C1C;       
+    --color-dangerbutton-bghover: #DC2626;  
+    --color-dangerbutton-bgactive: #991B1B;
+
+    /* ---- STAR RATING COLORS ---- */
+    --color-filledstar: var(--color-accent);
+    --color-emptystar: #334155;
+
+    /* ---- SEARCH INPUT COLORS ---- */
+    --color-searchinput-icon: #ffffff;
+    --color-searchinput-bg: #101828; 
+    --color-searchinput-placeholder: #ffffff;
+    --color-searchinput-focusborder: var(--color-primary);
+    --color-searchinput-focusplaceholder: #ffffff;
+
+    /* ---- ERROR MESSAGE ----*/
+    --color-errorbg: #450A0A; 
+    --color-errortext: #FCA5A5;
+    --color-erroraccent: var(--color-dangerbutton-bgactive);
+
+    /* Shadcn UI variables base */
+    --radius: 0.5rem;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+    background-color: var(--color-background); 
+    color: var(--color-text);
+}
+
+.light {
+    /* Fondo y texto principal */
+    --color-background: #F3F4F6;
+    --color-text: #111827;
+
+    /* Invertir blanco y negro */
+    --color-white: #111827; 
+    --color-black: #ffffff; 
+
+    /* Ajustes de componentes para Light Mode */
+    --color-gray: #9ca3af; 
+    
+    /* Reajuste de badges para modo claro */
+    --color-badge-default: #374151;
+    --color-badge-bgdefault: #E5E7EB;
+    --color-badge-wishlist: #6B21A8;
+    --color-badge-bgwishlist: #F3E8FF;
+    --color-badge-queue: #3730A3;
+    --color-badge-bgqueue: #E0E7FF;
+    --color-badge-playing: #155E75;
+    --color-badge-bgplaying: #CFFAFE;
+    --color-badge-completed: #166534;
+    --color-badge-bgcompleted: #DCFCE7;
+    --color-badge-dropped: #9F1239;
+    --color-badge-bgdropped: #FFE4E6;
+
+    /* Texto blanco en dangerbutton */
+    --color-dangerbutton-text: #ffffff; 
+
+    /* Suavizado del buscador en modo claro */
+    --color-searchinput-bg: #ffffff;         
+    --color-searchinput-icon: #4B5563;       
+    --color-searchinput-placeholder: #3d444e;
+    --color-searchinput-focusborder: var(--color-primary);
+    --color-searchinput-focusplaceholder: #111827;
+    
+    /* Suavizado de errores en modo claro */
+    --color-errorbg: #FEF2F2;
+    --color-errortext: #B91C1C;
+}
+
+/* ---- CUSTOM SCROLLBAR ---- */
+::-webkit-scrollbar {
+    width: 6px;  
+    height: 6px; 
+}
+::-webkit-scrollbar-track {
+    background: transparent; 
+}
+::-webkit-scrollbar-thumb {
+    background-color: #475569; 
+    border-radius: 10px; 
+}
+* {
+    scrollbar-width: thin;
+    scrollbar-color: #475569 transparent;
+}
+
+/* ---- NUMBER INPUT SPIN-BUTTONS ---- */
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+input[type="number"] {
+    -moz-appearance: textfield;
+    appearance: textfield;
 }

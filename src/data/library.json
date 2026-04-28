@@ -1,0 +1,176 @@
+[
+  {
+    "title": "Baldur's Gate III",
+    "coverUrl": "https://media.rawg.io/media/games/699/69907ecf13f172e9e144069769c3be73.jpg",
+    "platform": "PC",
+    "status": "Completed",
+    "releaseYear": 2023,
+    "genres": [
+      "Strategy",
+      "Adventure",
+      "RPG"
+    ],
+    "rawgId": 324997,
+    "id": "411850af-f00e-41d2-861f-a572644f7dbe",
+    "addedAt": "2026-04-17T14:16:14.042Z",
+    "rating": 5,
+    "updatedAt": "2026-04-19T19:23:12.604Z"
+  },
+  {
+    "title": "Cyberpunk 2077: Phantom Liberty",
+    "coverUrl": "https://media.rawg.io/media/games/062/06285b425e61623530c5430f20e5d222.jpg",
+    "platform": "PC",
+    "status": "Queue",
+    "releaseYear": 2023,
+    "genres": [
+      "Shooter",
+      "Action"
+    ],
+    "rawgId": 846303,
+    "id": "7d069f2e-1773-44e2-ac0b-69c995a36570",
+    "addedAt": "2026-04-17T15:26:04.123Z",
+    "review": "",
+    "updatedAt": "2026-04-20T13:38:35.319Z",
+    "rating": 3
+  },
+  {
+    "title": "Resident Evil 2",
+    "coverUrl": "https://media.rawg.io/media/games/053/053fc543bf488349610f1ae2d0c1b51b.jpg",
+    "platform": "PS5",
+    "status": "Playing",
+    "releaseYear": 2019,
+    "genres": [
+      "Adventure",
+      "Action"
+    ],
+    "rawgId": 58813,
+    "id": "938cf336-e274-445d-9d91-caa7dee954cf",
+    "addedAt": "2026-04-18T14:24:17.165Z",
+    "rating": 2,
+    "updatedAt": "2026-04-19T19:22:47.565Z"
+  },
+  {
+    "title": "The Legend of Zelda: Skyward Sword",
+    "coverUrl": "https://media.rawg.io/media/games/884/884d12f527a9a12b5e486ee1b79ecf7f.jpeg",
+    "platform": "Switch",
+    "status": "Playing",
+    "releaseYear": 2011,
+    "genres": [
+      "Adventure"
+    ],
+    "rawgId": 26824,
+    "id": "601c19f9-6ec0-4ed3-bdbc-139a79d0e402",
+    "addedAt": "2026-04-19T16:15:14.838Z",
+    "rating": 4,
+    "updatedAt": "2026-04-19T19:22:54.086Z"
+  },
+  {
+    "title": "Harvest Moon: Save the Homeland",
+    "coverUrl": "https://media.rawg.io/media/screenshots/d29/d293cbd204cdd1b6b2eaec956edc9ca3.jpg",
+    "platform": "PC",
+    "status": "Wishlist",
+    "releaseYear": 2001,
+    "genres": [
+      "RPG",
+      "Simulation"
+    ],
+    "rawgId": 4559,
+    "id": "d89961fc-9b0f-471e-8139-3e412652d11b",
+    "addedAt": "2026-04-19T16:16:09.898Z",
+    "updatedAt": "2026-04-19T16:37:28.969Z",
+    "rating": 5
+  },
+  {
+    "title": "Diablo IV",
+    "coverUrl": "https://media.rawg.io/media/games/77d/77d51f8f4a07c3eecb0f8504027b1bf0.jpg",
+    "platform": "PC",
+    "status": "Playing",
+    "releaseYear": 2023,
+    "genres": [
+      "Action",
+      "RPG"
+    ],
+    "rawgId": 388309,
+    "id": "c8094a8d-42de-4fa0-9720-d064e49d5a5d",
+    "addedAt": "2026-04-19T16:21:13.269Z",
+    "updatedAt": "2026-04-19T16:35:21.363Z"
+  },
+  {
+    "title": "The Legend of Zelda: Majora's Mask",
+    "coverUrl": "https://media.rawg.io/media/games/b3c/b3c209cd49aae8a469a59b79b54dc599.jpg",
+    "platform": "Switch",
+    "status": "Completed",
+    "releaseYear": 2000,
+    "genres": [
+      "Adventure",
+      "Action"
+    ],
+    "rawgId": 25924,
+    "id": "f108a117-9c9a-4ad7-962b-39f70e3bf3ef",
+    "addedAt": "2026-04-19T16:41:47.236Z",
+    "rating": 4,
+    "updatedAt": "2026-04-19T16:42:07.368Z"
+  },
+  {
+    "title": "Raft",
+    "coverUrl": "https://media.rawg.io/media/games/6b2/6b253d2d39fc05b2368e5e78bb4abffc.jpg",
+    "platform": "PC",
+    "status": "Dropped",
+    "releaseYear": 2022,
+    "genres": [
+      "Adventure"
+    ],
+    "rawgId": 46301,
+    "id": "56cea008-481d-4ea3-8af3-0f974d7ee917",
+    "addedAt": "2026-04-19T19:27:06.032Z",
+    "rating": 1,
+    "updatedAt": "2026-04-19T19:27:11.092Z"
+  },
+  {
+    "title": "A Short Hike",
+    "coverUrl": "https://media.rawg.io/media/games/c38/c38deeb8f331a78c89e64ad71a1db361.jpg",
+    "platform": "Xbox Series",
+    "status": "Playing",
+    "releaseYear": 2019,
+    "genres": [
+      "Indie",
+      "Adventure"
+    ],
+    "rawgId": 304247,
+    "id": "58ce9701-2910-488b-b035-366d0a58011a",
+    "addedAt": "2026-04-19T19:28:02.865Z",
+    "updatedAt": "2026-04-19T19:28:18.078Z"
+  },
+  {
+    "title": "Untitled Goose Game",
+    "coverUrl": "https://media.rawg.io/media/games/199/1996ab6448cadb2ce4bea31536466333.jpg",
+    "platform": "PC",
+    "status": "Wishlist",
+    "releaseYear": 2019,
+    "genres": [
+      "Indie",
+      "Family",
+      "Action",
+      "Puzzle"
+    ],
+    "rawgId": 59637,
+    "id": "bd71bf77-02b8-4579-8432-7401fa52489d",
+    "addedAt": "2026-04-19T19:28:43.298Z"
+  },
+  {
+    "title": "Dave the Diver",
+    "coverUrl": "https://media.rawg.io/media/games/1ee/1eec43616e3ff00a674124d746926b23.jpg",
+    "platform": "PC",
+    "status": "Wishlist",
+    "releaseYear": 2023,
+    "genres": [
+      "Adventure",
+      "Action",
+      "RPG",
+      "Simulation"
+    ],
+    "rawgId": 871264,
+    "id": "ebe1d86d-cfd9-464e-b0a0-49ae9aa3c5ab",
+    "addedAt": "2026-04-19T19:28:56.867Z"
+  }
+]
