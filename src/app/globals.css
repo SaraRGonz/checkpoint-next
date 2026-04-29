@@ -62,11 +62,16 @@
 
     /* Shadcn UI variables base */
     --radius: 0.5rem;
+
+    /* ---- FONTS ---- */
+    --font-inter: var(--font-inter);
+    --font-rajdhani: var(--font-rajdhani);
 }
 
 body {
     background-color: var(--color-background); 
     color: var(--color-text);
+    font-family: var(--font-inter);
 }
 
 .light {
