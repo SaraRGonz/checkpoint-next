@@ -1,4 +1,4 @@
-import { fetchApi } from '@/api/client';
+import { fetchApi } from './client';
 import type { SearchResponse } from '@/types/rawg';
 
 interface SearchFilters {
