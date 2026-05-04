@@ -10,6 +10,7 @@ type Props = {
 };
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
+
     const resolvedParams = await params;
     const game = await getGameById(resolvedParams.id);
     
@@ -35,5 +36,5 @@ export default async function GamePage({ params }: Props) {
         notFound();
     }
 
-    return <GameDetailClient game={game} />;
+    return <GameDetailClient initialGame={game} />;
 }
