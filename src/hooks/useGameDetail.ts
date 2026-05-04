@@ -1,17 +1,19 @@
-'use client';
+'use client'
 
 import { useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
-import { useLibrary } from './useLibrary';
-import type { Game } from '../types/game';
+import { useLibrary } from '@/hooks/useLibrary';
+import type { Game } from '@/types/game';
 
-export function useGameDetail() {
+export function useGameDetail(initialGame?: Game) {
     const params = useParams();
     const id = params?.id as string;
     
     const { games, updateGame, isLoading } = useLibrary();
     
-    const originalGame = games.find((g) => g.id === id);
+    const storeGame = games.find((g) => g.id === id);
+    const originalGame = storeGame || initialGame;
+
     const [isEditing, setIsEditing] = useState(false);
     const [draft, setDraft] = useState<Game | undefined>(originalGame);
 

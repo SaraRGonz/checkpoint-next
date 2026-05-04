@@ -13,7 +13,7 @@ export default function GameDetailLoading() {
             </div>
 
             {/* Content Skeleton */}
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch h-[600px]">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch h-150">
                 {/* Cover Skeleton */}
                 <div className="lg:col-span-3 bg-gray-900/40 rounded-2xl border border-gray-800 animate-pulse flex items-center justify-center">
                     <Spinner />

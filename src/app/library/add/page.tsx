@@ -2,7 +2,6 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import Image from 'next/image';
 import { addGameAction } from '@/actions/library.actions';
 import { Button } from '@/components/ui/Button';
 import { TagInput } from '@/components/ui/TagInput';
@@ -26,6 +25,16 @@ export default function AddGamePage() {
     const [error, setError] = useState<string | null>(null);
     const [isSaving, setIsSaving] = useState(false);
 
+    const isValidUrl = (url: string) => {
+        if (!url || url.trim() === '' || url === DEFAULT_COVER_URL) return true;
+        try {
+            const parsed = new URL(url);
+            return parsed.protocol === 'http:' || parsed.protocol === 'https:';
+        } catch {
+            return false;
+        }
+    };
+
     const handleSubmit = async (e?: React.SyntheticEvent) => {
         if (e) e.preventDefault(); 
 
@@ -34,27 +43,19 @@ export default function AddGamePage() {
             return;
         }
 
-        const finalCoverUrl = coverUrl.trim();
-        if (finalCoverUrl !== '' && finalCoverUrl !== DEFAULT_COVER_URL) {
-            try {
-                const url = new URL(finalCoverUrl);
-                if (url.protocol !== 'http:' && url.protocol !== 'https:') {
-                    throw new Error('Invalid protocol');
-                }
-            } catch (_) {
-                setError('Please enter a valid link for the image (e.g., https://...)');
-                return; 
-            }
+        let finalCoverUrl = coverUrl.trim();
+        if (finalCoverUrl !== DEFAULT_COVER_URL && !isValidUrl(finalCoverUrl)) {
+            finalCoverUrl = DEFAULT_COVER_URL;
+            setCoverUrl(DEFAULT_COVER_URL);
         }
 
         try {
             setIsSaving(true);
             setError(null);
 
-            // AQUÍ LA MAGIA: Llamamos directamente al Server Action
             const result = await addGameAction({
                 title,
-                coverUrl: coverUrl.trim() === '' ? DEFAULT_COVER_URL : coverUrl,
+                coverUrl: finalCoverUrl === '' ? DEFAULT_COVER_URL : finalCoverUrl,
                 coverPosition,
                 platform: platform === '' ? undefined : platform,
                 status,
@@ -63,10 +64,8 @@ export default function AddGamePage() {
             });
             
             if (result.success && result.gameId) {
-                // El Server Action ya ha hecho revalidatePath, así que la Library ya está actualizada
                 router.push(`/game/${result.gameId}`);
             } else {
-                // Si Zod o la API fallan, el Server Action nos devuelve el error
                 if (result.errors) {
                     const errorMessages = Object.values(result.errors).flat().join(', ');
                     setError(`Validation failed: ${errorMessages}`);
@@ -118,16 +117,13 @@ export default function AddGamePage() {
             <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-[300px_1fr] gap-8 items-stretch">
                 
                 <div className="relative flex flex-col justify-center h-full bg-gray-900/40 p-4 rounded-2xl border border-gray-800 shadow-xl min-w-0">
-                    <div className="relative rounded-2xl overflow-hidden border-2 border-gray-800 shadow-2xl aspect-[3/4] w-full bg-gray-950">
-                        {/* Usamos Next Image con unoptimized para soportar cualquier URL externa */}
-                        <Image 
-                            src={coverUrl} 
+                    <div className="relative rounded-2xl overflow-hidden border-2 border-gray-800 shadow-2xl aspect-3/4 w-full bg-gray-950">
+                        <img 
+                            src={isValidUrl(coverUrl) ? coverUrl : DEFAULT_COVER_URL} 
                             alt="Cover Preview" 
-                            fill
-                            unoptimized
-                            className="object-cover transition-opacity" 
+                            className="w-full h-full object-cover transition-opacity" 
                             style={{ objectPosition: coverPosition }}
-                            onError={() => setCoverUrl(DEFAULT_COVER_URL)}
+                            onError={(e) => (e.currentTarget.src = DEFAULT_COVER_URL)}
                         />
                     </div>
                     
@@ -136,13 +132,20 @@ export default function AddGamePage() {
                         <input 
                             type="text"
                             value={coverUrl === DEFAULT_COVER_URL ? '' : coverUrl}
-                            onChange={(e) => setCoverUrl(e.target.value)}
+                            onChange={(e) => {
+                                setCoverUrl(e.target.value);
+                                if (e.target.value.trim() !== '' && !isValidUrl(e.target.value)) {
+                                    setError('Warning: The URL format is invalid. A placeholder will be used.');
+                                } else if (error?.includes('Warning')) {
+                                    setError(null);
+                                }
+                            }}
                             placeholder="https://..."
                             className="w-full bg-gray-950 border border-gray-700 text-gray-300 text-xs p-2 rounded outline-none focus:border-primary transition-colors placeholder:text-gray-300"
                         />
                     </div>
 
-                    {coverUrl.trim() !== '' && coverUrl !== DEFAULT_COVER_URL && (
+                    {coverUrl.trim() !== '' && coverUrl !== DEFAULT_COVER_URL && isValidUrl(coverUrl) && (
                         <div className="mt-6 space-y-4 pt-6 border-t border-gray-800">
                             {(() => {
                                 const [x, y] = coverPosition.split(' ');

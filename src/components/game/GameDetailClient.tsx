@@ -1,31 +1,31 @@
-'use client';
+'use client'
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import Image from 'next/image';
-import { useGameDetail } from '../../hooks/useGameDetail';
-import { useLibrary } from '../../hooks/useLibrary';
-import { GameDetailHeader } from './GameDetailHeader';
-import { GameCoverColumn } from './GameCoverColumn';
-import { GameInfoColumn } from './GameInfoColumn';
-import { GameNotes } from './GameNotes';
-import { Modal, type ModalButton } from '../ui/Modal';
-import { Spinner } from '../ui/Spinner';
-import type { Game } from '../../types/game';
+import { useGameDetail } from '@/hooks/useGameDetail';
+import { useLibrary } from '@/hooks/useLibrary';
+import { GameDetailHeader } from '@/components/game/GameDetailHeader';
+import { GameCoverColumn } from '@/components/game/GameCoverColumn';
+import { GameInfoColumn } from '@/components/game/GameInfoColumn';
+import { GameNotes } from '@/components/game/GameNotes';
+import { Spinner } from '@/components/ui/Spinner';
+import { Modal, type ModalButton } from '@/components/ui/Modal';
+import type { Game } from '@/types/game';
 
 interface GameDetailClientProps {
-    game: Game;
+    initialGame: Game;
 }
 
-export function GameDetailClient({ game: initialGame }: GameDetailClientProps) {
-    const router = useRouter();
-    
+const DEFAULT_COVER_URL = '/placeholder.jpg';
+
+export function GameDetailClient({ initialGame }: GameDetailClientProps) {
     const { 
         game, draft, isEditing, isLoading, 
         toggleEdit, updateDraftField, saveChanges, discardChanges 
-    } = useGameDetail();
+    } = useGameDetail(initialGame);
 
     const { deleteGame } = useLibrary(); 
+    const router = useRouter();      
     
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
     const [isImageModalOpen, setIsImageModalOpen] = useState(false);
@@ -34,49 +34,52 @@ export function GameDetailClient({ game: initialGame }: GameDetailClientProps) {
     const [tempCoverPosition, setTempCoverPosition] = useState('50% 50%'); 
     const [imageError, setImageError] = useState<string | null>(null);
 
-    const placeholderImg = '/placeholder.jpg';
-
     useEffect(() => {
         if (draft) {
-            const isPlaceholder = draft.coverUrl === placeholderImg || draft.coverUrl.includes('placeholder');
+            const isPlaceholder = draft.coverUrl === DEFAULT_COVER_URL || draft.coverUrl.includes('placeholder');
             setTempImageUrl(isPlaceholder ? '' : draft.coverUrl);
             setTempCoverPosition(draft.coverPosition || '50% 50%');
             setImageError(null); 
         }
     }, [isImageModalOpen, draft]);
 
-    const currentGame = game || initialGame;
-    const currentDraft = draft || initialGame;
-
-    if (isLoading && !game) return <div className="p-20 flex justify-center"><Spinner /></div>;
+    if (!game || !draft) return <div className="p-20 flex justify-center"><Spinner /></div>;
 
     const handleDeleteConfirm = async () => {
-        await deleteGame(currentGame.id);
+        await deleteGame(game.id);
         setIsDeleteModalOpen(false);
         router.push('/library'); 
+    };
+
+    const isValidUrl = (url: string) => {
+        if (!url || url.trim() === '' || url === DEFAULT_COVER_URL) return true;
+        try {
+            const parsed = new URL(url);
+            return parsed.protocol === 'http:' || parsed.protocol === 'https:';
+        } catch {
+            return false;
+        }
     };
 
     const handleSaveImage = () => {
         const finalUrl = tempImageUrl.trim();
 
         if (finalUrl === '') {
-            updateDraftField('coverUrl', placeholderImg);
+            updateDraftField('coverUrl', DEFAULT_COVER_URL);
+            setImageError(null);
             setIsImageModalOpen(false);
             return;
         }
 
-        try {
-            const url = new URL(finalUrl);
-            if (url.protocol !== 'http:' && url.protocol !== 'https:') {
-                throw new Error('Invalid protocol');
-            }
-            
+        if (!isValidUrl(finalUrl)) {
+            updateDraftField('coverUrl', DEFAULT_COVER_URL);
+            setImageError(null);
+            setIsImageModalOpen(false);
+        } else {
             updateDraftField('coverUrl', finalUrl);
             updateDraftField('coverPosition', tempCoverPosition); 
             setImageError(null);
             setIsImageModalOpen(false);
-        } catch (_) {
-            setImageError('Please enter a valid link for the image (e.g., https://...)');
         }
     };
 
@@ -90,46 +93,43 @@ export function GameDetailClient({ game: initialGame }: GameDetailClientProps) {
         { content: 'Update Image', variant: 'primary', onClick: handleSaveImage }
     ];
 
-    const previewSrc = tempImageUrl.trim() === '' ? placeholderImg : tempImageUrl;
-
     return (
         <div className="max-w-7xl mx-auto space-y-8 animate-in fade-in duration-500">
             <GameDetailHeader 
-                title={currentGame.title} 
+                title={game.title} 
                 isEditing={isEditing} 
                 onEdit={toggleEdit} 
                 onSave={saveChanges} 
                 onDiscard={discardChanges} 
                 onDelete={() => setIsDeleteModalOpen(true)} 
-                onBack={() => router.back()} 
+                onBack={() => router.back()}
             />
 
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
-                <div className="lg:col-span-3">
+            <div className="grid grid-cols-1 md:grid-cols-12 gap-8 items-stretch">
+                <div className="md:col-span-4 lg:col-span-3 min-w-0">
                     <GameCoverColumn 
-                        draft={currentDraft} 
+                        draft={draft} 
                         isEditing={isEditing} 
                         onOpenImageModal={() => setIsImageModalOpen(true)} 
                     />
                 </div>
 
-                <div className="lg:col-span-4">
-                    <GameInfoColumn draft={currentDraft} isEditing={isEditing} updateDraftField={updateDraftField} />
+                <div className="md:col-span-4 lg:col-span-4 min-w-0">
+                    <GameInfoColumn draft={draft} isEditing={isEditing} updateDraftField={updateDraftField} />
                 </div>
 
-                <div className="lg:col-span-5 h-full">
+                <div className="md:col-span-4 lg:col-span-5 min-w-0 h-full">
                     <GameNotes 
-                        notes={currentDraft.review || ''} 
+                        notes={draft.review || ''} 
                         onChange={(n) => updateDraftField('review', n)}
                         isEditing={isEditing}
-                        onDoubleClick={() => !isEditing && toggleEdit()}
                     />
                 </div>
             </div>
 
             <Modal isOpen={isDeleteModalOpen} onClose={() => setIsDeleteModalOpen(false)} title="Delete Game" footerButtons={deleteModalButtons}>
                 <div className="space-y-4">
-                    <p>Are you sure you want to banish <span className="font-bold text-white">"{currentGame.title}" </span>from your library?</p>
+                    <p>Are you sure you want to banish <span className="font-bold text-white">"{game.title}" </span>from your library?</p>
                     <p className="text-sm text-gray-400">Permadeath is on: this action cannot be undone.</p>
                 </div>
             </Modal>
@@ -141,7 +141,14 @@ export function GameDetailClient({ game: initialGame }: GameDetailClientProps) {
                         <input 
                             type="text"
                             value={tempImageUrl}
-                            onChange={(e) => setTempImageUrl(e.target.value)}
+                            onChange={(e) => {
+                                setTempImageUrl(e.target.value);
+                                if (e.target.value.trim() !== '' && !isValidUrl(e.target.value)) {
+                                    setImageError('Warning: The URL format is invalid. A placeholder will be used.');
+                                } else if (imageError?.includes('Warning')) {
+                                    setImageError(null);
+                                }
+                            }}
                             className="w-full bg-gray-950 border border-gray-700 p-3 rounded-lg text-sm text-gray-200 focus:border-primary outline-none transition-all"
                             placeholder="https://..."
                         />
@@ -151,28 +158,18 @@ export function GameDetailClient({ game: initialGame }: GameDetailClientProps) {
                             </p>
                         )}
                     </div>
-
-                    {/* VISTA PREVIA Y CONTROLES PAN & TILT */}
                     <div className="pt-2">
                         <p className="text-[10px] uppercase text-gray-600 font-bold mb-3 tracking-[0.2em] text-center">Preview</p>
                         <div className="w-32 mx-auto aspect-3/4 rounded-xl overflow-hidden border-2 border-gray-700 shadow-2xl bg-gray-950 relative">
-                            <Image 
-                                src={previewSrc} 
+                            <img 
+                                src={isValidUrl(tempImageUrl) && tempImageUrl.trim() !== '' ? tempImageUrl : DEFAULT_COVER_URL} 
                                 alt="Preview" 
-                                fill
-                                sizes="128px"
-                                className="object-cover" 
+                                className="w-full h-full object-cover" 
                                 style={{ objectPosition: tempCoverPosition }}
-                                onError={(e) => {
-                                    // Fallback manual si la URL falla
-                                    const target = e.target as HTMLImageElement;
-                                    target.srcset = placeholderImg;
-                                }} 
+                                onError={(e) => (e.currentTarget.src = DEFAULT_COVER_URL)} 
                             />
                         </div>
-                        
-                        {/* CONTROLES DE RECORTE (PAN & TILT) */}
-                        {tempImageUrl.trim() !== '' && (
+                        {tempImageUrl.trim() !== '' && isValidUrl(tempImageUrl) && (
                             <div className="mt-6 space-y-4">
                                 {(() => {
                                     const [x, y] = tempCoverPosition.split(' ');
@@ -181,7 +178,6 @@ export function GameDetailClient({ game: initialGame }: GameDetailClientProps) {
 
                                     return (
                                         <>
-                                            {/* Slider Horizontal */}
                                             <div>
                                                 <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest flex justify-between">
                                                     <span>Horizontal Pan</span>
@@ -195,7 +191,6 @@ export function GameDetailClient({ game: initialGame }: GameDetailClientProps) {
                                                 />
                                             </div>
 
-                                            {/* Slider vertical */}
                                             <div>
                                                 <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest flex justify-between">
                                                     <span>Vertical Pan</span>
