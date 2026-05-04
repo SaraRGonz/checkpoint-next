@@ -1,27 +1,19 @@
-export default function LibraryLoading() {
+import { GameCardSkeleton } from '@/components/ui/GameCardSkeleton';
+
+export default function Loading() {
     return (
-        <div className="flex flex-col lg:flex-row gap-8 items-start w-full">
-            {/* Sidebar Skeleton */}
-            <aside className="w-full lg:w-64 shrink-0 flex flex-col gap-6">
-                <div className="h-10 bg-gray-800 rounded animate-pulse w-full"></div>
-                <div className="h-10 bg-gray-800 rounded animate-pulse w-full"></div>
-                <div className="h-10 bg-gray-800 rounded animate-pulse w-full mt-4"></div>
-            </aside>
+        <div className="max-w-7xl mx-auto space-y-8 py-10">
+            {/* Header Skeleton */}
+            <div className="flex justify-between items-end border-b border-gray-800 pb-6">
+                <div className="h-10 w-48 bg-gray-800 rounded-md animate-pulse"></div>
+            </div>
 
             {/* Grid Skeleton */}
-            <main className="flex-1 w-full min-w-0">
-                <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-6">
-                    {Array.from({ length: 8 }).map((_, i) => (
-                        <div key={i} className="bg-gray-900 rounded-xl overflow-hidden border border-gray-800">
-                            <div className="aspect-3/4 w-full bg-gray-800 animate-pulse" />
-                            <div className="p-5 space-y-3">
-                                <div className="h-5 bg-gray-800 rounded animate-pulse w-3/4" />
-                                <div className="h-4 bg-gray-800 rounded animate-pulse w-1/2" />
-                            </div>
-                        </div>
-                    ))}
-                </div>
-            </main>
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
+                {Array.from({ length: 10 }).map((_, i) => (
+                    <GameCardSkeleton key={i} />
+                ))}
+            </div>
         </div>
     );
 }
