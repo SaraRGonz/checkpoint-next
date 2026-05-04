@@ -19,8 +19,38 @@ const rajdhani = Rajdhani({
 });
 
 export const metadata: Metadata = {
-  title: "Checkpoint | Your video game library",
+  title: {
+    default: "Checkpoint | Your video game library",
+    template: "%s | Checkpoint", 
+  },
   description: "Manage your collection, discover new titles, and organize your video game backlog.",
+  keywords: ["gaming", "backlog", "video games", "collection tracker", "RAWG"],
+  openGraph: {
+    title: "Checkpoint",
+    description: "Your ultimate video game backlog tracker.",
+    url: "https://checkpoint.vercel.app", 
+    siteName: "Checkpoint",
+    images: [
+      {
+        url: "/checkpointlogo.svg", 
+        width: 1200,
+        height: 630,
+        alt: "Checkpoint Dashboard",
+      },
+    ],
+    locale: "en_US",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Checkpoint",
+    description: "Your ultimate video game tracker.",
+    images: ["/checkpointlogo.svg"],
+  },
+  robots: {
+    index: true,
+    follow: true,
+  },
 };
 
 export default function RootLayout({

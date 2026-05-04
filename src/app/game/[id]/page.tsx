@@ -15,12 +15,12 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     const game = await getGameById(resolvedParams.id);
     
     if (!game) {
-        return { title: 'Juego no encontrado | Checkpoint' };
+        return { title: 'Game Not Found' };
     }
     
     return {
-        title: `${game.title} | Checkpoint`,
-        description: game.review || `${game.title} — ${game.status} en tu biblioteca de Checkpoint`,
+        title: game.title, 
+        description: game.review || `${game.title} — ${game.status} in your Checkpoint library`,
         openGraph: {
             title: game.title,
             images: [{ url: game.coverUrl, width: 600, height: 800, alt: game.title }],
