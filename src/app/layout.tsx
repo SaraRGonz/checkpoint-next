@@ -5,7 +5,6 @@ import "./globals.css";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 
-// configuración de fuentes optimizadas sin layout shift
 const inter = Inter({ 
   subsets: ['latin'], 
   variable: '--font-inter', 
@@ -19,7 +18,6 @@ const rajdhani = Rajdhani({
   display: 'swap' 
 });
 
-// Metadatos base 
 export const metadata: Metadata = {
   title: "Checkpoint | Your video game library",
   description: "Manage your collection, discover new titles, and organize your video game backlog.",
@@ -31,7 +29,6 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    // suppressHydrationWarning para el dark mode toggle
     <html lang="es" className={`${inter.variable} ${rajdhani.variable} dark`} suppressHydrationWarning>
       <body className="min-h-screen flex flex-col bg-background text-text">
         <Providers>
