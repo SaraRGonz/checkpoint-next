@@ -11,7 +11,6 @@ import { Button } from '@/components/ui/Button';
 import { ActionMenu } from '@/components/ui/ActionMenu/ActionMenu';
 import { STATUS_LIST } from '@/utils/constants';
 import { SearchIcon, PlusIcon, GridIcon, KanbanIcon } from '@/components/ui/Icons';
-import { Spinner } from '@/components/ui/Spinner';
 import { useState, useEffect } from 'react';
 import { KanbanBoard } from '@/components/game/KanbanBoard';
 
@@ -159,20 +158,7 @@ export default function LibraryPage() {
 
                 {/* filtros desplegables */}
                 <div className="flex flex-col gap-4">
-                    <div className="flex flex-col gap-1.5 w-full">
-                        <label className="text-[10px] font-bold text-gray-300 uppercase tracking-wider">Status</label>
-                        <ActionMenu value={statusFilter} onSelect={setStatusFilter}>
-                            <ActionMenu.Button>
-                                {statusFilter === 'all' ? 'All' : statusFilter}
-                            </ActionMenu.Button>
-                            <ActionMenu.Overlay>
-                                <ActionMenu.Item value="all">All</ActionMenu.Item>
-                                {STATUS_LIST.filter(s => s.value !== 'Wishlist').map(s => (
-                                    <ActionMenu.Item key={s.value} value={s.value}>{s.label}</ActionMenu.Item>
-                                ))}
-                            </ActionMenu.Overlay>
-                        </ActionMenu>
-                    </div>
+                    {/* Status filter removed from here and moved to top pills */}
 
                     <div className="flex flex-col gap-1.5 w-full">
                         <label className="text-[10px] font-bold text-gray-300 uppercase tracking-wider">Genre</label>
@@ -232,22 +218,55 @@ export default function LibraryPage() {
                 </div>
             </aside>
 
-            {/* main */}
-            <main className="flex-1 w-full min-w-0"> 
+            {/* MAIN CONTENT AREA */}
+            <main className="flex-1 w-full min-w-0 flex flex-col gap-6"> 
+                
+                {/* STATUS PILLS (Only visible in Grid mode) */}
+                {viewMode === 'grid' && (
+                    <div className="flex flex-wrap items-center gap-2 pb-2 border-b border-gray-800/50">
+                        <button
+                            onClick={() => setStatusFilter('all')}
+                            className={`px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider transition-all duration-200 border ${
+                                statusFilter === 'all' 
+                                    ? 'bg-primary text-white border-primary shadow-lg shadow-primary/20' 
+                                    : 'bg-gray-900/50 text-gray-400 border-gray-800 hover:bg-gray-800 hover:text-white'
+                            }`}
+                        >
+                            All
+                        </button>
+                        {STATUS_LIST.filter(s => s.value !== 'Wishlist').map(s => (
+                            <button
+                                key={s.value}
+                                onClick={() => setStatusFilter(s.value)}
+                                className={`px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider transition-all duration-200 border ${
+                                    statusFilter === s.value 
+                                        ? 'bg-primary text-white border-primary shadow-lg shadow-primary/20' 
+                                        : 'bg-gray-900/50 text-gray-400 border-gray-800 hover:bg-gray-800 hover:text-white'
+                                }`}
+                            >
+                                {s.label}
+                            </button>
+                        ))}
+                    </div>
+                )}
+
+                {/* GAME GRID / KANBAN / EMPTY STATE */}
                 {filteredGames.length === 0 ? (
-                    <EmptyState 
-                        title="Mission Failed"
-                        message="It seems no game survived your selection. Try a different strategy!"
-                        onClick={clearFilters}
-                        clickText="Respawn Filters"
-                    />
+                    <div className="mt-4">
+                        <EmptyState 
+                            title="Mission Failed"
+                            message="It seems no game survived your selection. Try a different strategy!"
+                            onClick={clearFilters}
+                            clickText="Respawn Filters"
+                        />
+                    </div>
                 ) : viewMode === 'grid' ? (
                     <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-6 animate-in fade-in duration-500">
                         {filteredGames.map((game, index) => (
                             <GameCard 
                                 key={game.id} 
                                 game={game} 
-                                priority={index < 8} // <--- AÑADIDO: Prioridad solo a los 8 primeros
+                                priority={index < 8} 
                             />
                         ))}
                     </div>
