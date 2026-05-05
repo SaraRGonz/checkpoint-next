@@ -49,11 +49,11 @@ export function HomeIcon(props: IconProps) {
     );
 }
 
-// x del navbar para library
+// triángulo del navbar para library
 export function LibraryIcon(props: IconProps) {
     return (
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" {...props}>
-            <path d="M18 6L6 18M6 6l12 12" />
+            <path d="M12 6l6 12H6z" />
         </svg>
     );
 }
@@ -67,11 +67,11 @@ export function WishlistNavIcon(props: IconProps) {
     );
 }
 
-// triángulo del navbar para search
+// x del navbar para search
 export function SearchNavIcon(props: IconProps) {
     return (
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" {...props}>
-            <path d="M12 6l6 12H6z" />
+            <path d="M18 6L6 18M6 6l12 12" />
         </svg>
     );
 }
