@@ -203,7 +203,7 @@ export default function SearchPage() {
                                     <div className="h-5 bg-gray-800/40 rounded w-3/4"></div>
                                 </div>
                             </div>
-                            <div className="flex gap-2 items-stretch h-[34px] shrink-0 mt-auto">
+                            <div className="flex gap-2 items-stretch h-8.5 shrink-0 mt-auto">
                                 <div className="flex-1 bg-gray-800/40 rounded-md"></div>
                                 <div className="flex-1 bg-gray-800/40 rounded-md"></div>
                             </div>
