@@ -215,7 +215,7 @@ export function WishlistClient({ initialGames }: WishlistClientProps) {
                                             aria-label={`Remove ${game.title} from wishlist`}
                                         >
                                             <div className="flex items-center justify-center">
-                                                <TrashIcon className="w-4 h-4" />
+                                                <TrashIcon className="w-5 h-5" />
                                             </div>
                                         </Button>
                                     </div>

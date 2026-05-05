@@ -89,7 +89,6 @@ export function GameDetailClient({ initialGame }: GameDetailClientProps) {
     ];
 
     const imageModalButtons: ModalButton[] = [
-        { content: 'Cancel', variant: 'secondary', onClick: () => setIsImageModalOpen(false) },
         { content: 'Update Image', variant: 'primary', onClick: handleSaveImage }
     ];
 

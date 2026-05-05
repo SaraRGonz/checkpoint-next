@@ -22,15 +22,18 @@ export function Navbar() {
             <div className="px-6 py-4 flex items-center justify-between relative z-50 bg-background">
                 
                 {/* IZQUIERDA LOGO */}
-                <Link href="/" className="flex items-center gap-3 group" onClick={closeMenu}>
-                    <div className="text-primary group-hover:scale-110 transition-transform">
+                <Link href="/" className="flex items-center gap-3 group cursor-pointer" onClick={closeMenu}>
+                    <div className="text-primary group-hover:scale-110 active:scale-95 transition-transform duration-200">
                         <LogoIcon className="w-8 h-8" />
                     </div>
                     <span className="text-xl font-black tracking-tighter text-text uppercase">Checkpoint</span>
                 </Link>
 
                 {/* CENTRO NAVEGACIÓN desktop visible, móvil oculto */}
-                <div className="hidden md:flex items-center bg-gray-900/40 border border-gray-700/50 rounded-full p-1 shadow-inner absolute left-1/2 -translate-x-1/2">
+                <div 
+                    className="hidden md:flex items-center bg-gray-900/40 border border-gray-700/50 
+                    rounded-full p-1 shadow-inner absolute left-1/2 -translate-x-1/2"
+                >
                     <div className="flex items-center gap-1 relative">
                         <NavItem href="/" active={isActive('/')} label="Home" icon={HomeIcon} />
                         <NavItem href="/library" active={isActive('/library')} label="Library" icon={LibraryIcon} />
@@ -42,24 +45,27 @@ export function Navbar() {
                 <button 
                     onClick={toggleTheme} 
                     aria-label="Toggle theme" 
-                    className="hidden md:flex w-10 h-10 rounded-full items-center justify-center bg-gray-800 border border-gray-700 hover:border-primary text-accent transition-all"
+                    className="hidden md:flex w-10 h-10 rounded-full items-center justify-center cursor-pointer bg-gray-800 border 
+                    border-gray-700 hover:border-primary text-accent transition-all duration-200 hover:scale-105 active:scale-95"
                 >
                     {theme === 'dark' ? "☀️" : "🌙"}
                 </button>
 
-                {/* CONTROLES MÓVILES desktop oculto, móvil visible m*/}
+                {/* CONTROLES MÓVILES desktop oculto, móvil visible */}
                 <div className="flex items-center gap-3 md:hidden">
                     <button 
                         onClick={toggleTheme} 
                         aria-label="Toggle theme" 
-                        className="w-9 h-9 rounded-full flex items-center justify-center bg-gray-800 border border-gray-700 text-accent transition-all"
+                        className="w-9 h-9 rounded-full flex items-center justify-center cursor-pointer bg-gray-800 border 
+                        border-gray-700 text-accent transition-all duration-200 hover:scale-105 active:scale-95"
                     >
                         {theme === 'dark' ? "☀️" : "🌙"}
                     </button>
                     <button 
                         onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
                         aria-label={isMobileMenuOpen ? "Close menu" : "Open menu"} 
-                        className="text-gray-400 hover:text-white p-1 transition-colors"
+                        className="text-gray-400 hover:text-white p-1 cursor-pointer transition-all duration-200 
+                        hover:scale-110 active:scale-95"
                     >
                         {isMobileMenuOpen ? <CrossIcon className="w-7 h-7" /> : <MenuIcon className="w-7 h-7" />}
                     </button>
@@ -71,7 +77,8 @@ export function Navbar() {
                 <motion.div 
                     initial={{ opacity: 0, y: -20 }}
                     animate={{ opacity: 1, y: 0 }}
-                    className="md:hidden absolute top-full left-0 w-full bg-gray-900 border-b border-gray-800 shadow-2xl py-4 px-4 flex flex-col gap-2 z-40"
+                    className="md:hidden absolute top-full left-0 w-full bg-gray-900 border-b border-gray-800 shadow-2xl 
+                    py-4 px-4 flex flex-col gap-2 z-40"
                 >
                     <NavItem href="/" active={isActive('/')} label="Home" icon={HomeIcon} onClick={closeMenu} />
                     <NavItem href="/library" active={isActive('/library')} label="Library" icon={LibraryIcon} onClick={closeMenu} />
@@ -87,7 +94,8 @@ function NavItem({ href, active, label, icon: Icon, onClick }: { href: string; a
         <Link 
             href={href}
             onClick={onClick}
-            className={`flex items-center gap-2 px-4 py-3 md:py-2 rounded-xl md:rounded-full transition-colors duration-300 relative group ${
+            className={`flex items-center gap-2 px-4 py-3 md:py-2 rounded-xl cursor-pointer md:rounded-full 
+                transition-all duration-200 hover:scale-105 active:scale-95 relative group ${
                 active ? 'text-primary bg-gray-800/50 md:bg-transparent' : 'text-gray-400 hover:text-white hover:bg-gray-800/30 md:hover:bg-transparent'
             }`}
         >

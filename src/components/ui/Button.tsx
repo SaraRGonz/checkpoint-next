@@ -19,7 +19,7 @@ export function Button({
     ...props
 }: ButtonProps) {
     
-    const baseStyles = 'px-4 py-2 rounded-md font-medium transition-all duration-200 disabled:bg-[#333333] disabled:text-white disabled:border disabled:border-transparent disabled:cursor-not-allowed [&>*]:opacity-100';    
+    const baseStyles = 'px-4 py-2 rounded-md font-medium cursor-pointer transition-all duration-200 hover:scale-105 active:scale-95 disabled:bg-[#333333] disabled:text-white disabled:border disabled:border-transparent disabled:cursor-not-allowed disabled:pointer-events-none [&>*]:opacity-100';    
     
     const finalClasses = `${baseStyles} ${variantStyles[variant]} ${className}`.trim();
 

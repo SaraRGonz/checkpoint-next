@@ -48,7 +48,7 @@ export function GameDetailHeader({ title, isEditing, onEdit, onSave, onDiscard, 
                         
                         <Button onClick={onDiscard} variant="danger">
                             <div className="flex items-center gap-2">
-                                <CrossIcon className="w-4 h-4" />
+                                <CrossIcon className="w-4 h-4 " />
                                 Discard changes
                             </div>
                         </Button>

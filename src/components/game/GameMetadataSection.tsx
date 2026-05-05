@@ -16,7 +16,7 @@ export function GameMetadataSection({ addedAt, updatedAt, rawgId }: GameMetadata
         <div className="mt-6 pt-4 border-t border-gray-800/50">
             <button
                 onClick={() => setShowMetadata(!showMetadata)}
-                className="flex items-center gap-2 text-[10px] font-bold text-gray-500 hover:text-gray-300 uppercase tracking-widest transition-colors outline-none"
+                className="cursor-pointer flex items-center gap-2 text-[10px] font-bold text-gray-500 hover:text-gray-300 uppercase tracking-widest transition-colors outline-none"
             >
                 <svg
                     className={`w-3.5 h-3.5 transition-transform duration-300 ${showMetadata ? 'rotate-45 text-primary' : ''}`}

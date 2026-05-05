@@ -43,9 +43,9 @@ export function Modal({ isOpen, onClose, title, children, footerButtons, closeIc
                     <h2 className="text-xl font-bold text-text">{title}</h2>
                     <button 
                         onClick={onClose}
-                        className={closeIconClassName || "text-gray-400 hover:text-white transition-colors"}
+                        className={closeIconClassName || "text-gray-400 hover:text-white cursor-pointer transition-all duration-200 hover:scale-110 active:scale-95"}
                     >
-                        <CrossIcon className="w-6 h-6" />
+                        <CrossIcon className="cursor-pointer w-6 h-6" />
                     </button>
                 </div>
                 

@@ -113,7 +113,7 @@ export default function SearchPage() {
                 <div className="flex gap-4 items-start">
                     <button 
                         onClick={() => router.back()}
-                        className="p-2 h-fit text-gray-400 hover:text-white hover:bg-gray-800 rounded-full transition-colors outline-none shrink-0 mt-0.5"
+                        className="p-2 h-fit text-gray-400 hover:text-white cursor-pointer hover:bg-gray-800 rounded-full transition-all duration-200 hover:scale-105 active:scale-95 outline-none shrink-0 mt-0.5"
                         title="Go back"
                     >
                         <ArrowLeftIcon className="w-6 h-6" />
@@ -193,11 +193,30 @@ export default function SearchPage() {
                 </div>
             )}
 
-            {(isLoading || isSaving) && (
+            {isLoading && !isSaving && (
+                <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-6 mt-8">
+                    {Array.from({ length: 8 }).map((_, i) => (
+                        <div key={i} className="flex flex-col gap-3 h-full bg-gray-900/40 p-3 rounded-2xl border border-gray-800 shadow-xl animate-pulse">
+                            <div className="flex-1 flex flex-col bg-gray-900 border border-gray-800 rounded-xl overflow-hidden">
+                                <div className="relative aspect-3/4 bg-gray-800/40"></div>
+                                <div className="flex flex-col grow p-5 gap-1.5">
+                                    <div className="h-5 bg-gray-800/40 rounded w-3/4"></div>
+                                </div>
+                            </div>
+                            <div className="flex gap-2 items-stretch h-[34px] shrink-0 mt-auto">
+                                <div className="flex-1 bg-gray-800/40 rounded-md"></div>
+                                <div className="flex-1 bg-gray-800/40 rounded-md"></div>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            )}
+
+            {isSaving && (
                 <div className="flex flex-col items-center justify-center py-24 gap-4">
                     <Spinner />
                     <p className="text-primary font-bold animate-pulse text-sm uppercase tracking-widest">
-                        {isSaving ? 'Extracting to Database...' : 'Deep Scanning RAWG Network...'}
+                        Extracting to Database...
                     </p>
                 </div>
             )}

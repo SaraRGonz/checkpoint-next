@@ -128,7 +128,7 @@ export default function LibraryPage() {
                     <div className="flex gap-2 bg-gray-950 p-1 rounded-lg border border-gray-800">
                         <button 
                             onClick={() => setViewMode('grid')}
-                            className={`flex-1 py-1.5 flex justify-center items-center rounded-md transition-colors 
+                            className={`flex-1 py-1.5 flex justify-center items-center rounded-md cursor-pointer transition-all duration-200 hover:scale-105 active:scale-95 
                                 ${viewMode === 'grid' ? 'bg-gray-800 text-primary' : 'text-gray-500 hover:text-gray-300'}`}
                             title="Grid View"
                         >
@@ -136,7 +136,7 @@ export default function LibraryPage() {
                         </button>
                         <button 
                             onClick={() => setViewMode('kanban')}
-                            className={`flex-1 py-1.5 flex justify-center items-center rounded-md transition-colors 
+                            className={`flex-1 py-1.5 flex justify-center items-center rounded-md cursor-pointer transition-all duration-200 hover:scale-105 active:scale-95 
                                 ${viewMode === 'kanban' ? 'bg-gray-800 text-primary' : 'text-gray-500 hover:text-gray-300'}`}
                             title="Kanban View"
                         >
@@ -150,7 +150,7 @@ export default function LibraryPage() {
                 <div className="flex justify-between items-center">
                     <h2 className="text-xl font-black text-primary uppercase tracking-tighter">Filters</h2>
                     {hasActiveFilters && (
-                        <button onClick={clearFilters} className="text-[10px] font-bold text-gray-300 hover:text-white uppercase transition-colors">
+                        <button onClick={clearFilters} className="text-[10px] font-bold text-gray-300 hover:text-white uppercase cursor-pointer transition-all duration-200 hover:scale-105 active:scale-95">
                             Reset
                         </button>
                     )}
@@ -158,7 +158,6 @@ export default function LibraryPage() {
 
                 {/* filtros desplegables */}
                 <div className="flex flex-col gap-4">
-                    {/* Status filter removed from here and moved to top pills */}
 
                     <div className="flex flex-col gap-1.5 w-full">
                         <label className="text-[10px] font-bold text-gray-300 uppercase tracking-wider">Genre</label>
@@ -226,7 +225,7 @@ export default function LibraryPage() {
                     <div className="flex flex-wrap items-center gap-2 pb-2 border-b border-gray-800/50">
                         <button
                             onClick={() => setStatusFilter('all')}
-                            className={`px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider transition-all duration-200 border ${
+                            className={`px-4 py-1.5 rounded-full cursor-pointer text-xs font-bold uppercase tracking-wider transition-all duration-200 hover:scale-105 active:scale-95 border ${
                                 statusFilter === 'all' 
                                     ? 'bg-primary text-white border-primary shadow-lg shadow-primary/20' 
                                     : 'bg-gray-900/50 text-gray-400 border-gray-800 hover:bg-gray-800 hover:text-white'
@@ -238,7 +237,7 @@ export default function LibraryPage() {
                             <button
                                 key={s.value}
                                 onClick={() => setStatusFilter(s.value)}
-                                className={`px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider transition-all duration-200 border ${
+                                className={`px-4 py-1.5 rounded-full cursor-pointer text-xs font-bold uppercase tracking-wider transition-all duration-200 hover:scale-105 active:scale-95 border ${
                                     statusFilter === s.value 
                                         ? 'bg-primary text-white border-primary shadow-lg shadow-primary/20' 
                                         : 'bg-gray-900/50 text-gray-400 border-gray-800 hover:bg-gray-800 hover:text-white'
