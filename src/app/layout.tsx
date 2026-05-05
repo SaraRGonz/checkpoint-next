@@ -19,6 +19,7 @@ const rajdhani = Rajdhani({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://checkpoint.vercel.app"),
   title: {
     default: "Checkpoint | Your video game library",
     template: "%s | Checkpoint", 

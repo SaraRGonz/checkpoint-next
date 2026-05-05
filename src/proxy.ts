@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
-export function middleware(request: NextRequest) {
+export function proxy(request: NextRequest) {
     const response = NextResponse.next();
 
     // CABECERAS DE SEGURIDAD HTTP 
@@ -14,7 +14,7 @@ export function middleware(request: NextRequest) {
     
     response.headers.set('Permissions-Policy', 'camera=(), microphone=(), geolocation=()');
 
-    return response;
+    return NextResponse.next();
 }
 
 export const config = {

@@ -1,5 +1,6 @@
 import { MetadataRoute } from 'next';
-import { getLibrary } from '@/api/library';
+import { getAllGames } from '@/lib/library';
+import { Game } from '@/types/game';
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     const baseUrl = 'https://checkpoint.vercel.app'; 
@@ -12,9 +13,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     }));
 
     try {
-        const { data: games } = await getLibrary();
+        const games: Game[] = await getAllGames();
 
-        const gameRoutes = games.map((game) => ({
+        const gameRoutes = games.map((game: Game) => ({
             url: `${baseUrl}/game/${game.id}`,
             lastModified: game.updatedAt ? new Date(game.updatedAt) : new Date(),
             changeFrequency: 'weekly' as const,
