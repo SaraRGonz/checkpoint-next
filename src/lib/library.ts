@@ -18,7 +18,11 @@ const readLibrary = async (): Promise<Game[]> => {
 };
 
 const writeLibrary = async (games: Game[]): Promise<void> => {
-    await fs.writeFile(dataPath, JSON.stringify(games, null, 2), 'utf-8');
+    try {
+        await fs.writeFile(dataPath, JSON.stringify(games, null, 2), 'utf-8');
+    } catch (error) {
+        console.warn("⚠️ Production environment is read-only. Write skipped.");
+    }
 };
 
 // FUNCIONES EXPORTADAS (CRUD)

@@ -3,7 +3,7 @@ import { getAllGames } from '@/lib/library';
 import { Game } from '@/types/game';
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-    const baseUrl = 'https://checkpoint.vercel.app'; 
+    const baseUrl = 'https://checkpoint-next-navy.vercel.app'; 
 
     const staticRoutes = ['', '/library', '/wishlist', '/search', '/library/add'].map((route) => ({
         url: `${baseUrl}${route}`,

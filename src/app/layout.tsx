@@ -19,7 +19,7 @@ const rajdhani = Rajdhani({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://checkpoint.vercel.app"),
+  metadataBase: new URL("https://checkpoint-next-navy.vercel.app"),
   title: {
     default: "Checkpoint | Your video game library",
     template: "%s | Checkpoint", 
@@ -29,7 +29,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Checkpoint",
     description: "Your ultimate video game backlog tracker.",
-    url: "https://checkpoint.vercel.app", 
+    url: "https://checkpoint-next-navy.vercel.app", 
     siteName: "Checkpoint",
     images: [
       {

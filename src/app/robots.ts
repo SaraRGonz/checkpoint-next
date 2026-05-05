@@ -7,6 +7,6 @@ export default function robots(): MetadataRoute.Robots {
             allow: '/',
             disallow: ['/api/'],
         },
-        sitemap: 'https://checkpoint.vercel.app/sitemap.xml',
+        sitemap: 'https://checkpoint-next-navy.vercel.app/sitemap.xml',
     };
 }
