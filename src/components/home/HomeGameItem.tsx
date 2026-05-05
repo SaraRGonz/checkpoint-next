@@ -14,7 +14,7 @@ export function HomeGameItem({ game }: HomeGameItemProps) {
         >
             <Image
                 src={game.coverUrl || '/placeholder.jpg'}
-                alt={game.title}
+                alt=""
                 fill
                 priority
                 sizes="(max-width: 768px) 100vw, (max-width: 1200px) 33vw, 25vw"

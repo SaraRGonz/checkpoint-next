@@ -41,10 +41,10 @@ export function GameCard({
                 <Image 
                     src={game.coverUrl || '/placeholder.jpg'} 
                     alt={game.title} 
-                    fill
-                    sizes="64px"
+                    width={64}
+                    height={80}
                     priority={priority}
-                    className="object-cover group-hover:scale-110 transition-transform duration-500"
+                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                     style={{ objectPosition: game.coverPosition || '50% 50%' }}
                 />
             </div>
@@ -72,10 +72,11 @@ export function GameCard({
                 <Image 
                     src={game.coverUrl || '/placeholder.jpg'} 
                     alt={game.title} 
-                    fill
+                    width={600}
+                    height={800}
                     sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                     priority={priority}
-                    className="object-cover group-hover:scale-105 transition-transform duration-500"
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                     style={{ objectPosition: game.coverPosition || '50% 50%' }} 
                 />
                 <div className="absolute inset-0 bg-linear-to-t from-gray-900 via-transparent to-transparent opacity-80" />

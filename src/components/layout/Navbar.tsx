@@ -39,17 +39,26 @@ export function Navbar() {
                 </div>
 
                 {/* DERECHA TOGGLE TEMA desktop visible, móvil oculto */}
-                <button onClick={toggleTheme} className="hidden md:flex w-10 h-10 rounded-full items-center justify-center bg-gray-800 border border-gray-700 hover:border-primary text-accent transition-all">
+                <button 
+                    onClick={toggleTheme} 
+                    aria-label="Toggle theme" 
+                    className="hidden md:flex w-10 h-10 rounded-full items-center justify-center bg-gray-800 border border-gray-700 hover:border-primary text-accent transition-all"
+                >
                     {theme === 'dark' ? "☀️" : "🌙"}
                 </button>
 
                 {/* CONTROLES MÓVILES desktop oculto, móvil visible m*/}
                 <div className="flex items-center gap-3 md:hidden">
-                    <button onClick={toggleTheme} className="w-9 h-9 rounded-full flex items-center justify-center bg-gray-800 border border-gray-700 text-accent transition-all">
+                    <button 
+                        onClick={toggleTheme} 
+                        aria-label="Toggle theme" 
+                        className="w-9 h-9 rounded-full flex items-center justify-center bg-gray-800 border border-gray-700 text-accent transition-all"
+                    >
                         {theme === 'dark' ? "☀️" : "🌙"}
                     </button>
                     <button 
                         onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+                        aria-label={isMobileMenuOpen ? "Close menu" : "Open menu"} 
                         className="text-gray-400 hover:text-white p-1 transition-colors"
                     >
                         {isMobileMenuOpen ? <CrossIcon className="w-7 h-7" /> : <MenuIcon className="w-7 h-7" />}

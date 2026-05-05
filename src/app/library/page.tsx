@@ -47,8 +47,23 @@ export default function LibraryPage() {
 
     if (isLoading) {
         return (
-            <div className="flex justify-center items-center min-h-[50vh]">
-                <Spinner />
+            <div className="flex flex-col lg:flex-row gap-8 items-start w-full">
+                {/* Skeleton del sidebar*/}
+                <aside className="w-full lg:w-64 shrink-0 flex flex-col gap-6 animate-pulse">
+                    <div className="h-10 bg-gray-800 rounded-xl"></div>
+                    <div className="h-10 bg-gray-800 rounded-xl"></div>
+                    <div className="h-10 bg-gray-800 rounded-xl mt-6"></div>
+                    <div className="h-32 bg-gray-800 rounded-xl"></div>
+                </aside>
+                
+                {/* Skeleton del grid principal */}
+                <main className="flex-1 w-full min-w-0">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-6">
+                        {Array.from({ length: 8 }).map((_, i) => (
+                            <div key={i} className="aspect-3/4 bg-gray-800/40 rounded-xl animate-pulse border border-gray-800/50" />
+                        ))}
+                    </div>
+                </main>
             </div>
         );
     }

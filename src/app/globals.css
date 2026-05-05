@@ -33,17 +33,17 @@
 
     /* ---- BUTTON COLORS ---- */
     --color-primarybutton-text: #FFFFFF;
-    --color-primarybutton-bg: #0284C7;       
-    --color-primarybutton-bghover: #0369A1;  
-    --color-primarybutton-bgactive: #075985;
+    --color-primarybutton-bg: #075985;       
+    --color-primarybutton-bghover: #082F49;  
+    --color-primarybutton-bgactive: #041F32;
     --color-secondarybutton-text: #FFFFFF;
-    --color-secondarybutton-bg: #047857;       
-    --color-secondarybutton-bghover: #065F46;  
-    --color-secondarybutton-bgactive: #064E3B;
+    --color-secondarybutton-bg: #064E3B;       
+    --color-secondarybutton-bghover: #022C22;  
+    --color-secondarybutton-bgactive: #01140F;
     --color-dangerbutton-text: #FFFFFF;
-    --color-dangerbutton-bg: #B91C1C;       
-    --color-dangerbutton-bghover: #DC2626;  
-    --color-dangerbutton-bgactive: #991B1B;
+    --color-dangerbutton-bg: #991B1B;       
+    --color-dangerbutton-bghover: #7F1D1D;  
+    --color-dangerbutton-bgactive: #450A0A;
 
     /* ---- STAR RATING COLORS ---- */
     --color-filledstar: var(--color-accent);
