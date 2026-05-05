@@ -1,21 +1,21 @@
 'use client'
 
-import type { Game } from '@/types/game'; 
+import type { Game } from '@/types/game';
 import { Badge } from '@/components/ui/Badge';
-import Link from 'next/link'; 
+import Link from 'next/link';
 import Image from 'next/image';
 
 interface GameCardProps {
-    game: Game; 
-    showDetails?: boolean; 
+    game: Game;
+    showDetails?: boolean;
     hideBadge?: boolean;
-    disableLink?: boolean; 
+    disableLink?: boolean;
     onClick?: () => void;
     compact?: boolean;
     priority?: boolean;
 }
 
-export function GameCard({ 
+export function GameCard({
     game, showDetails = true, hideBadge = false, disableLink = false, onClick, compact = false, priority = false
 }: GameCardProps) {
 
@@ -28,19 +28,19 @@ export function GameCard({
         if (game.genres.length > MAX_GENRES) displayGenres += '...';
     }
 
-    const hoverEffects = disableLink 
-            ? (onClick ? "cursor-pointer hover:border-primary transition-colors" : "") 
-            : "hover:border-primary hover:shadow-xl hover:shadow-primary/5 group";
+    const hoverEffects = disableLink
+        ? (onClick ? "cursor-pointer hover:border-primary transition-colors" : "")
+        : "hover:border-primary hover:shadow-xl hover:shadow-primary/5 group";
 
-    const containerClasses = `flex ${compact ? 'flex-row h-20' : 'flex-col h-full'} 
-        bg-gray-900 border border-gray-800 rounded-xl overflow-hidden transition-all duration-300 ${hoverEffects}`;    
+    const containerClasses = `flex ${compact ? 'flex-row h-20' : 'flex-col h-full'}
+        bg-gray-900 border border-gray-800 rounded-xl overflow-hidden transition-all duration-300 ${hoverEffects}`;
 
     const cardContent = compact ? (
         <>
             <div className="w-14 sm:w-16 shrink-0 relative bg-gray-950 overflow-hidden">
-                <Image 
-                    src={game.coverUrl || '/placeholder.jpg'} 
-                    alt={game.title} 
+                <Image
+                    src={game.coverUrl || '/placeholder.jpg'}
+                    alt={game.title}
                     width={64}
                     height={80}
                     priority={priority}
@@ -69,15 +69,15 @@ export function GameCard({
     ) : (
         <>
             <div className="relative aspect-3/4 overflow-hidden bg-gray-950">
-                <Image 
-                    src={game.coverUrl || '/placeholder.jpg'} 
-                    alt={game.title} 
+                <Image
+                    src={game.coverUrl || '/placeholder.jpg'}
+                    alt={game.title}
                     width={600}
                     height={800}
                     sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                     priority={priority}
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                    style={{ objectPosition: game.coverPosition || '50% 50%' }} 
+                    style={{ objectPosition: game.coverPosition || '50% 50%' }}
                 />
                 <div className="absolute inset-0 bg-linear-to-t from-gray-900 via-transparent to-transparent opacity-80" />
             </div>
