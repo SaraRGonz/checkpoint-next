@@ -6,6 +6,7 @@ import { usePathname } from 'next/navigation';
 import { useTheme } from '@/hooks/useTheme';
 import { motion } from 'framer-motion'; 
 import { LogoIcon, HomeIcon, LibraryIcon, WishlistNavIcon, CrossIcon, MenuIcon } from '@/components/ui/Icons';
+import { UserMenu } from './UserMenu';
 
 export function Navbar() {
     const { theme, toggleTheme } = useTheme();
@@ -41,18 +42,22 @@ export function Navbar() {
                     </div>
                 </div>
 
-                {/* DERECHA TOGGLE TEMA desktop visible, móvil oculto */}
-                <button 
-                    onClick={toggleTheme} 
-                    aria-label="Toggle theme" 
-                    className="hidden md:flex w-10 h-10 rounded-full items-center justify-center cursor-pointer bg-gray-800 border 
-                    border-gray-700 hover:border-primary text-accent transition-all duration-200 hover:scale-105 active:scale-95"
-                >
-                    {theme === 'dark' ? "☀️" : "🌙"}
-                </button>
+                {/* DERECHA TOGGLE TEMA Y USER MENU desktop visible, móvil oculto */}
+                <div className="hidden md:flex items-center gap-4">
+                    <UserMenu />
+                    <button 
+                        onClick={toggleTheme} 
+                        aria-label="Toggle theme" 
+                        className="flex w-10 h-10 rounded-full items-center justify-center cursor-pointer bg-gray-800 border 
+                        border-gray-700 hover:border-primary text-accent transition-all duration-200 hover:scale-105 active:scale-95"
+                    >
+                        {theme === 'dark' ? "☀️" : "🌙"}
+                    </button>
+                </div>
 
                 {/* CONTROLES MÓVILES desktop oculto, móvil visible */}
                 <div className="flex items-center gap-3 md:hidden">
+                    <UserMenu />
                     <button 
                         onClick={toggleTheme} 
                         aria-label="Toggle theme" 
