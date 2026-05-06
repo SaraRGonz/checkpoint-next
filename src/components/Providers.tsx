@@ -1,15 +1,18 @@
-'use client'
+"use client";
 
-import { ReactNode } from 'react'
-import { ThemeProvider } from '@/context/ThemeContext'
-import { LibraryProvider } from '@/context/LibraryContext'
+import { SessionProvider } from "next-auth/react";
+import { ReactNode } from "react";
+import { ThemeProvider } from '@/context/ThemeContext';
+import { LibraryProvider } from '@/context/LibraryContext';
 
-export function Providers({ children }: { children: ReactNode }) {
+export default function Providers({ children }: { children: ReactNode }) {
     return (
-        <ThemeProvider>
-            <LibraryProvider>
-                {children}
-            </LibraryProvider>
-        </ThemeProvider>
-    )
+        <SessionProvider>
+            <ThemeProvider>
+                <LibraryProvider>
+                    {children}
+                </LibraryProvider>
+            </ThemeProvider>
+        </SessionProvider>
+    );
 }

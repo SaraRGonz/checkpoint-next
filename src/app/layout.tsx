@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { Inter, Rajdhani } from "next/font/google";
-import { Providers } from "@/components/Providers";
+import Providers from "@/components/Providers";
 import "./globals.css";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
