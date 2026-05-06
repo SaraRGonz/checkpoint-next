@@ -60,7 +60,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="es" className={`${inter.variable} ${rajdhani.variable} dark`} suppressHydrationWarning>
+    <html lang="en" className={`${inter.variable} ${rajdhani.variable} dark`} suppressHydrationWarning>
       <body className="min-h-screen flex flex-col bg-background text-text">
         <Providers>
 
