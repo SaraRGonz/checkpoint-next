@@ -8,16 +8,18 @@ export function UserMenu() {
     const { data: session, status } = useSession();
 
     // Cargando (Skeleton)
+    // Loading (Skeleton)
     if (status === "loading") {
         return <div className="h-9 w-9 animate-pulse bg-border rounded-full"></div>;
     }
 
     // No autenticado (Botón de login)
+    // Unauthenticated (Login button)
     if (!session) {
         return (
             <Link 
                 href="/login" 
-                className="bg-accent hover:bg-accent/80 text-white px-4 py-2 rounded-md font-semibold transition-colors text-sm"
+                className="bg-primarybutton-bg hover:bg-primarybutton-bghover text-white px-4 py-2 rounded-md font-semibold transition-colors text-sm"
             >
                 Log In
             </Link>
@@ -25,6 +27,7 @@ export function UserMenu() {
     }
 
     // Autenticado (Avatar + Logout)
+    // Authenticated (Avatar + Logout)
     return (
         <div className="flex items-center gap-4">
             <Link href="/dashboard" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
@@ -32,10 +35,10 @@ export function UserMenu() {
                     <img 
                         src={session.user.image} 
                         alt="Avatar" 
-                        className="h-9 w-9 rounded-full border-2 border-accent" 
+                        className="h-9 w-9 rounded-full border-2 border-primary" 
                     />
                 ) : (
-                    <div className="h-9 w-9 rounded-full bg-accent flex items-center justify-center text-white font-bold">
+                    <div className="h-9 w-9 rounded-full bg-primarybutton-bg flex items-center justify-center text-white font-bold">
                         {session.user?.email?.[0].toUpperCase() || <User size={16} />}
                     </div>
                 )}
