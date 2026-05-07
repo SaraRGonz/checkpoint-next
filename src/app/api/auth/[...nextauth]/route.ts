@@ -28,13 +28,16 @@ export const authOptions: NextAuthOptions = {
                         }),
                     });
                     
-                    const user = await res.json();
-                    if (res.ok && user) {
-                        return { id: user.localId, email: user.email };
+                    const data = await res.json();
+                    
+                    if (!res.ok) {
+                        const errorMessage = data?.error?.message || "UNKNOWN_ERROR";
+                        throw new Error(errorMessage);
                     }
-                    return null;
-                } catch (error) {
-                    return null;
+                    
+                    return { id: data.localId, email: data.email };
+                } catch (error: any) {
+                    throw new Error(error.message);
                 }
             }
         })

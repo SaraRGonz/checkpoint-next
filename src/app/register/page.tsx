@@ -14,16 +14,41 @@ export default function RegisterPage() {
     const [loading, setLoading] = useState(false);
     const router = useRouter();
 
-    const handleRegister = async (e: React.FormEvent) => {
+    const handleRegister = async (e: React.SyntheticEvent<HTMLFormElement>) => {
         e.preventDefault();
         setError("");
-        setLoading(true);
+        
+        if (!email) {
+            return setError("Identity required. Please enter your Email.");
+        }
+        if (!password) {
+            return setError("Password missing. Access denied.");
+        }
 
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(email)) {
+            return setError("Invalid email format.");
+        }
+        
+        const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/;
+        if (!passwordRegex.test(password)) {
+            return setError("Password must be at least 8 characters long and include an uppercase letter, a lowercase letter, and a number.");
+        }
+
+        setLoading(true);
         try {
             await createUserWithEmailAndPassword(auth, email, password);
             router.push("/login?registered=true");
         } catch (err: any) {
-            setError(err.message || "Error registering user");
+            if (err.code === "auth/email-already-in-use") {
+                setError("This email is already linked to another account.");
+            } else if (err.code === "auth/invalid-email") {
+                setError("Invalid email address.");
+            } else if (err.code === "auth/network-request-failed") {
+                setError("Mainframe connection lost. Please check your network.");
+            } else {
+                setError("Critical failure in data synchronization.");
+            }
         } finally {
             setLoading(false);
         }
@@ -59,7 +84,7 @@ export default function RegisterPage() {
                     </p>
                 </div>
 
-                <form onSubmit={handleRegister} className="w-full flex flex-col gap-5">
+                <form onSubmit={handleRegister} noValidate className="w-full flex flex-col gap-5">
                     <div className="space-y-1.5">
                         <label className="text-xs font-rajdhani font-bold uppercase tracking-widest text-gray-400">Email</label>
                         <input
@@ -78,7 +103,7 @@ export default function RegisterPage() {
                             type="password"
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
-                            placeholder="At least 6 characters"
+                            placeholder="Min 8 chars, 1 uppercase, 1 number"
                             className="w-full bg-black/50 border border-gray-800 rounded px-4 py-3 text-text placeholder:text-gray-600 
                                 focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent/50 transition-all duration-300"
                             required
@@ -87,7 +112,7 @@ export default function RegisterPage() {
                     
                     {error && (
                         <p className="text-danger text-sm text-center font-semibold bg-danger/10 py-2 border border-danger/20 rounded">
-                            ⚠️ {error}
+                            {error}
                         </p>
                     )}
 

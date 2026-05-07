@@ -17,10 +17,26 @@ function LoginForm() {
     const [error, setError] = useState("");
     const [loading, setLoading] = useState(false);
 
-    const handleSubmit = async (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.SyntheticEvent<HTMLFormElement>) => {
         e.preventDefault();
         setLoading(true);
         setError("");
+
+        if (!email) {
+            setLoading(false);
+            return setError("Identity required. Please enter your Email.");
+        }
+        
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(email)) {
+            setLoading(false);
+            return setError("Access denied: Invalid credentials or identity not found.");
+        }
+
+        if (!password) {
+            setLoading(false);
+            return setError("Password missing. Access denied.");
+        }
 
         const res = await signIn("credentials", {
             email,
@@ -29,7 +45,17 @@ function LoginForm() {
         });
 
         if (res?.error) {
-            setError("Invalid credentials. Please try again.");
+            const errorMsg = res.error.toUpperCase();
+            
+            if (errorMsg.includes("INVALID_LOGIN_CREDENTIALS") || errorMsg.includes("EMAIL_NOT_FOUND") || errorMsg.includes("INVALID_PASSWORD") || errorMsg.includes("INVALID_EMAIL")) {
+                setError("Access denied: Invalid credentials or identity not found.");
+            } else if (errorMsg.includes("USER_DISABLED")) {
+                setError("Protocol violation: This account has been locked.");
+            } else if (errorMsg.includes("TOO_MANY_ATTEMPTS_TRY_LATER")) {
+                setError("Mainframe overload: Too many attempts. Try later.");
+            } else {
+                setError("Neural connection failure. Try again.");
+            }
             setLoading(false);
         } else {
             router.push(callbackUrl);
@@ -60,7 +86,7 @@ function LoginForm() {
                 )}
             </div>
 
-            <form onSubmit={handleSubmit} className="w-full flex flex-col gap-5">
+            <form onSubmit={handleSubmit} noValidate className="w-full flex flex-col gap-5">
                 <div className="space-y-1.5">
                     <label className="text-xs font-rajdhani font-bold uppercase tracking-widest text-gray-400">Email</label>
                     <input
