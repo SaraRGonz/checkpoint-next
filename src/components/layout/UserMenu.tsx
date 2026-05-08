@@ -24,6 +24,10 @@ export function UserMenu() {
         );
     }
 
+    const position = session.user?.imagePosition || "50% 50%";
+    const isValidPosition = /^\d+%\s\d+%$/.test(position);
+    const safePosition = isValidPosition ? position : "50% 50%";
+
     // Avatar + Logout
     return (
         <div className="flex items-center gap-4">
@@ -33,7 +37,7 @@ export function UserMenu() {
                         src={session.user.image} 
                         alt="Avatar" 
                         className="h-9 w-9 rounded-full border-2 border-primary object-cover" 
-                        style={{ objectPosition: session.user?.imagePosition || "50% 50%" }}
+                        style={{ objectPosition: safePosition }}
                     />
                 ) : (
                     <div className="h-9 w-9 rounded-full bg-primarybutton-bg flex items-center justify-center text-white font-bold">
