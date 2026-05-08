@@ -1,6 +1,8 @@
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { redirect } from "next/navigation";
+import { DashboardClient } from "./DashboardClient";
+import { getAllGames } from "@/lib/library";
 
 export default async function DashboardPage() {
     const session = await getServerSession(authOptions);
@@ -9,25 +11,50 @@ export default async function DashboardPage() {
         redirect("/login");
     }
 
-    return (
-        <div className="flex flex-col items-center justify-center min-h-[50vh] space-y-6">
-            <h1 className="text-4xl font-rajdhani font-bold text-accent">
-                Dashboard
-            </h1>
+    const allGames = await getAllGames();
+    
+    // INSIGHTS
+    
+    const genreCounts = allGames.flatMap(g => g.genres || []).reduce<Record<string, number>>((acc, val) => {
+        if (val) acc[val] = (acc[val] || 0) + 1;
+        return acc;
+    }, {});
 
-            <div className="p-8 border rounded-lg bg-card border-border shadow-md text-center flex flex-col items-center gap-4">
-                {session.user?.image && (
-                    <img
-                        src={session.user.image}
-                        alt="Avatar"
-                        className="w-24 h-24 rounded-full border-2 border-accent"
-                    />
-                )}
-                <div>
-                    <h2 className="text-2xl font-semibold text-text">{session.user?.name}</h2>
-                    <p className="text-text/70">{session.user?.email}</p>
-                </div>
-            </div>
-        </div>
+    const platformCounts = allGames.reduce<Record<string, number>>((acc, g) => {
+        if (g.platform) acc[g.platform] = (acc[g.platform] || 0) + 1;
+        return acc;
+    }, {});
+
+    // Eficiencia - % Completados
+    const completed = allGames.filter(g => g.status === 'Completed').length;
+    const completionRate = allGames.length > 0 ? Math.round((completed / allGames.length) * 100) : 0;
+
+    // Era - Década media
+    const releaseYears = allGames.map(g => g.releaseYear).filter((y): y is number => typeof y === 'number' && !isNaN(y));
+    const avgYear = releaseYears.length > 0 ? Math.round(releaseYears.reduce((a, b) => a + b, 0) / releaseYears.length) : 0;
+    const temporalFocus = avgYear > 0 ? `${Math.floor(avgYear / 10) * 10}s` : 'Unknown';
+
+    const stats = {
+        avgRating: allGames.length > 0 
+            ? (allGames.reduce((acc, g) => acc + (g.rating || 0), 0) / allGames.length).toFixed(1)
+            : "0.0",
+        topGenre: Object.keys(genreCounts).length > 0
+            ? Object.entries(genreCounts).sort((a, b) => b[1] - a[1])[0][0]
+            : 'None',
+        topPlatform: Object.keys(platformCounts).length > 0
+            ? Object.entries(platformCounts).sort((a, b) => b[1] - a[1])[0][0]
+            : 'None',
+        completionRate: `${completionRate}%`,
+        temporalFocus,
+        activeThreads: allGames.filter(g => g.status === 'Playing').length.toString()
+    };
+
+    return (
+        <main className="min-h-screen py-10 px-4 md:px-10 relative overflow-hidden">
+            <div className="absolute top-0 right-0 w-150 h-150 bg-tertiary/5 blur-[120px] rounded-full -z-10" />
+            <div className="absolute bottom-0 left-0 w-125 h-125 bg-primary/5 blur-[120px] rounded-full -z-10" />
+            
+            <DashboardClient session={session} stats={stats} />
+        </main>
     );
 }
