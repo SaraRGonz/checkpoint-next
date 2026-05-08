@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { useLibrary } from '@/hooks/useLibrary';
 import { searchGamesInRawg } from '@/api/games';
@@ -38,20 +38,36 @@ export default function SearchPage() {
     const [error, setError] = useState<string | null>(null);
     const [hasSearched, setHasSearched] = useState(false);
 
+    const lastRequestTime = useRef<number>(0);
+    const COOLDOWN_MS = 1500;
+
     const selectedPlatformLabel = platform ? RAWG_PLATFORMS.find(p => p.id === platform)?.label : 'Any platform';
     const selectedGenreLabel = genre ? RAWG_GENRES.find(g => g.slug === genre)?.label : 'Any genre';
 
     const handleSearch = async (e: React.FormEvent) => {
         e.preventDefault();
         
-        if (!query.trim()) return;
+        const now = Date.now();
+        if (now - lastRequestTime.current < COOLDOWN_MS) {
+            setError(`Rate limit exceeded. Por favor, espera ${COOLDOWN_MS / 1000}s antes de volver a buscar.`);
+            return;
+        }
+
+        const sanitizedQuery = query.trim().replace(/[<>{}\$\\]/g, ""); 
+        
+        if (!sanitizedQuery) {
+            setError("Búsqueda inválida o con caracteres no permitidos.");
+            return;
+        }
 
         try {
+            lastRequestTime.current = now; 
+
             setIsLoading(true);
             setError(null);
             setHasSearched(true);
             
-            const data = await searchGamesInRawg(query, {
+            const data = await searchGamesInRawg(sanitizedQuery, { // <-- Pasamos el sanitizado
                 platform: platform || undefined,
                 genre: genre || undefined,
                 year: year || undefined
