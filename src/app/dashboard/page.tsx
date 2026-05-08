@@ -4,6 +4,9 @@ import { redirect } from "next/navigation";
 import { DashboardClient } from "./DashboardClient";
 import { getAllGames } from "@/lib/library";
 
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 export default async function DashboardPage() {
     const session = await getServerSession(authOptions);
 

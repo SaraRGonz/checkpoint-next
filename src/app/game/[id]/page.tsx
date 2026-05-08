@@ -4,6 +4,7 @@ import { GameDetailClient } from '../../../components/game/GameDetailClient';
 import { getGameById } from '../../../lib/library';
 
 export const dynamic = 'force-dynamic';
+export const revalidate = 0;
 
 type Props = {
     params: Promise<{ id: string }>;

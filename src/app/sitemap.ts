@@ -2,6 +2,9 @@ import { MetadataRoute } from 'next';
 import { getAllGames } from '@/lib/library';
 import { Game } from '@/types/game';
 
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     const baseUrl = 'https://checkpoint-next-navy.vercel.app'; 
 
