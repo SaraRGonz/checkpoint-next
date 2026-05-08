@@ -96,11 +96,36 @@ npm install
 ```
 
 ### 3. Configurar variables de entorno
-Crea un archivo .env.local en la raíz del proyecto. Necesitarás una clave de la API de RAWG (puedes obtenerla gratis en rawg.io/apidocs). Añade las siguientes variables:
+Checkpoint requiere de varios servicios externos (RAWG, Firebase, NextAuth, OAuth). Por motivos de seguridad, los secretos **nunca** se suben al repositorio.
 
-```
-RAWG_API_KEY=tu_api_key_aqui
-NEXT_PUBLIC_BASE_URL=http://localhost:3000
+1. Crea un archivo `.env.local` en la raíz del proyecto.
+2. Solicita las claves de Firebase al equipo de DevOps o configura un proyecto propio en Firebase Console.
+3. Obtén tu API Key gratuita de [RAWG.io](https://rawg.io/apidocs).
+4. Genera una app de OAuth en GitHub para obtener el ID y el Secret.
+
+Añade las siguientes variables a tu archivo:
+
+```env
+# API de Videojuegos
+RAWG_API_KEY="tu_clave_rawg"
+
+# Autenticación Segura (Genera un secreto seguro de 32+ caracteres)
+NEXTAUTH_SECRET="tu_secreto_generado"
+
+# Proveedores de OAuth (GitHub)
+GITHUB_ID="tu_id_oauth_github"
+GITHUB_SECRET="tu_secret_oauth_github"
+
+# Firebase Client SDK (Seguras para el cliente, limitadas por Security Rules en Firestore)
+NEXT_PUBLIC_FIREBASE_API_KEY="tu_firebase_api_key"
+NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN="tu_dominio.firebaseapp.com"
+NEXT_PUBLIC_FIREBASE_PROJECT_ID="tu_project_id"
+NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET="tu_bucket.appspot.com"
+NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID="tu_sender_id"
+NEXT_PUBLIC_FIREBASE_APP_ID="tu_app_id"
+
+# Firebase Server SDK (Privada, nunca exponer al cliente)
+FIREBASE_API_KEY_SERVER="tu_firebase_api_key_AQUI_TAMBIEN"
 ```
 
 ### 4. Ejecutar el servidor de desarrollo
