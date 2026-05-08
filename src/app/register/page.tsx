@@ -6,6 +6,7 @@ import { auth } from "@/lib/firebase";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { LogoIcon } from "@/components/ui/Icons";
+import { signIn } from "next-auth/react";
 
 export default function RegisterPage() {
     const [email, setEmail] = useState("");
@@ -37,18 +38,22 @@ export default function RegisterPage() {
 
         setLoading(true);
         try {
+            setLoading(true);
             await createUserWithEmailAndPassword(auth, email, password);
-            router.push("/login?registered=true");
-        } catch (err: any) {
-            if (err.code === "auth/email-already-in-use") {
-                setError("This email is already linked to another account.");
-            } else if (err.code === "auth/invalid-email") {
-                setError("Invalid email address.");
-            } else if (err.code === "auth/network-request-failed") {
-                setError("Mainframe connection lost. Please check your network.");
+
+            const loginResult = await signIn("credentials", {
+                email,
+                password,
+                redirect: false, 
+            });
+
+            if (loginResult?.error) {
+                router.push("/login?registered=true&error=session_failed");
             } else {
-                setError("Critical failure in data synchronization.");
+                router.push("/dashboard");
             }
+        } catch (err: any) {
+            setError(err.message);
         } finally {
             setLoading(false);
         }
