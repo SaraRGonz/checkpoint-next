@@ -17,10 +17,6 @@ const nextConfig: NextConfig = {
       },
     ],
   },
-  outputFileTracingIncludes: {
-    '/api/**': ['./src/data/**'],
-    '/': ['./src/data/**'],
-  },
 };
 
 export default nextConfig;

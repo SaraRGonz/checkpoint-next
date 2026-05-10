@@ -1,111 +1,116 @@
+import fs from 'fs/promises';
+import path from 'path';
 import { v4 as uuidv4 } from 'uuid';
 import type { Game, GameStatus } from '@/types/game';
-import seedData from '../data/library.json';
+
+const dataPath = path.join(process.cwd(), 'src', 'data', 'library.json');
+
 let memoryCache: Game[] | null = null;
 
-function getCache(): Game[] {
-    if (memoryCache === null) {
-        memoryCache = (seedData as Game[]).map((g) => ({ ...g }));
-    }
-    return memoryCache;
-}
+// FUNCIONES INTERNAS
+const readLibrary = async (): Promise<Game[]> => {
+    if (memoryCache !== null) return memoryCache;
 
-async function writeCache(games: Game[]): Promise<void> {
+    try {
+        const data = await fs.readFile(dataPath, 'utf-8');
+        memoryCache = JSON.parse(data);
+        return memoryCache as Game[];
+    } catch (error) {
+        console.error("Error inicializando la base de datos:", error);
+        memoryCache = [];
+        return memoryCache;
+    }
+};
+
+const writeLibrary = async (games: Game[]): Promise<void> => {
     memoryCache = games;
 
     try {
-        const fs = await import('fs/promises');
-        const path = await import('path');
-        const dataPath = path.join(process.cwd(), 'src', 'data', 'library.json');
         await fs.writeFile(dataPath, JSON.stringify(games, null, 2), 'utf-8');
-    } catch {
-        console.warn(
-            '⚠️  FS write omitted (read-only). Los datos se guardan solo en memoria para esta instancia.'
-        );
+    } catch (error) {
+        console.warn("⚠️ Production environment is read-only. Data saved in memory for this session.");
     }
-}
+};
 
-// CRUD público 
+// FUNCIONES EXPORTADAS (CRUD)
+export const getAllGames = async (): Promise<Game[]> => {
+    return await readLibrary();
+};
 
-export async function getAllGames(): Promise<Game[]> {
-    return getCache();
-}
+export const getGameById = async (id: string): Promise<Game | null> => {
+    const games = await readLibrary();
+    const game = games.find(g => g.id === id);
+    return game || null;
+};
 
-export async function getGameById(id: string): Promise<Game | null> {
-    const games = getCache();
-    return games.find((g) => g.id === id) ?? null;
-}
-
-export async function addGame(gameData: Omit<Game, 'id'>): Promise<Game> {
-    const games = getCache();
+export const addGame = async (gameData: Omit<Game, 'id'>): Promise<Game> => {
+    const games = await readLibrary();
     const newGame: Game = {
         ...gameData,
         id: uuidv4(),
         addedAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
     };
     games.push(newGame);
-    await writeCache(games);
+    await writeLibrary(games);
     return newGame;
-}
+};
 
-export async function updateGame(
-    id: string,
-    updates: Partial<Game>
-): Promise<Game | null> {
-    const games = getCache();
-    const index = games.findIndex((g) => g.id === id);
+export const updateGame = async (id: string, updates: Partial<Game>): Promise<Game | null> => {
+    const games = await readLibrary();
+    const index = games.findIndex(g => g.id === id);
+    
     if (index === -1) return null;
-
-    games[index] = {
-        ...games[index],
+    
+    games[index] = { 
+        ...games[index], 
         ...updates,
-        updatedAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString() 
     };
-    await writeCache(games);
+    
+    await writeLibrary(games);
     return games[index];
-}
+};
 
-export async function deleteGame(id: string): Promise<boolean> {
-    const games = getCache();
-    const filtered = games.filter((g) => g.id !== id);
-    if (filtered.length === games.length) return false;
-
-    await writeCache(filtered);
+export const deleteGame = async (id: string): Promise<boolean> => {
+    const games = await readLibrary();
+    const filteredGames = games.filter(g => g.id !== id);
+    
+    if (games.length === filteredGames.length) return false;
+    
+    await writeLibrary(filteredGames);
     return true;
-}
+};
 
-// helpers para homepage y sitemap
-
-export async function getRecentGames(limit: number): Promise<Game[]> {
-    const games = getCache();
-    return [...games]
+// FUNCIONES AUXILIARES PARA LA HOMEPAGE
+export const getRecentGames = async (limit: number): Promise<Game[]> => {
+    const games = await readLibrary();
+    return games
         .sort((a, b) => {
             const dateA = a.addedAt ? new Date(a.addedAt).getTime() : 0;
             const dateB = b.addedAt ? new Date(b.addedAt).getTime() : 0;
             return dateB - dateA;
         })
         .slice(0, limit);
-}
+};
 
-export async function getGamesByStatus(status: GameStatus): Promise<Game[]> {
-    const games = getCache();
-    return games.filter((g) => g.status === status);
-}
+export const getGamesByStatus = async (status: GameStatus): Promise<Game[]> => {
+    const games = await readLibrary();
+    return games.filter(g => g.status === status);
+};
 
-export async function getLibraryStats(): Promise<Record<GameStatus, number>> {
-    const games = getCache();
+export const getLibraryStats = async (): Promise<Record<GameStatus, number>> => {
+    const games = await readLibrary();
+    
     const stats: Record<GameStatus, number> = {
-        Wishlist: 0,
-        Queue: 0,
-        Playing: 0,
-        Completed: 0,
-        Dropped: 0,
+        Wishlist: 0, Queue: 0, Playing: 0, Completed: 0, Dropped: 0
     };
-    for (const game of games) {
+    
+    games.forEach(game => {
         if (stats[game.status] !== undefined) {
             stats[game.status]++;
         }
-    }
+    });
+    
     return stats;
-}
+};
