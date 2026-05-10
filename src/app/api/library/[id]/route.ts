@@ -2,9 +2,6 @@ import { NextResponse } from 'next/server';
 import { z } from 'zod';
 import { getGameById, updateGame, deleteGame } from '@/lib/library';
 
-export const dynamic = 'force-dynamic';
-export const revalidate = 0;
-
 const updateGameSchema = z.object({
     title: z.string().min(1, 'El título es requerido').optional(),
     status: z.enum(['Wishlist', 'Queue', 'Playing', 'Completed', 'Dropped']).optional(),

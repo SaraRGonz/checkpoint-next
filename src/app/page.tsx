@@ -5,8 +5,7 @@ import { HomeGameItem } from '@/components/home/HomeGameItem';
 import { HomeStats } from '@/components/home/HomeStats';
 import { GameCardSkeleton } from '@/components/ui/GameCardSkeleton';
 
-export const dynamic = 'force-dynamic';
-export const revalidate = 0;
+export const revalidate = 60; 
 
 async function PlayingSection() {
     const playingGames = await getGamesByStatus('Playing');
