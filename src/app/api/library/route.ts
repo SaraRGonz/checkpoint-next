@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
-import { getAllGames, addGame } from '@/lib/library';
+import { db } from '@/lib/db';
 
 const createGameSchema = z.object({
     title: z.string().min(1, 'El título es requerido'),
@@ -16,11 +16,29 @@ const createGameSchema = z.object({
     rawgId: z.number().optional(),
 });
 
-export async function GET() {
+export async function GET(req: Request) {
     try {
-        const games = await getAllGames();
-        return NextResponse.json({ data: games, total: games.length }, { status: 200 });
+        const { searchParams } = new URL(req.url);
+        const search = searchParams.get('search') ?? '';
+
+        const games = await db.game.findMany({
+            where: {
+                title: { contains: search, mode: 'insensitive' }
+            },
+            include: { platform: true, genres: true },
+            orderBy: { addedAt: 'desc' }
+        });
+
+        const formattedGames = games.map(game => ({
+            ...game,
+            status: game.status.charAt(0) + game.status.slice(1).toLowerCase(), 
+            platform: game.platform?.name || 'Unknown',
+            genres: game.genres.map(g => g.name)
+        }));
+
+        return NextResponse.json({ data: formattedGames, total: formattedGames.length }, { status: 200 });
     } catch (error) {
+        console.error("Error fetching games:", error);
         return NextResponse.json({ error: { code: 'SERVER_ERROR', message: 'Internal server error' } }, { status: 500 });
     }
 }
@@ -30,8 +48,49 @@ export async function POST(req: Request) {
         const body = await req.json();
         const data = await createGameSchema.parseAsync(body);
         
-        const newGame = await addGame(data);
-        return NextResponse.json(newGame, { status: 201 });
+        const platformName = data.platform || 'PC'; 
+        let platformRecord = await db.platform.findUnique({ where: { name: platformName } });
+        if (!platformRecord) {
+            platformRecord = await db.platform.create({ data: { name: platformName } });
+        }
+
+        const genreConnections = [];
+        if (data.genres && data.genres.length > 0) {
+            for (const genreName of data.genres) {
+                let genreRecord = await db.genre.findUnique({ where: { name: genreName } });
+                if (!genreRecord) {
+                    genreRecord = await db.genre.create({ data: { name: genreName } });
+                }
+                genreConnections.push({ id: genreRecord.id });
+            }
+        }
+
+        const mappedStatus = data.status ? data.status.toUpperCase() as any : 'QUEUE';
+
+        const newGame = await db.game.create({
+            data: {
+                title: data.title,
+                coverUrl: data.coverUrl,
+                status: mappedStatus,
+                rating: data.rating,
+                releaseYear: data.releaseYear,
+                rawgId: data.rawgId,
+                platformId: platformRecord.id,
+                genres: {
+                    connect: genreConnections
+                }
+            },
+            include: { platform: true, genres: true }
+        });
+
+        const formattedGame = {
+            ...newGame,
+            status: newGame.status.charAt(0) + newGame.status.slice(1).toLowerCase(),
+            platform: newGame.platform.name,
+            genres: newGame.genres.map(g => g.name)
+        };
+
+        return NextResponse.json(formattedGame, { status: 201 });
     } catch (error) {
         if (error instanceof z.ZodError) {
             return NextResponse.json({
