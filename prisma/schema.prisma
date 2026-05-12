@@ -1,13 +1,78 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Get a free hosted Postgres database in seconds: `npx create-db`
-
 generator client {
-  provider = "prisma-client"
-  output   = "../src/generated/prisma"
+  provider = "prisma-client-js"
 }
 
 datasource db {
   provider = "postgresql"
+}
+
+// PLATAFORMAS
+model Platform {
+  id           String        @id @default(cuid())
+  name         String        @unique
+  createdAt    DateTime      @default(now())
+  
+  games        Game[]
+  playthroughs Playthrough[] 
+
+  @@map("platforms")
+}
+
+// GÉNEROS
+model Genre {
+  id           String   @id @default(cuid())
+  name         String   @unique
+  
+  games        Game[] 
+
+  @@map("genres")
+}
+
+// JUEGOS 
+model Game {
+  id           String        @id @default(uuid())
+  title        String
+  coverUrl     String?
+  releaseYear  Int?
+  rawgId       Int?          @unique
+  rating       Int?
+  status       Status        @default(QUEUE)
+  addedAt      DateTime      @default(now())
+  updatedAt    DateTime?      @updatedAt
+
+  platformId   String
+  platform     Platform      @relation(fields: [platformId], references: [id], onDelete: Restrict)
+  genres       Genre[]
+  playthroughs Playthrough[] 
+
+  @@map("games")
+}
+
+// PLAYTHROUGHS 
+model Playthrough {
+  id            String    @id @default(uuid())
+  startDate     DateTime  @default(now())
+  endDate       DateTime?
+  status        Status    @default(PLAYING)
+  rating        Int?      
+  notes         String?   @db.Text
+
+  characterName String?   
+  serverName    String?   
+  
+  gameId        String
+  game          Game      @relation(fields: [gameId], references: [id], onDelete: Cascade)
+  platformId    String    
+  platform      Platform  @relation(fields: [platformId], references: [id], onDelete: Restrict)
+
+  @@map("playthroughs")
+}
+
+// STATUS
+enum Status {
+  WISHLIST
+  COMPLETED
+  PLAYING
+  QUEUE
+  DROPPED
 }
