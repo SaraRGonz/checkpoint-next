@@ -9,11 +9,13 @@ import { ActionMenu } from '@/components/ui/ActionMenu/ActionMenu';
 import { STATUS_LIST, PLATFORM_LIST } from '@/utils/constants';
 import type { GameStatus } from '@/types/game';
 import { PlusIcon, ArrowLeftIcon } from '@/components/ui/Icons';
+import { useQueryClient } from '@tanstack/react-query';
 
 const DEFAULT_COVER_URL = '/placeholder.jpg';
 
 export default function AddGamePage() {
     const router = useRouter();
+    const queryClient = useQueryClient();
 
     const [title, setTitle] = useState('');
     const [coverUrl, setCoverUrl] = useState(DEFAULT_COVER_URL);
@@ -64,6 +66,8 @@ export default function AddGamePage() {
             });
             
             if (result.success && result.gameId) {
+                // Invalidar la caché para que la librería se refresque
+                queryClient.invalidateQueries({ queryKey: ['games'] });
                 router.push(`/game/${result.gameId}`);
             } else {
                 if (result.errors) {

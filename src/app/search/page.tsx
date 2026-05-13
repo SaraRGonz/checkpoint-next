@@ -15,12 +15,14 @@ import type { Game, GameStatus } from '@/types/game';
 import { PlusIcon, HeartIcon, SearchIcon, ArrowLeftIcon } from '@/components/ui/Icons';
 import { AddGameFromRawgModal } from '@/components/game/AddGameFromRawgModal';
 import { RawgPreviewModal } from '@/components/game/RawgPreviewModal';
+import { useQueryClient } from '@tanstack/react-query';
 
 const currentYear = new Date().getFullYear();
 const YEARS = Array.from({ length: 50 }, (_, i) => (currentYear - i).toString());
 
 export default function SearchPage() {
     const router = useRouter();
+    const queryClient = useQueryClient();
 
     const [query, setQuery] = useState('');
     const [platform, setPlatform] = useState('');
@@ -103,7 +105,13 @@ export default function SearchPage() {
         try {
             setIsSaving(true);
             const res = await addGameAction(gameData);
-            return res.success && res.gameId ? res.gameId : null; 
+            
+            // Si tiene éxito, invalidamos la caché de juegos
+            if (res.success && res.gameId) {
+                queryClient.invalidateQueries({ queryKey: ['games'] });
+                return res.gameId; 
+            }
+            return null;
         } catch (err: any) {
             alert(err.message || 'Error saving the game. Try again.');
             return null; 
