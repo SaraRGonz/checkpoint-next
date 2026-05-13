@@ -2,13 +2,12 @@
 
 import { revalidatePath } from 'next/cache';
 import { z } from 'zod';
-import { addGame, updateGame, deleteGame } from '@/lib/library';
-import type { Game } from '@/types/game';
+import { db } from '@/lib/db';
 
 const CreateGameSchema = z.object({
     title: z.string().min(1, 'Title is required'),
     status: z.enum(['Wishlist', 'Queue', 'Playing', 'Completed', 'Dropped']),
-    coverUrl: z.url({ message: 'Must be a valid URL' }).optional().or(z.literal('')),
+    coverUrl: z.string().optional().or(z.literal('')),
     coverPosition: z.string().optional(),
     platform: z.string().optional(),
     genres: z.array(z.string()).optional(),
@@ -32,12 +31,41 @@ export async function addGameAction(data: unknown) {
     try {
         const parsedData = await CreateGameSchema.parseAsync(data);
         
-        const gameData = {
-            ...parsedData,
-            coverUrl: parsedData.coverUrl || '/placeholder.jpg'
-        };
+        let platformId;
+        const platformName = parsedData.platform || "Not specified";
+        let platformRecord = await db.platform.findUnique({ where: { name: platformName } });
+        if (!platformRecord) {
+            platformRecord = await db.platform.create({ data: { name: platformName } });
+        }
+        platformId = platformRecord.id;
 
-        const newGame = await addGame(gameData);
+        let genresUpdate = {};
+        if (parsedData.genres && parsedData.genres.length > 0) {
+            const genreConnections = [];
+            for (const genreName of parsedData.genres) {
+                let genreRecord = await db.genre.findUnique({ where: { name: genreName } });
+                if (!genreRecord) {
+                    genreRecord = await db.genre.create({ data: { name: genreName } });
+                }
+                genreConnections.push({ id: genreRecord.id });
+            }
+            genresUpdate = { connect: genreConnections };
+        }
+
+        const newGame = await db.game.create({
+            data: {
+                title: parsedData.title,
+                status: parsedData.status.toUpperCase() as any,
+                coverUrl: parsedData.coverUrl || '/placeholder.jpg',
+                coverPosition: parsedData.coverPosition || '50% 50%',
+                platformId: platformId,
+                releaseYear: parsedData.releaseYear,
+                rawgId: parsedData.rawgId,
+                rating: parsedData.rating,
+                review: parsedData.review,
+                genres: genresUpdate
+            }
+        });
         
         revalidatePath('/');
         revalidatePath('/library');
@@ -47,41 +75,6 @@ export async function addGameAction(data: unknown) {
         if (error instanceof z.ZodError) {
             return { success: false, errors: formatZodErrors(error) };
         }
-        return { success: false, error: 'Error interno al añadir el juego' };
-    }
-}
-
-export async function updateGameAction(id: string, updates: Partial<Game>) {
-    try {
-        const updatedGame = await updateGame(id, updates);
-        
-        if (!updatedGame) {
-            return { success: false, error: 'Game not found' };
-        }
-
-        revalidatePath(`/game/${id}`);
-        revalidatePath('/library');
-        
-        return { success: true };
-    } catch (error) {
-        return { success: false, error: 'Internal error updating game' };
-    }
-}
-
-export async function deleteGameAction(id: string) {
-    try {
-        const success = await deleteGame(id);
-        
-        if (!success) {
-            return { success: false, error: 'Game not found to delete' };
-        }
-
-        revalidatePath('/');
-        revalidatePath('/library');
-        revalidatePath('/wishlist');
-        
-        return { success: true };
-    } catch (error) {
-        return { success: false, error: 'Internal error deleting game' };
+        return { success: false, error: 'Internal error adding game' };
     }
 }
