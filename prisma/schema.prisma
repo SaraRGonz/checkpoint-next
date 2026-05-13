@@ -33,12 +33,14 @@ model Game {
   id           String        @id @default(uuid())
   title        String
   coverUrl     String?
+  coverPosition String?
   releaseYear  Int?
   rawgId       Int?          @unique
   rating       Int?
+  review       String?       @db.Text // <-- NUEVO: Review general
   status       Status        @default(QUEUE)
   addedAt      DateTime      @default(now())
-  updatedAt    DateTime?      @updatedAt
+  updatedAt    DateTime?     @updatedAt
 
   platformId   String
   platform     Platform      @relation(fields: [platformId], references: [id], onDelete: Restrict)
