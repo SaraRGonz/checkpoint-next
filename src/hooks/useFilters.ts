@@ -10,6 +10,7 @@ export function useFilters(initialGames: Game[]) {
     const store = useUIStore();
 
     useEffect(() => {
+        const state = useUIStore.getState();
         const q = searchParams.get('q') || '';
         const sort = (searchParams.get('sort') as any) || 'added-desc';
         const status = searchParams.get('status') || 'all';
@@ -17,12 +18,12 @@ export function useFilters(initialGames: Game[]) {
         const platform = searchParams.get('platform') || 'all';
         const rating = searchParams.get('rating') || 'all';
 
-        if (q !== store.searchQuery) store.setSearchQuery(q);
-        if (sort !== store.sortOption) store.setSortOption(sort);
-        if (status !== store.statusFilter) store.setStatusFilter(status);
-        if (genre !== store.genreFilter) store.setGenreFilter(genre);
-        if (platform !== store.platformFilter) store.setPlatformFilter(platform);
-        if (rating !== store.ratingFilter) store.setRatingFilter(rating);
+        if (q !== state.searchQuery) state.setSearchQuery(q);
+        if (sort !== state.sortOption) state.setSortOption(sort);
+        if (status !== state.statusFilter) state.setStatusFilter(status);
+        if (genre !== state.genreFilter) state.setGenreFilter(genre);
+        if (platform !== state.platformFilter) state.setPlatformFilter(platform);
+        if (rating !== state.ratingFilter) state.setRatingFilter(rating);
     }, [searchParams]);
 
     useEffect(() => {
