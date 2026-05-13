@@ -74,8 +74,10 @@ export async function PUT(req: Request, { params }: { params: Promise<{ id: stri
             data: {
                 ...(data.title && { title: data.title }),
                 ...(data.coverUrl && { coverUrl: data.coverUrl }),
+                ...(data.coverPosition && { coverPosition: data.coverPosition }), 
                 ...(data.status && { status: data.status.toUpperCase() as any }),
                 ...(data.rating !== undefined && { rating: data.rating }),
+                ...(data.review !== undefined && { review: data.review }), 
                 ...(data.releaseYear && { releaseYear: data.releaseYear }),
                 ...(data.rawgId && { rawgId: data.rawgId }),
                 ...(platformId && { platformId }),

@@ -1,7 +1,7 @@
 import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { GameDetailClient } from '../../../components/game/GameDetailClient';
-import { getGameById } from '../../../lib/library';
+import { db } from '../../../lib/db';
 
 export const dynamic = 'force-dynamic';
 
@@ -10,31 +10,41 @@ type Props = {
 };
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-
-    const resolvedParams = await params;
-    const game = await getGameById(resolvedParams.id);
+    const { id } = await params;
+    const game = await db.game.findUnique({ where: { id } });
     
-    if (!game) {
-        return { title: 'Game Not Found' };
-    }
+    if (!game) return { title: 'Game Not Found' };
     
     return {
         title: game.title, 
-        description: game.review || `${game.title} — ${game.status} in your Checkpoint library`,
+        description: game.review || `${game.title} — ${game.status} en Checkpoint`,
         openGraph: {
             title: game.title,
-            images: [{ url: game.coverUrl, width: 600, height: 800, alt: game.title }],
+            images: game.coverUrl ? [{ url: game.coverUrl }] : [],
         },
     };
 }
 
 export default async function GamePage({ params }: Props) {
-    const resolvedParams = await params;
-    const game = await getGameById(resolvedParams.id);
+    const { id } = await params;
+    
+    const game = await db.game.findUnique({
+        where: { id },
+        include: { 
+            platform: true, 
+            genres: true,
+            playthroughs: true 
+        }
+    });
 
-    if (!game) {
-        notFound();
-    }
+    if (!game) notFound();
 
-    return <GameDetailClient initialGame={game} />;
+    const formattedGame = {
+        ...game,
+        platform: game.platform?.name || '',
+        genres: game.genres.map(g => g.name),
+        review: game.review || ''
+    };
+
+    return <GameDetailClient initialGame={formattedGame as any} />;
 }
