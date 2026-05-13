@@ -1,51 +1,49 @@
-import { useMemo, useCallback } from 'react';
+import { useMemo, useEffect, useCallback } from 'react';
 import { useSearchParams, useRouter, usePathname } from 'next/navigation';
+import { useUIStore } from '@/stores/ui-store';
 import type { Game } from '@/types/game';
-
-export type SortOption = 'title-asc' | 'title-desc' | 'added-desc' | 'updated-desc';
 
 export function useFilters(initialGames: Game[]) {
     const searchParams = useSearchParams();
     const router = useRouter();
     const pathname = usePathname();
+    const store = useUIStore();
 
-    const getParam = (key: string, defaultVal: string) => searchParams.get(key) || defaultVal;
-    
-    const updateParam = (key: string, value: string, defaultVal: string) => {
-        const params = new URLSearchParams(searchParams.toString());
-        if (value === defaultVal || value === '') {
-            params.delete(key);
-        } else {
-            params.set(key, value);
-        }
-        router.replace(`${pathname}?${params.toString()}`, { scroll: false }); 
-    };
+    useEffect(() => {
+        const q = searchParams.get('q') || '';
+        const sort = (searchParams.get('sort') as any) || 'added-desc';
+        const status = searchParams.get('status') || 'all';
+        const genre = searchParams.get('genre') || 'all';
+        const platform = searchParams.get('platform') || 'all';
+        const rating = searchParams.get('rating') || 'all';
 
-    const searchQuery = getParam('q', '');
-    const setSearchQuery = (val: string) => updateParam('q', val, '');
+        if (q !== store.searchQuery) store.setSearchQuery(q);
+        if (sort !== store.sortOption) store.setSortOption(sort);
+        if (status !== store.statusFilter) store.setStatusFilter(status);
+        if (genre !== store.genreFilter) store.setGenreFilter(genre);
+        if (platform !== store.platformFilter) store.setPlatformFilter(platform);
+        if (rating !== store.ratingFilter) store.setRatingFilter(rating);
+    }, [searchParams]);
 
-    const sortOption = getParam('sort', 'added-desc') as SortOption;
-    const setSortOption = (val: SortOption) => updateParam('sort', val, 'added-desc');
+    useEffect(() => {
+        const params = new URLSearchParams();
+        if (store.searchQuery) params.set('q', store.searchQuery);
+        if (store.sortOption !== 'added-desc') params.set('sort', store.sortOption);
+        if (store.statusFilter !== 'all') params.set('status', store.statusFilter);
+        if (store.genreFilter !== 'all') params.set('genre', store.genreFilter);
+        if (store.platformFilter !== 'all') params.set('platform', store.platformFilter);
+        if (store.ratingFilter !== 'all') params.set('rating', store.ratingFilter);
 
-    const statusFilter = getParam('status', 'all');
-    const setStatusFilter = (val: string) => updateParam('status', val, 'all');
-
-    const genreFilter = getParam('genre', 'all');
-    const setGenreFilter = (val: string) => updateParam('genre', val, 'all');
-
-    const platformFilter = getParam('platform', 'all');
-    const setPlatformFilter = (val: string) => updateParam('platform', val, 'all');
-
-    const ratingFilter = getParam('rating', 'all');
-    const setRatingFilter = (val: string) => updateParam('rating', val, 'all');
+        const newUrl = params.toString() ? `${pathname}?${params.toString()}` : pathname;
+        router.replace(newUrl, { scroll: false });
+    }, [store.searchQuery, store.sortOption, store.statusFilter, store.genreFilter, store.platformFilter, store.ratingFilter, pathname, router]);
 
     const availableGenres = useMemo(() => {
         const genres = new Set<string>();
         initialGames.forEach(game => {
-            if (game.genres && game.genres.length > 0) {
+            if (game.genres?.length) {
                 game.genres.forEach(g => {
-                    const formatted = g.charAt(0).toUpperCase() + g.slice(1).toLowerCase();
-                    genres.add(formatted);
+                    genres.add(g.charAt(0).toUpperCase() + g.slice(1).toLowerCase());
                 });
             }
         });
@@ -55,7 +53,7 @@ export function useFilters(initialGames: Game[]) {
     const availablePlatforms = useMemo(() => {
         const platforms = new Set<string>();
         initialGames.forEach(game => {
-            if (game.platform && game.platform.trim() !== '') {
+            if (game.platform?.trim()) {
                 platforms.add(game.platform);
             }
         });
@@ -64,49 +62,32 @@ export function useFilters(initialGames: Game[]) {
 
     const filteredGames = useMemo(() => {
         let result = initialGames;
-        if (searchQuery) {
-            result = result.filter(game => game.title.toLowerCase().includes(searchQuery.toLowerCase()));
+        if (store.searchQuery) result = result.filter(g => g.title.toLowerCase().includes(store.searchQuery.toLowerCase()));
+        if (store.statusFilter !== 'all') result = result.filter(g => g.status === store.statusFilter);
+        if (store.genreFilter !== 'all') result = result.filter(g => g.genres?.some(gen => gen.toLowerCase() === store.genreFilter.toLowerCase()));
+        if (store.platformFilter !== 'all') {
+            result = store.platformFilter === 'Not specified' 
+                ? result.filter(g => !g.platform?.trim()) 
+                : result.filter(g => g.platform === store.platformFilter);
         }
-        if (statusFilter !== 'all') {
-            result = result.filter(game => game.status === statusFilter);
-        }
-        if (genreFilter !== 'all') {
-            result = result.filter(game => 
-                game.genres?.some(g => g.toLowerCase() === genreFilter.toLowerCase())
-            );
-        }
-        if (platformFilter !== 'all') {
-            if (platformFilter === 'Not specified') {
-                result = result.filter(game => !game.platform || game.platform.trim() === '');
-            } else {
-                result = result.filter(game => game.platform === platformFilter);
-            }
-        }
-        if (ratingFilter !== 'all') {
-            result = result.filter(game => game.rating === parseInt(ratingFilter, 10));
-        }
+        if (store.ratingFilter !== 'all') result = result.filter(g => g.rating === parseInt(store.ratingFilter, 10));
 
         result.sort((a, b) => {
-            switch (sortOption) {
+            switch (store.sortOption) {
                 case 'title-asc': return a.title.localeCompare(b.title);
                 case 'title-desc': return b.title.localeCompare(a.title);
                 case 'updated-desc': return new Date(b.updatedAt || 0).getTime() - new Date(a.updatedAt || 0).getTime();
-                case 'added-desc':
-                default:
-                    return new Date(b.addedAt || 0).getTime() - new Date(a.addedAt || 0).getTime();
+                case 'added-desc': default: return new Date(b.addedAt || 0).getTime() - new Date(a.addedAt || 0).getTime();
             }
         });
-
         return result;
-    }, [initialGames, searchQuery, statusFilter, genreFilter, platformFilter, ratingFilter, sortOption]);
+    }, [initialGames, store.searchQuery, store.statusFilter, store.genreFilter, store.platformFilter, store.ratingFilter, store.sortOption]);
 
     const clearFilters = useCallback(() => {
-        router.replace(pathname, { scroll: false });
-    }, [pathname, router]);
+        store.clearFilters();
+    }, [store]);
 
-    const hasActiveFilters = searchQuery !== '' || sortOption !== 'added-desc' || statusFilter !== 'all' || genreFilter !== 'all' || platformFilter !== 'all' || ratingFilter !== 'all';
+    const hasActiveFilters = store.searchQuery !== '' || store.sortOption !== 'added-desc' || store.statusFilter !== 'all' || store.genreFilter !== 'all' || store.platformFilter !== 'all' || store.ratingFilter !== 'all';
 
-    return {
-        searchQuery, setSearchQuery, sortOption, setSortOption, statusFilter, setStatusFilter, genreFilter, setGenreFilter, platformFilter, setPlatformFilter, ratingFilter, setRatingFilter, filteredGames, availableGenres, availablePlatforms, clearFilters, hasActiveFilters
-    };
+    return { filteredGames, availableGenres, availablePlatforms, clearFilters, hasActiveFilters };
 }

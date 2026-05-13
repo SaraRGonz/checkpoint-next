@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useLibrary } from '@/hooks/useLibrary';
 import { useFilters } from '@/hooks/useFilters';
-import type { SortOption } from '@/hooks/useFilters';
+import { useUIStore, type SortOption } from '@/stores/ui-store';
 import { GameCard } from '@/components/game/GameCard';
 import { SearchInput } from '@/components/ui/SearchInput';
 import { EmptyState } from '@/components/ui/EmptyState';
@@ -20,20 +20,21 @@ interface WishlistClientProps {
 
 export function WishlistClient({ initialGames }: WishlistClientProps) {
     const router = useRouter();
-
     const { updateGame, deleteGame } = useLibrary();
-
     const [gameToDelete, setGameToDelete] = useState<Game | null>(null);
+
+    const {
+        sortOption, setSortOption,
+        genreFilter, setGenreFilter,
+        platformFilter, setPlatformFilter
+    } = useUIStore();
 
     const {
         filteredGames,
         availablePlatforms,
         availableGenres,
-        searchQuery, setSearchQuery,
-        sortOption, setSortOption,
-        genreFilter, setGenreFilter,
-        platformFilter, setPlatformFilter,
-        clearFilters, hasActiveFilters
+        clearFilters, 
+        hasActiveFilters
     } = useFilters(initialGames);
 
     const sortLabels: Record<SortOption, string> = {
@@ -57,16 +58,8 @@ export function WishlistClient({ initialGames }: WishlistClientProps) {
     };
 
     const modalButtons: ModalButton[] = [
-        {
-            content: 'Cancel',
-            variant: 'secondary',
-            onClick: () => setGameToDelete(null)
-        },
-        {
-            content: 'Remove',
-            variant: 'danger',
-            onClick: handleDeleteConfirm
-        }
+        { content: 'Cancel', variant: 'secondary', onClick: () => setGameToDelete(null) },
+        { content: 'Remove', variant: 'danger', onClick: handleDeleteConfirm }
     ];
 
     if (initialGames.length === 0) {
@@ -84,9 +77,7 @@ export function WishlistClient({ initialGames }: WishlistClientProps) {
 
     return (
         <div className="flex flex-col lg:flex-row gap-8 items-start">
-
             <aside className="w-full lg:w-64 shrink-0 flex flex-col gap-6">
-
                 <div className="flex flex-col gap-3">
                     <Button variant="primary" onClick={() => router.push('/search')}>
                         <span className="flex items-center justify-center gap-2">
@@ -103,11 +94,7 @@ export function WishlistClient({ initialGames }: WishlistClientProps) {
                 </div>
 
                 <div className="w-full">
-                    <SearchInput
-                        value={searchQuery}
-                        onChange={setSearchQuery}
-                        placeholder="Search in wishlist..."
-                    />
+                    <SearchInput placeholder="Search in wishlist..." />
                 </div>
 
                 <div className="flex flex-col gap-1.5 w-full">
@@ -138,18 +125,14 @@ export function WishlistClient({ initialGames }: WishlistClientProps) {
                     <div className="flex flex-col gap-1.5 w-full">
                         <label className="text-[10px] font-bold text-gray-300 uppercase tracking-wider">Genre</label>
                         <ActionMenu value={genreFilter} onSelect={setGenreFilter}>
-                            <ActionMenu.Button>
-                                {genreFilter === 'all' ? 'All' : genreFilter}
-                            </ActionMenu.Button>
+                            <ActionMenu.Button>{genreFilter === 'all' ? 'All' : genreFilter}</ActionMenu.Button>
                             <ActionMenu.Overlay>
                                 <ActionMenu.Search />
                                 <ActionMenu.Item value="all">All</ActionMenu.Item>
                                 {availableGenres.length === 0 ? (
                                     <div className="px-4 py-3 text-xs text-gray-300 italic text-center">Genres not found</div>
                                 ) : (
-                                    availableGenres.map(g => (
-                                        <ActionMenu.Item key={g} value={g}>{g}</ActionMenu.Item>
-                                    ))
+                                    availableGenres.map(g => <ActionMenu.Item key={g} value={g}>{g}</ActionMenu.Item>)
                                 )}
                             </ActionMenu.Overlay>
                         </ActionMenu>
@@ -158,9 +141,7 @@ export function WishlistClient({ initialGames }: WishlistClientProps) {
                     <div className="flex flex-col gap-1.5 w-full">
                         <label className="text-[10px] font-bold text-gray-300 uppercase tracking-wider">Platform</label>
                         <ActionMenu value={platformFilter} onSelect={setPlatformFilter} position="top">
-                            <ActionMenu.Button>
-                                {platformFilter === 'all' ? 'All' : platformFilter}
-                            </ActionMenu.Button>
+                            <ActionMenu.Button>{platformFilter === 'all' ? 'All' : platformFilter}</ActionMenu.Button>
                             <ActionMenu.Overlay>
                                 <ActionMenu.Search />
                                 <ActionMenu.Item value="all">All</ActionMenu.Item>
@@ -168,15 +149,12 @@ export function WishlistClient({ initialGames }: WishlistClientProps) {
                                 {availablePlatforms.length === 0 ? (
                                     <div className="px-4 py-3 text-xs text-gray-300 italic text-center">No platforms found</div>
                                 ) : (
-                                    availablePlatforms.map(p => (
-                                        <ActionMenu.Item key={p} value={p}>{p}</ActionMenu.Item>
-                                    ))
+                                    availablePlatforms.map(p => <ActionMenu.Item key={p} value={p}>{p}</ActionMenu.Item>)
                                 )}
                             </ActionMenu.Overlay>
                         </ActionMenu>
                     </div>
                 </div>
-
             </aside>
 
             <main className="flex-1 w-full">
@@ -192,13 +170,8 @@ export function WishlistClient({ initialGames }: WishlistClientProps) {
                         {filteredGames.map((game, index) => (
                             <div key={game.id} className="flex flex-col gap-3 h-full">
                                 <div className="flex-1">
-                                    <GameCard
-                                        game={game}
-                                        hideBadge={true}
-                                        priority={index < 4}
-                                    />
+                                    <GameCard game={game} hideBadge={true} priority={index < 4} />
                                 </div>
-
                                 <div className="flex gap-2">
                                     <div className="flex-1">
                                         <Button className="w-full" variant="primary" onClick={() => handleMoveToLibrary(game.id)}>
@@ -209,14 +182,8 @@ export function WishlistClient({ initialGames }: WishlistClientProps) {
                                         </Button>
                                     </div>
                                     <div>
-                                        <Button
-                                            variant="danger"
-                                            onClick={() => setGameToDelete(game)}
-                                            aria-label={`Remove ${game.title} from wishlist`}
-                                        >
-                                            <div className="flex items-center justify-center">
-                                                <TrashIcon className="w-5 h-5" />
-                                            </div>
+                                        <Button variant="danger" onClick={() => setGameToDelete(game)} aria-label={`Remove ${game.title} from wishlist`}>
+                                            <div className="flex items-center justify-center"><TrashIcon className="w-5 h-5" /></div>
                                         </Button>
                                     </div>
                                 </div>
@@ -226,12 +193,7 @@ export function WishlistClient({ initialGames }: WishlistClientProps) {
                 )}
             </main>
 
-            <Modal
-                isOpen={gameToDelete !== null}
-                onClose={() => setGameToDelete(null)}
-                title="Remove from Wishlist"
-                footerButtons={modalButtons}
-            >
+            <Modal isOpen={gameToDelete !== null} onClose={() => setGameToDelete(null)} title="Remove from Wishlist" footerButtons={modalButtons}>
                 <div className="space-y-4">
                     <p>Discard <span className="font-bold text-white">"{gameToDelete?.title}"</span> from your loot list?</p>
                     <p className="text-sm text-gray-400">No worries! You can always find this legendary item again using the search radar.</p>

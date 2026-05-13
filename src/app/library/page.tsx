@@ -3,7 +3,7 @@
 import { useRouter } from 'next/navigation';
 import { useLibrary } from '@/hooks/useLibrary';
 import { useFilters } from '@/hooks/useFilters';
-import type { SortOption } from '@/hooks/useFilters';
+import { useUIStore, type SortOption } from '@/stores/ui-store';
 import { GameCard } from '@/components/game/GameCard';
 import { SearchInput } from '@/components/ui/SearchInput';
 import { EmptyState } from '@/components/ui/EmptyState';
@@ -11,30 +11,29 @@ import { Button } from '@/components/ui/Button';
 import { ActionMenu } from '@/components/ui/ActionMenu/ActionMenu';
 import { STATUS_LIST } from '@/utils/constants';
 import { SearchIcon, PlusIcon, GridIcon, KanbanIcon } from '@/components/ui/Icons';
-import { useState, useEffect } from 'react';
 import { KanbanBoard } from '@/components/game/KanbanBoard';
 
 export default function LibraryPage() {
     const { games, isLoading } = useLibrary();
     const router = useRouter();
     
-    const [viewMode, setViewMode] = useState<'grid' | 'kanban'>('grid');
-
-    useEffect(() => {
-        const savedMode = localStorage.getItem('libraryViewMode');
-        if (savedMode === 'kanban') setViewMode('kanban');
-    }, []);
-
-    useEffect(() => {
-        localStorage.setItem('libraryViewMode', viewMode);
-    }, [viewMode]);
+    const {
+        viewMode, setViewMode,
+        sortOption, setSortOption,
+        statusFilter, setStatusFilter,
+        genreFilter, setGenreFilter,
+        platformFilter, setPlatformFilter,
+        ratingFilter, setRatingFilter
+    } = useUIStore();
 
     const libraryGames = games.filter(g => g.status !== 'Wishlist');
 
     const {
-        filteredGames, availableGenres, availablePlatforms, searchQuery, setSearchQuery, sortOption, setSortOption,
-        statusFilter, setStatusFilter, genreFilter, setGenreFilter, platformFilter, setPlatformFilter, ratingFilter, setRatingFilter,
-        clearFilters, hasActiveFilters
+        filteredGames, 
+        availableGenres, 
+        availablePlatforms, 
+        clearFilters, 
+        hasActiveFilters
     } = useFilters(libraryGames);
 
     const sortLabels: Record<SortOption, string> = {
@@ -47,15 +46,12 @@ export default function LibraryPage() {
     if (isLoading) {
         return (
             <div className="flex flex-col lg:flex-row gap-8 items-start w-full">
-                {/* Skeleton del sidebar*/}
                 <aside className="w-full lg:w-64 shrink-0 flex flex-col gap-6 animate-pulse">
                     <div className="h-10 bg-gray-800 rounded-xl"></div>
                     <div className="h-10 bg-gray-800 rounded-xl"></div>
                     <div className="h-10 bg-gray-800 rounded-xl mt-6"></div>
                     <div className="h-32 bg-gray-800 rounded-xl"></div>
                 </aside>
-                
-                {/* Skeleton del grid principal */}
                 <main className="flex-1 w-full min-w-0">
                     <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-6">
                         {Array.from({ length: 8 }).map((_, i) => (
@@ -79,11 +75,7 @@ export default function LibraryPage() {
 
     return (
         <div className="flex flex-col lg:flex-row gap-8 items-start">
-            
-            {/* SIDEBAR */}
             <aside className="w-full lg:w-64 shrink-0 flex flex-col gap-6">
-                
-                {/* botones de acción */}
                 <div className="flex flex-col gap-3">
                     <Button variant="primary" onClick={() => router.push('/search')}>
                         <span className="flex items-center justify-center gap-2">
@@ -99,16 +91,10 @@ export default function LibraryPage() {
                     </Button>
                 </div>
 
-                {/* búsqueda */}
                 <div className="w-full">
-                    <SearchInput 
-                        value={searchQuery} 
-                        onChange={setSearchQuery} 
-                        placeholder="Search in library..." 
-                    />
+                    <SearchInput placeholder="Search in library..." />
                 </div>
 
-                {/* order by */}
                 <div className="flex flex-col gap-1.5 w-full">
                     <label className="text-[10px] font-bold text-gray-300 uppercase tracking-widest">Order by</label>
                     <ActionMenu value={sortOption} onSelect={(val) => setSortOption(val as SortOption)}>
@@ -122,7 +108,6 @@ export default function LibraryPage() {
                     </ActionMenu>
                 </div>
 
-                {/* VIEW MODE */}
                 <div className="flex flex-col gap-1.5 w-full">
                     <label className="text-[10px] font-bold text-gray-300 uppercase tracking-widest">View Mode</label>
                     <div className="flex gap-2 bg-gray-950 p-1 rounded-lg border border-gray-800">
@@ -156,24 +141,18 @@ export default function LibraryPage() {
                     )}
                 </div>
 
-                {/* filtros desplegables */}
                 <div className="flex flex-col gap-4">
-
                     <div className="flex flex-col gap-1.5 w-full">
                         <label className="text-[10px] font-bold text-gray-300 uppercase tracking-wider">Genre</label>
                         <ActionMenu value={genreFilter} onSelect={setGenreFilter}>
-                            <ActionMenu.Button>
-                                {genreFilter === 'all' ? 'All' : genreFilter}
-                            </ActionMenu.Button>
+                            <ActionMenu.Button>{genreFilter === 'all' ? 'All' : genreFilter}</ActionMenu.Button>
                             <ActionMenu.Overlay>
                                 <ActionMenu.Search />
                                 <ActionMenu.Item value="all">All</ActionMenu.Item>
                                 {availableGenres.length === 0 ? (
                                     <div className="px-4 py-3 text-xs text-gray-300 italic text-center">Genres not found</div>
                                 ) : (
-                                    availableGenres.map(g => (
-                                        <ActionMenu.Item key={g} value={g}>{g}</ActionMenu.Item>
-                                    ))
+                                    availableGenres.map(g => <ActionMenu.Item key={g} value={g}>{g}</ActionMenu.Item>)
                                 )}
                             </ActionMenu.Overlay>
                         </ActionMenu>
@@ -182,9 +161,7 @@ export default function LibraryPage() {
                     <div className="flex flex-col gap-1.5 w-full">
                         <label className="text-[10px] font-bold text-gray-300 uppercase tracking-wider">Platform</label>
                         <ActionMenu value={platformFilter} onSelect={setPlatformFilter} position="top">
-                            <ActionMenu.Button>
-                                {platformFilter === 'all' ? 'All' : platformFilter}
-                            </ActionMenu.Button>
+                            <ActionMenu.Button>{platformFilter === 'all' ? 'All' : platformFilter}</ActionMenu.Button>
                             <ActionMenu.Overlay>
                                 <ActionMenu.Search />
                                 <ActionMenu.Item value="all">All</ActionMenu.Item>
@@ -192,9 +169,7 @@ export default function LibraryPage() {
                                 {availablePlatforms.length === 0 ? (
                                     <div className="px-4 py-3 text-xs text-gray-300 italic text-center">No platforms found</div>
                                 ) : (
-                                    availablePlatforms.map(p => (
-                                        <ActionMenu.Item key={p} value={p}>{p}</ActionMenu.Item>
-                                    ))
+                                    availablePlatforms.map(p => <ActionMenu.Item key={p} value={p}>{p}</ActionMenu.Item>)
                                 )}
                             </ActionMenu.Overlay>
                         </ActionMenu>
@@ -203,9 +178,7 @@ export default function LibraryPage() {
                     <div className="flex flex-col gap-1.5 w-full">
                         <label className="text-[10px] font-bold text-gray-300 uppercase tracking-wider">Rating</label>
                         <ActionMenu value={ratingFilter} onSelect={setRatingFilter} position="top">
-                            <ActionMenu.Button>
-                                {ratingFilter === 'all' ? 'All' : `${ratingFilter} Stars`}
-                            </ActionMenu.Button>
+                            <ActionMenu.Button>{ratingFilter === 'all' ? 'All' : `${ratingFilter} Stars`}</ActionMenu.Button>
                             <ActionMenu.Overlay>
                                 <ActionMenu.Item value="all">All</ActionMenu.Item>
                                 {[5, 4, 3, 2, 1].map(stars => (
@@ -217,10 +190,7 @@ export default function LibraryPage() {
                 </div>
             </aside>
 
-            {/* MAIN CONTENT AREA */}
             <main className="flex-1 w-full min-w-0 flex flex-col gap-6"> 
-                
-                {/* STATUS PILLS (Only visible in Grid mode) */}
                 {viewMode === 'grid' && (
                     <div className="flex flex-wrap items-center gap-2 pb-2 border-b border-gray-800/50">
                         <button
@@ -249,7 +219,6 @@ export default function LibraryPage() {
                     </div>
                 )}
 
-                {/* GAME GRID / KANBAN / EMPTY STATE */}
                 {filteredGames.length === 0 ? (
                     <div className="mt-4">
                         <EmptyState 
@@ -262,11 +231,7 @@ export default function LibraryPage() {
                 ) : viewMode === 'grid' ? (
                     <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-6 animate-in fade-in duration-500">
                         {filteredGames.map((game, index) => (
-                            <GameCard 
-                                key={game.id} 
-                                game={game} 
-                                priority={index < 8} 
-                            />
+                            <GameCard key={game.id} game={game} priority={index < 8} />
                         ))}
                     </div>
                 ) : (
