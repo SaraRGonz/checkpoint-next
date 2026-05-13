@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useGameDetail } from '@/hooks/useGameDetail';
-import { useLibrary } from '@/hooks/useLibrary';
+import { useGames } from '@/hooks/use-games';
 import { GameDetailHeader } from '@/components/game/GameDetailHeader';
 import { GameCoverColumn } from '@/components/game/GameCoverColumn';
 import { GameInfoColumn } from '@/components/game/GameInfoColumn';
@@ -24,7 +24,7 @@ export function GameDetailClient({ initialGame }: GameDetailClientProps) {
         toggleEdit, updateDraftField, saveChanges, discardChanges 
     } = useGameDetail(initialGame);
 
-    const { deleteGame } = useLibrary(); 
+    const { deleteGame } = useGames();
     const router = useRouter();      
     
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);

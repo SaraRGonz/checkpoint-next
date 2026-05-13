@@ -7,16 +7,18 @@ import { STATUS_LIST } from '@/utils/constants';
 import { KanbanColumn } from './KanbanColumn';
 import { KanbanItem } from './KanbanItem';
 import { GameCard } from './GameCard';
-import { useLibrary } from '@/hooks/useLibrary';
-import type { Game, GameStatus } from '@/types/game';
+import { useGames } from '@/hooks/use-games';
+import type { Game } from '@/types/game';
 
 interface Props {
     games: Game[];
 }
 
 export function KanbanBoard({ games }: Props) {
-    const { updateGame } = useLibrary();
-    const [activeId, setActiveId] = useState<string | null>(null);
+    const { updateGame } = useGames(); 
+    const [activeGame, setActiveGame] = useState<Game | null>(null);
+
+    const columns = STATUS_LIST.filter(s => s.value !== 'Wishlist');
 
     const sensors = useSensors(
         useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
@@ -24,35 +26,41 @@ export function KanbanBoard({ games }: Props) {
     );
 
     const handleDragStart = (event: DragStartEvent) => {
-        setActiveId(event.active.id as string);
+        const game = games.find(g => g.id === event.active.id);
+        if (game) setActiveGame(game);
     };
 
-    const handleDragEnd = async (event: DragEndEvent) => {
-        setActiveId(null);
+    const handleDragEnd = (event: DragEndEvent) => {
         const { active, over } = event;
-        if (!over) return;
 
-        const gameId = active.id as string;
-        const newStatus = over.id as GameStatus;
-        const game = games.find(g => g.id === gameId);
-        
-        if (game && game.status !== newStatus) {
-            await updateGame(gameId, { status: newStatus });
+        if (over) {
+            const gameId = active.id as string;
+            const newStatus = over.id as Game['status'];
+            const draggedGame = games.find(g => g.id === gameId);
+
+            if (draggedGame && draggedGame.status !== newStatus) {
+                updateGame(gameId, { status: newStatus });
+            }
         }
+        
+        setActiveGame(null);
     };
-
-    const columns = STATUS_LIST.filter(s => s.value !== 'Wishlist');
-    const activeGame = activeId ? games.find(g => g.id === activeId) : null;
 
     return (
-        <DndContext sensors={sensors} collisionDetection={closestCorners} onDragStart={handleDragStart} onDragEnd={handleDragEnd} onDragCancel={() => setActiveId(null)}>
+        <DndContext 
+            sensors={sensors} 
+            collisionDetection={closestCorners} 
+            onDragStart={handleDragStart} 
+            onDragEnd={handleDragEnd} 
+            onDragCancel={() => setActiveGame(null)}
+        >
             <div className="flex gap-6 overflow-x-auto pb-6 snap-x w-full">
                 {columns.map(col => {
                     const columnGames = games.filter(g => g.status === col.value);
                     return (
                         <div key={col.value} className="w-68 shrink-0 snap-center">
-                            <KanbanColumn status={col.value} label={col.label} count={columnGames.length}>
-                                {columnGames.map((game, index) => (
+                            <KanbanColumn status={col.value as any} label={col.label} count={columnGames.length}>
+                                {columnGames.map((game) => (
                                     <KanbanItem 
                                         key={game.id} 
                                         game={game} 
@@ -63,7 +71,7 @@ export function KanbanBoard({ games }: Props) {
                     );
                 })}
             </div>
-            <DragOverlay>
+            <DragOverlay dropAnimation={null}>
                 {activeGame ? (
                     <div className="cursor-grabbing rotate-2 shadow-2xl opacity-90">
                         <GameCard game={activeGame} hideBadge={true} disableLink={true} compact={true} />

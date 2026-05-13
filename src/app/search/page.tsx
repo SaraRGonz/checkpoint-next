@@ -2,7 +2,7 @@
 
 import { useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
-import { useLibrary } from '@/hooks/useLibrary';
+import { addGameAction } from '@/actions/library.actions';
 import { searchGamesInRawg } from '@/api/games';
 import { SearchInput } from '@/components/ui/SearchInput';
 import { GameCard } from '@/components/game/GameCard';
@@ -21,7 +21,6 @@ const YEARS = Array.from({ length: 50 }, (_, i) => (currentYear - i).toString())
 
 export default function SearchPage() {
     const router = useRouter();
-    const { addGame } = useLibrary();
 
     const [query, setQuery] = useState('');
     const [platform, setPlatform] = useState('');
@@ -67,7 +66,7 @@ export default function SearchPage() {
             setError(null);
             setHasSearched(true);
             
-            const data = await searchGamesInRawg(sanitizedQuery, { // <-- Pasamos el sanitizado
+            const data = await searchGamesInRawg(sanitizedQuery, { 
                 platform: platform || undefined,
                 genre: genre || undefined,
                 year: year || undefined
@@ -103,8 +102,8 @@ export default function SearchPage() {
     const handleConfirmSave = async (gameData: Omit<Game, 'id'>): Promise<string | null> => {
         try {
             setIsSaving(true);
-            const newGameId = await addGame(gameData);
-            return newGameId; 
+            const res = await addGameAction(gameData);
+            return res.success && res.gameId ? res.gameId : null; 
         } catch (err: any) {
             alert(err.message || 'Error saving the game. Try again.');
             return null; 

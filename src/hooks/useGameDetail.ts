@@ -2,14 +2,14 @@
 
 import { useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
-import { useLibrary } from '@/hooks/useLibrary';
+import { useGames } from '@/hooks/use-games';
 import type { Game } from '@/types/game';
 
 export function useGameDetail(initialGame?: Game) {
     const params = useParams();
     const id = params?.id as string;
     
-    const { games, updateGame, isLoading } = useLibrary();
+    const { games, updateGame, isLoading } = useGames();
     
     const storeGame = games.find((g) => g.id === id);
     const originalGame = storeGame || initialGame;
