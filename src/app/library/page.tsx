@@ -1,7 +1,7 @@
 'use client'
 
 import { useRouter } from 'next/navigation';
-import { useLibrary } from '@/hooks/useLibrary';
+import { useGames } from '@/hooks/use-games';
 import { useFilters } from '@/hooks/useFilters';
 import { useUIStore, type SortOption } from '@/stores/ui-store';
 import { GameCard } from '@/components/game/GameCard';
@@ -14,7 +14,7 @@ import { SearchIcon, PlusIcon, GridIcon, KanbanIcon } from '@/components/ui/Icon
 import { KanbanBoard } from '@/components/game/KanbanBoard';
 
 export default function LibraryPage() {
-    const { games, isLoading } = useLibrary();
+    const { games, isLoading } = useGames();
     const router = useRouter();
     
     const {

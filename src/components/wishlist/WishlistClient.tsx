@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { useLibrary } from '@/hooks/useLibrary';
+import { useGames } from '@/hooks/use-games';
 import { useFilters } from '@/hooks/useFilters';
 import { useUIStore, type SortOption } from '@/stores/ui-store';
 import { GameCard } from '@/components/game/GameCard';
@@ -20,8 +20,10 @@ interface WishlistClientProps {
 
 export function WishlistClient({ initialGames }: WishlistClientProps) {
     const router = useRouter();
-    const { updateGame, deleteGame } = useLibrary();
+    const { games, updateGame, deleteGame } = useGames();
     const [gameToDelete, setGameToDelete] = useState<Game | null>(null);
+
+    const liveGames = games.length > 0 ? games.filter(g => g.status === 'Wishlist') : initialGames;
 
     const {
         sortOption, setSortOption,
@@ -35,7 +37,7 @@ export function WishlistClient({ initialGames }: WishlistClientProps) {
         availableGenres,
         clearFilters, 
         hasActiveFilters
-    } = useFilters(initialGames);
+    } = useFilters(liveGames);
 
     const sortLabels: Record<SortOption, string> = {
         'added-desc': 'Recently added',
