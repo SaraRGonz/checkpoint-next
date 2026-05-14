@@ -1,4 +1,6 @@
 import { NextResponse } from 'next/server';
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { z } from 'zod';
 import { db } from '@/lib/db';
 
@@ -18,33 +20,39 @@ const createGameSchema = z.object({
 
 export async function GET(req: Request) {
     try {
+        const session = await getServerSession(authOptions);
+        if (!session?.user?.id) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+
         const { searchParams } = new URL(req.url);
         const search = searchParams.get('search') ?? '';
 
         const games = await db.game.findMany({
             where: {
+                userId: session.user.id, 
                 title: { contains: search, mode: 'insensitive' }
             },
             include: { platform: true, genres: true },
             orderBy: { addedAt: 'desc' }
         });
 
-        const formattedGames = games.map(game => ({
+        const formattedGames = games.map((game: any) => ({
             ...game,
             status: game.status.charAt(0) + game.status.slice(1).toLowerCase(), 
             platform: game.platform?.name || 'Unknown',
-            genres: game.genres.map(g => g.name)
+            genres: game.genres.map((g: { name: string }) => g.name)
         }));
 
         return NextResponse.json({ data: formattedGames, total: formattedGames.length }, { status: 200 });
     } catch (error) {
-        console.error("Error fetching games:", error);
         return NextResponse.json({ error: { code: 'SERVER_ERROR', message: 'Internal server error' } }, { status: 500 });
     }
 }
 
 export async function POST(req: Request) {
     try {
+        const session = await getServerSession(authOptions);
+        if (!session?.user?.id) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+
         const body = await req.json();
         const data = await createGameSchema.parseAsync(body);
         
@@ -75,10 +83,9 @@ export async function POST(req: Request) {
                 rating: data.rating,
                 releaseYear: data.releaseYear,
                 rawgId: data.rawgId,
+                userId: session.user.id, 
                 platformId: platformRecord.id,
-                genres: {
-                    connect: genreConnections
-                }
+                genres: { connect: genreConnections }
             },
             include: { platform: true, genres: true }
         });
@@ -87,7 +94,7 @@ export async function POST(req: Request) {
             ...newGame,
             status: newGame.status.charAt(0) + newGame.status.slice(1).toLowerCase(),
             platform: newGame.platform.name,
-            genres: newGame.genres.map(g => g.name)
+            genres: newGame.genres.map((g: { name: string }) => g.name)
         };
 
         return NextResponse.json(formattedGame, { status: 201 });
