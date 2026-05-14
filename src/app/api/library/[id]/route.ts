@@ -1,4 +1,6 @@
 import { NextResponse } from 'next/server';
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { z } from 'zod';
 import { db } from '@/lib/db';
 
@@ -18,14 +20,17 @@ const updateGameSchema = z.object({
 
 export async function GET(req: Request, { params }: { params: Promise<{ id: string }> }) {
     try {
+        const session = await getServerSession(authOptions);
+        if (!session?.user?.id) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+
         const { id } = await params;
-        const game = await db.game.findUnique({
-            where: { id },
+        const game = await db.game.findFirst({
+            where: { id, userId: session.user.id }, 
             include: { platform: true, genres: true }
         });
         
         if (!game) {
-            return NextResponse.json({ error: { code: 'NOT_FOUND', message: 'Game not found' } }, { status: 404 });
+            return NextResponse.json({ error: { code: 'NOT_FOUND', message: 'Game not found or unauthorized' } }, { status: 404 });
         }
         
         const formattedGame = {
@@ -43,7 +48,14 @@ export async function GET(req: Request, { params }: { params: Promise<{ id: stri
 
 export async function PUT(req: Request, { params }: { params: Promise<{ id: string }> }) {
     try {
+        const session = await getServerSession(authOptions);
+        if (!session?.user?.id) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+
         const { id } = await params;
+
+        const existingGame = await db.game.findFirst({ where: { id, userId: session.user.id } });
+        if (!existingGame) return NextResponse.json({ error: 'Not found or unauthorized' }, { status: 404 });
+
         const body = await req.json();
         const data = await updateGameSchema.parseAsync(body);
         
@@ -97,15 +109,8 @@ export async function PUT(req: Request, { params }: { params: Promise<{ id: stri
     } catch (error) {
         if (error instanceof z.ZodError) {
             return NextResponse.json({
-                error: {
-                    code: 'VALIDATION_ERROR',
-                    message: 'Invalid data provided',
-                    details: error.issues.map(e => ({ field: e.path.join('.'), message: e.message }))
-                }
+                error: { code: 'VALIDATION_ERROR', message: 'Invalid data' }
             }, { status: 400 });
-        }
-        if ((error as any).code === 'P2025') {
-            return NextResponse.json({ error: { code: 'NOT_FOUND', message: 'Game not found' } }, { status: 404 });
         }
         return NextResponse.json({ error: { code: 'SERVER_ERROR', message: 'Internal server error' } }, { status: 500 });
     }
@@ -113,14 +118,18 @@ export async function PUT(req: Request, { params }: { params: Promise<{ id: stri
 
 export async function DELETE(req: Request, { params }: { params: Promise<{ id: string }> }) {
     try {
+        const session = await getServerSession(authOptions);
+        if (!session?.user?.id) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+
         const { id } = await params;
+
+        const existingGame = await db.game.findFirst({ where: { id, userId: session.user.id } });
+        if (!existingGame) return NextResponse.json({ error: 'Not found or unauthorized' }, { status: 404 });
+
         await db.game.delete({ where: { id } });
         
         return new NextResponse(null, { status: 204 });
     } catch (error) {
-        if ((error as any).code === 'P2025') {
-            return NextResponse.json({ error: { code: 'NOT_FOUND', message: 'Game not found' } }, { status: 404 });
-        }
         return NextResponse.json({ error: { code: 'SERVER_ERROR', message: 'Internal server error' } }, { status: 500 });
     }
 }
