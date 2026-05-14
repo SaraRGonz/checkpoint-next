@@ -5,15 +5,15 @@ import { db } from '@/lib/db';
 const updateGameSchema = z.object({
     title: z.string().min(1, 'El título es requerido').optional(),
     status: z.enum(['Wishlist', 'Queue', 'Playing', 'Completed', 'Dropped']).optional(),
-    coverUrl: z.string().optional(),
-    coverPosition: z.string().optional(),
-    platform: z.string().optional(),
-    availablePlatforms: z.array(z.string()).optional(),
-    rating: z.number().min(0).max(5).optional(),
-    review: z.string().optional(),
-    genres: z.array(z.string()).optional(),
-    releaseYear: z.number().optional(),
-    rawgId: z.number().optional(),
+    coverUrl: z.string().nullable().optional(),
+    coverPosition: z.string().nullable().optional(),
+    platform: z.string().nullable().optional(),
+    availablePlatforms: z.array(z.string()).nullable().optional(),
+    rating: z.number().min(0).max(5).nullable().optional(),
+    review: z.string().nullable().optional(),
+    genres: z.array(z.string()).nullable().optional(),
+    releaseYear: z.number().nullable().optional(),
+    rawgId: z.number().nullable().optional(),
 });
 
 export async function GET(req: Request, { params }: { params: Promise<{ id: string }> }) {
@@ -32,7 +32,7 @@ export async function GET(req: Request, { params }: { params: Promise<{ id: stri
             ...game,
             status: game.status.charAt(0) + game.status.slice(1).toLowerCase(),
             platform: game.platform.name,
-            genres: game.genres.map(g => g.name)
+            genres: game.genres.map((g: { name: string }) => g.name)
         };
 
         return NextResponse.json(formattedGame, { status: 200 });
@@ -72,14 +72,14 @@ export async function PUT(req: Request, { params }: { params: Promise<{ id: stri
         const updatedGame = await db.game.update({
             where: { id },
             data: {
-                ...(data.title && { title: data.title }),
-                ...(data.coverUrl && { coverUrl: data.coverUrl }),
-                ...(data.coverPosition && { coverPosition: data.coverPosition }), 
-                ...(data.status && { status: data.status.toUpperCase() as any }),
+                ...(data.title !== undefined && { title: data.title }),
+                ...(data.coverUrl !== undefined && { coverUrl: data.coverUrl }),
+                ...(data.coverPosition !== undefined && { coverPosition: data.coverPosition }), 
+                ...(data.status !== undefined && { status: data.status!.toUpperCase() as any }),
                 ...(data.rating !== undefined && { rating: data.rating }),
                 ...(data.review !== undefined && { review: data.review }), 
-                ...(data.releaseYear && { releaseYear: data.releaseYear }),
-                ...(data.rawgId && { rawgId: data.rawgId }),
+                ...(data.releaseYear !== undefined && { releaseYear: data.releaseYear }),
+                ...(data.rawgId !== undefined && { rawgId: data.rawgId }),
                 ...(platformId && { platformId }),
                 ...(genresUpdate && { genres: genresUpdate })
             },
@@ -90,7 +90,7 @@ export async function PUT(req: Request, { params }: { params: Promise<{ id: stri
             ...updatedGame,
             status: updatedGame.status.charAt(0) + updatedGame.status.slice(1).toLowerCase(),
             platform: updatedGame.platform.name,
-            genres: updatedGame.genres.map(g => g.name)
+            genres: updatedGame.genres.map((g: { name: string }) => g.name)
         };
         
         return NextResponse.json(formattedGame, { status: 200 });
