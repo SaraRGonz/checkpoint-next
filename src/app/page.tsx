@@ -1,4 +1,7 @@
 import { Suspense } from 'react';
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import { redirect } from "next/navigation";
 import { db } from '@/lib/db';
 import { HomeColumn } from '@/components/home/HomeColumn';
 import { HomeGameItem } from '@/components/home/HomeGameItem';
@@ -7,9 +10,9 @@ import { GameCardSkeleton } from '@/components/ui/GameCardSkeleton';
 
 export const dynamic = 'force-dynamic';
 
-async function PlayingSection() {
+async function PlayingSection({ userId }: { userId: string }) {
     const playingGames = await db.game.findMany({
-        where: { status: 'PLAYING' },
+        where: { status: 'PLAYING', userId },
         include: { platform: true, genres: true },
         orderBy: { updatedAt: 'desc' },
         take: 3
@@ -17,7 +20,9 @@ async function PlayingSection() {
 
     if (playingGames.length === 0) {
         return (
-            <div className="h-full border-2 border-dashed border-gray-800 rounded-2xl flex items-center justify-center text-gray-600 uppercase text-xs font-bold min-h-37.5">
+            <div 
+                className="h-full border-2 border-dashed border-gray-800 rounded-2xl flex items-center justify-center text-gray-600 uppercase 
+                text-xs font-bold min-h-37.5">
                 You have no active sessions
             </div>
         );
@@ -33,9 +38,9 @@ async function PlayingSection() {
     return <>{formattedGames.map((game: any) => <HomeGameItem key={game.id} game={game as any} />)}</>;
 }
 
-async function WishlistSection() {
+async function WishlistSection({ userId }: { userId: string }) {
     const wishlistGames = await db.game.findMany({
-        where: { status: 'WISHLIST' },
+        where: { status: 'WISHLIST', userId },
         include: { platform: true, genres: true },
         orderBy: { addedAt: 'desc' },
         take: 3
@@ -43,7 +48,9 @@ async function WishlistSection() {
 
     if (wishlistGames.length === 0) {
         return (
-            <div className="h-full border-2 border-dashed border-gray-800 rounded-2xl flex items-center justify-center text-gray-600 uppercase text-xs font-bold min-h-37.5">
+            <div 
+                className="h-full border-2 border-dashed border-gray-800 rounded-2xl flex items-center justify-center text-gray-600 
+                uppercase text-xs font-bold min-h-37.5">
                 Scanner empty
             </div>
         );
@@ -59,9 +66,10 @@ async function WishlistSection() {
     return <>{formattedGames.map((game: any) => <HomeGameItem key={game.id} game={game as any} />)}</>;
 }
 
-async function StatsSection() {
+async function StatsSection({ userId }: { userId: string }) {
     const nonWishlistGames = await db.game.findMany({
         where: {
+            userId,
             status: { in: ['PLAYING', 'QUEUE', 'COMPLETED', 'DROPPED'] }
         }
     });
@@ -84,8 +92,6 @@ async function StatsSection() {
 
     return <HomeStats total={totalGames} stats={statsArray} />;
 }
-
-// SKELETONS HOME 
 
 function HomeColumnSkeleton({ count = 3 }: { count?: number }) {
     return (
@@ -119,29 +125,32 @@ function StatsSkeleton() {
     );
 }
 
-export default function Home() {
+export default async function Home() {
+    const session = await getServerSession(authOptions);
+    if (!session?.user?.id) {
+        redirect("/login");
+    }
+
+    const userId = session.user.id;
+
     return (
         <div className="max-w-7xl mx-auto py-10 animate-in fade-in duration-700">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-12 items-stretch">
-                
                 <HomeColumn title="Playing">
                     <Suspense fallback={<HomeColumnSkeleton />}>
-                        <PlayingSection />
+                        <PlayingSection userId={userId} />
                     </Suspense>
                 </HomeColumn>
-
                 <HomeColumn title="Wishlist">
                     <Suspense fallback={<HomeColumnSkeleton />}>
-                        <WishlistSection />
+                        <WishlistSection userId={userId} />
                     </Suspense>
                 </HomeColumn>
-
                 <HomeColumn title="Game Stats">
                     <Suspense fallback={<StatsSkeleton />}>
-                        <StatsSection />
+                        <StatsSection userId={userId} />
                     </Suspense>
                 </HomeColumn>
-                
             </div>
         </div>
     );

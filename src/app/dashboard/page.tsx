@@ -9,11 +9,12 @@ export const dynamic = 'force-dynamic';
 export default async function DashboardPage() {
     const session = await getServerSession(authOptions);
 
-    if (!session) {
+    if (!session?.user?.id) {
         redirect("/login");
     }
 
     const gamesData = await db.game.findMany({
+        where: { userId: session.user.id },
         include: { platform: true, genres: true }
     });
 
@@ -24,16 +25,15 @@ export default async function DashboardPage() {
         genres: game.genres.map((g: { name: string }) => g.name) || []
     }));
     
-    // INSIGHTS
     const genreCounts = allGames.flatMap((g: any) => g.genres || []).reduce((acc: Record<string, number>, val: string) => {
         if (val) acc[val] = (acc[val] || 0) + 1;
         return acc;
-    }, {});
+    }, {} as Record<string, number>);
 
     const platformCounts = allGames.reduce((acc: Record<string, number>, g: any) => {
         if (g.platform) acc[g.platform] = (acc[g.platform] || 0) + 1;
         return acc;
-    }, {});
+    }, {} as Record<string, number>);
 
     const completed = allGames.filter((g: any) => g.status === 'Completed').length;
     const completionRate = allGames.length > 0 ? Math.round((completed / allGames.length) * 100) : 0;
