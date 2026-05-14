@@ -17,44 +17,44 @@ export default async function DashboardPage() {
         include: { platform: true, genres: true }
     });
 
-    const allGames = gamesData.map(game => ({
+    const allGames = gamesData.map((game: any) => ({
         ...game,
         status: game.status.charAt(0) + game.status.slice(1).toLowerCase(),
         platform: game.platform?.name || '',
-        genres: game.genres.map(g => g.name) || []
+        genres: game.genres.map((g: { name: string }) => g.name) || []
     }));
     
     // INSIGHTS
-    const genreCounts = allGames.flatMap(g => g.genres || []).reduce<Record<string, number>>((acc, val) => {
+    const genreCounts = allGames.flatMap((g: any) => g.genres || []).reduce((acc: Record<string, number>, val: string) => {
         if (val) acc[val] = (acc[val] || 0) + 1;
         return acc;
     }, {});
 
-    const platformCounts = allGames.reduce<Record<string, number>>((acc, g) => {
+    const platformCounts = allGames.reduce((acc: Record<string, number>, g: any) => {
         if (g.platform) acc[g.platform] = (acc[g.platform] || 0) + 1;
         return acc;
     }, {});
 
-    const completed = allGames.filter(g => g.status === 'Completed').length;
+    const completed = allGames.filter((g: any) => g.status === 'Completed').length;
     const completionRate = allGames.length > 0 ? Math.round((completed / allGames.length) * 100) : 0;
 
-    const releaseYears = allGames.map(g => g.releaseYear).filter((y): y is number => typeof y === 'number' && !isNaN(y));
-    const avgYear = releaseYears.length > 0 ? Math.round(releaseYears.reduce((a, b) => a + b, 0) / releaseYears.length) : 0;
+    const releaseYears = allGames.map((g: any) => g.releaseYear).filter((y: any): y is number => typeof y === 'number' && !isNaN(y));
+    const avgYear = releaseYears.length > 0 ? Math.round(releaseYears.reduce((a: number, b: number) => a + b, 0) / releaseYears.length) : 0;
     const temporalFocus = avgYear > 0 ? `${Math.floor(avgYear / 10) * 10}s` : 'Unknown';
 
     const stats = {
         avgRating: allGames.length > 0 
-            ? (allGames.reduce((acc, g) => acc + (g.rating || 0), 0) / allGames.length).toFixed(1)
+            ? (allGames.reduce((acc: number, g: any) => acc + (g.rating || 0), 0) / allGames.length).toFixed(1)
             : "0.0",
         topGenre: Object.keys(genreCounts).length > 0
-            ? Object.entries(genreCounts).sort((a, b) => b[1] - a[1])[0][0]
+            ? Object.entries(genreCounts).sort((a: any, b: any) => b[1] - a[1])[0][0]
             : 'None',
         topPlatform: Object.keys(platformCounts).length > 0
-            ? Object.entries(platformCounts).sort((a, b) => b[1] - a[1])[0][0]
+            ? Object.entries(platformCounts).sort((a: any, b: any) => b[1] - a[1])[0][0]
             : 'None',
         completionRate: `${completionRate}%`,
         temporalFocus,
-        activeThreads: allGames.filter(g => g.status === 'Playing').length.toString()
+        activeThreads: allGames.filter((g: any) => g.status === 'Playing').length.toString()
     };
 
     return (
