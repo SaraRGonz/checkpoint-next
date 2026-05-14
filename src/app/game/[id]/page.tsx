@@ -42,7 +42,7 @@ export default async function GamePage({ params }: Props) {
     const formattedGame = {
         ...game,
         platform: game.platform?.name || '',
-        genres: game.genres.map(g => g.name),
+        genres: game.genres.map((g: { name: string }) => g.name),
         review: game.review || ''
     };
 

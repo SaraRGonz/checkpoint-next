@@ -122,6 +122,7 @@ export function GameDetailClient({ initialGame }: GameDetailClientProps) {
                         notes={draft.review || ''} 
                         onChange={(n) => updateDraftField('review', n)}
                         isEditing={isEditing}
+                        onDoubleClick={() => { if (!isEditing) toggleEdit(); }}
                     />
                 </div>
             </div>
