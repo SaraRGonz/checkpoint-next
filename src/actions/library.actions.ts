@@ -3,6 +3,8 @@
 import { revalidatePath } from 'next/cache';
 import { z } from 'zod';
 import { db } from '@/lib/db';
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 
 const CreateGameSchema = z.object({
     title: z.string().min(1, 'Title is required'),
@@ -29,6 +31,11 @@ const formatZodErrors = (error: z.ZodError) => {
 
 export async function addGameAction(data: unknown) {
     try {
+        const session = await getServerSession(authOptions);
+        if (!session?.user?.id) {
+            return { success: false, error: 'Unauthorized: No active session' };
+        }
+
         const parsedData = await CreateGameSchema.parseAsync(data);
         
         let platformId;
@@ -63,7 +70,8 @@ export async function addGameAction(data: unknown) {
                 rawgId: parsedData.rawgId,
                 rating: parsedData.rating,
                 review: parsedData.review,
-                genres: genresUpdate
+                genres: genresUpdate,
+                userId: session.user.id 
             }
         });
         
