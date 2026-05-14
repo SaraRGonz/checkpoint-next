@@ -6,7 +6,20 @@ datasource db {
   provider = "postgresql"
 }
 
-// PLATAFORMAS
+model User {
+  id            String        @id
+  name          String?
+  email         String?       @unique
+  image         String?
+  imagePosition String?
+  createdAt     DateTime      @default(now())
+
+  games         Game[]
+  playthroughs  Playthrough[]
+
+  @@map("users")
+}
+
 model Platform {
   id           String        @id @default(cuid())
   name         String        @unique
@@ -18,59 +31,61 @@ model Platform {
   @@map("platforms")
 }
 
-// GÉNEROS
 model Genre {
   id           String   @id @default(cuid())
   name         String   @unique
-  
   games        Game[] 
 
   @@map("genres")
 }
 
-// JUEGOS 
 model Game {
-  id           String        @id @default(uuid())
-  title        String
-  coverUrl     String?
+  id            String        @id @default(uuid())
+  title         String
+  coverUrl      String?
   coverPosition String?
-  releaseYear  Int?
-  rawgId       Int?          @unique
-  rating       Int?
-  review       String?       @db.Text // <-- NUEVO: Review general
-  status       Status        @default(QUEUE)
-  addedAt      DateTime      @default(now())
-  updatedAt    DateTime?     @updatedAt
+  releaseYear   Int?
+  rawgId        Int?
+  rating        Int?
+  review        String?       @db.Text
+  status        Status        @default(QUEUE)
+  addedAt       DateTime      @default(now())
+  updatedAt     DateTime?     @updatedAt
 
-  platformId   String
-  platform     Platform      @relation(fields: [platformId], references: [id], onDelete: Restrict)
-  genres       Genre[]
-  playthroughs Playthrough[] 
+  userId        String
+  user          User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  platformId    String
+  platform      Platform      @relation(fields: [platformId], references: [id], onDelete: Restrict)
+  genres        Genre[]
+  playthroughs  Playthrough[] 
 
   @@map("games")
 }
 
-// PLAYTHROUGHS 
 model Playthrough {
   id            String    @id @default(uuid())
   startDate     DateTime  @default(now())
   endDate       DateTime?
   status        Status    @default(PLAYING)
-  rating        Int?      
+  rating        Int?
   notes         String?   @db.Text
 
   characterName String?   
-  serverName    String?   
+  serverName    String?
   
+  userId        String
+  user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
   gameId        String
   game          Game      @relation(fields: [gameId], references: [id], onDelete: Cascade)
+  
   platformId    String    
   platform      Platform  @relation(fields: [platformId], references: [id], onDelete: Restrict)
 
   @@map("playthroughs")
 }
 
-// STATUS
 enum Status {
   WISHLIST
   COMPLETED
