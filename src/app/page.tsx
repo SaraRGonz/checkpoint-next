@@ -1,24 +1,21 @@
 import { Suspense } from 'react';
-import { getGamesByStatus, getLibraryStats } from '@/lib/library';
+import { db } from '@/lib/db';
 import { HomeColumn } from '@/components/home/HomeColumn';
 import { HomeGameItem } from '@/components/home/HomeGameItem';
 import { HomeStats } from '@/components/home/HomeStats';
 import { GameCardSkeleton } from '@/components/ui/GameCardSkeleton';
 
-export const revalidate = 60; 
+export const dynamic = 'force-dynamic';
 
 async function PlayingSection() {
-    const playingGames = await getGamesByStatus('Playing');
-    
-    const topPlaying = playingGames
-        .sort((a, b) => {
-            const lastA = Math.max(new Date(a.updatedAt || 0).getTime(), new Date(a.addedAt || 0).getTime());
-            const lastB = Math.max(new Date(b.updatedAt || 0).getTime(), new Date(b.addedAt || 0).getTime());
-            return lastB - lastA;
-        })
-        .slice(0, 3);
+    const playingGames = await db.game.findMany({
+        where: { status: 'PLAYING' },
+        include: { platform: true, genres: true },
+        orderBy: { updatedAt: 'desc' },
+        take: 3
+    });
 
-    if (topPlaying.length === 0) {
+    if (playingGames.length === 0) {
         return (
             <div className="h-full border-2 border-dashed border-gray-800 rounded-2xl flex items-center justify-center text-gray-600 uppercase text-xs font-bold min-h-37.5">
                 You have no active sessions
@@ -26,17 +23,25 @@ async function PlayingSection() {
         );
     }
 
-    return <>{topPlaying.map(game => <HomeGameItem key={game.id} game={game} />)}</>;
+    const formattedGames = playingGames.map((game: any) => ({
+        ...game,
+        status: 'Playing' as any,
+        platform: game.platform?.name || '',
+        genres: game.genres.map((g: { name: string }) => g.name) || []
+    }));
+
+    return <>{formattedGames.map((game: any) => <HomeGameItem key={game.id} game={game as any} />)}</>;
 }
 
 async function WishlistSection() {
-    const wishlistGames = await getGamesByStatus('Wishlist');
-    
-    const topWishlist = wishlistGames
-        .sort((a, b) => new Date(b.addedAt || 0).getTime() - new Date(a.addedAt || 0).getTime())
-        .slice(0, 3);
+    const wishlistGames = await db.game.findMany({
+        where: { status: 'WISHLIST' },
+        include: { platform: true, genres: true },
+        orderBy: { addedAt: 'desc' },
+        take: 3
+    });
 
-    if (topWishlist.length === 0) {
+    if (wishlistGames.length === 0) {
         return (
             <div className="h-full border-2 border-dashed border-gray-800 rounded-2xl flex items-center justify-center text-gray-600 uppercase text-xs font-bold min-h-37.5">
                 Scanner empty
@@ -44,17 +49,30 @@ async function WishlistSection() {
         );
     }
 
-    return <>{topWishlist.map(game => <HomeGameItem key={game.id} game={game} />)}</>;
+    const formattedGames = wishlistGames.map((game: any) => ({
+        ...game,
+        status: 'Wishlist' as any,
+        platform: game.platform?.name || '',
+        genres: game.genres.map((g: { name: string }) => g.name) || []
+    }));
+
+    return <>{formattedGames.map((game: any) => <HomeGameItem key={game.id} game={game as any} />)}</>;
 }
 
 async function StatsSection() {
-    const rawStats = await getLibraryStats();
-    
-    const totalGames = 
-        (rawStats['Playing'] || 0) + 
-        (rawStats['Queue'] || 0) + 
-        (rawStats['Completed'] || 0) + 
-        (rawStats['Dropped'] || 0);
+    const nonWishlistGames = await db.game.findMany({
+        where: {
+            status: { in: ['PLAYING', 'QUEUE', 'COMPLETED', 'DROPPED'] }
+        }
+    });
+
+    const totalGames = nonWishlistGames.length;
+
+    const rawStats = nonWishlistGames.reduce((acc: Record<string, number>, game: any) => {
+        const statusStr = game.status.charAt(0) + game.status.slice(1).toLowerCase();
+        acc[statusStr] = (acc[statusStr] || 0) + 1;
+        return acc;
+    }, {} as Record<string, number>);
 
     const statuses: ('Playing' | 'Queue' | 'Completed' | 'Dropped')[] = ['Playing', 'Queue', 'Completed', 'Dropped'];
 
