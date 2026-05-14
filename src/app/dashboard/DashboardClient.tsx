@@ -85,49 +85,54 @@ export function DashboardClient({ session: initialSession, stats }: any) {
                 </div>
 
                 <div className="flex-1 space-y-6 w-full text-center md:text-left">
-                    <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-                        <div className="space-y-1 flex-1">
-                            <label className="text-[10px] font-bold text-primary uppercase tracking-[0.3em]">Identity Protocol</label>
-                            
-                            {!isEditingName ? (
-                                <div className="flex items-center justify-center md:justify-start gap-3 group">
-                                    <h1 className="text-5xl font-rajdhani font-black uppercase tracking-tighter text-text truncate max-w-100">
-                                        {currentName}
-                                    </h1>
-                                    <ShieldCheckIcon className="w-6 h-6 text-secondary opacity-50" />
-                                </div>
-                            ) : (
-                                <input 
-                                    type="text"
-                                    value={tempName}
-                                    onChange={(e) => setTempName(e.target.value)}
-                                    className="text-4xl font-rajdhani font-black bg-black/40 border border-primary/40 rounded-lg px-4 py-1 text-text focus:outline-none w-full"
-                                    autoFocus
-                                />
-                            )}
-                        </div>
+                    <div className="flex flex-col w-full">
+                        <label className="text-[10px] font-bold text-primary uppercase tracking-[0.3em] mb-2">Identity Protocol</label>
+                        
+                        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                            <div className="flex-1 min-w-0">
+                                {!isEditingName ? (
+                                    <div className="flex items-center justify-center md:justify-start gap-3 group">
+                                        <h1 className="text-5xl font-rajdhani font-black uppercase tracking-tighter text-text truncate">
+                                            {currentName}
+                                        </h1>
+                                        <ShieldCheckIcon className="w-6 h-6 text-secondary opacity-50 shrink-0" />
+                                    </div>
+                                ) : (
+                                    <input 
+                                        type="text"
+                                        value={tempName}
+                                        onChange={(e) => setTempName(e.target.value)}
+                                        className="text-4xl font-rajdhani font-black bg-black/40 border border-primary/40 rounded-lg px-4 py-1 
+                                        text-text focus:outline-none w-full max-w-sm"
+                                        autoFocus
+                                    />
+                                )}
+                            </div>
 
-                        <div className="flex gap-2 justify-center shrink-0">
-                            {!isEditingName ? (
-                                <Button onClick={() => setIsEditingName(true)} variant="secondary" className="flex items-center gap-2">
-                                    <EditIcon className="w-4 h-4" /> Edit ID
-                                </Button>
-                            ) : (
-                                <>
-                                    <Button onClick={handleDiscardName} variant="danger" className="flex items-center gap-2">
-                                        <CrossIcon className="w-4 h-4" /> Discard
+                            <div className="flex gap-2 justify-center shrink-0">
+                                {!isEditingName ? (
+                                    <Button onClick={() => setIsEditingName(true)} variant="secondary" className="flex items-center gap-2">
+                                        <EditIcon className="w-4 h-4" /> Edit ID
                                     </Button>
-                                    <Button onClick={handleSaveName} variant="primary" className="flex items-center gap-2">
-                                        <SaveIcon className="w-4 h-4" /> Save ID
-                                    </Button>
-                                </>
-                            )}
+                                ) : (
+                                    <>
+                                        <Button onClick={handleDiscardName} variant="danger" className="flex items-center gap-2">
+                                            <CrossIcon className="w-4 h-4" /> Discard
+                                        </Button>
+                                        <Button onClick={handleSaveName} variant="primary" className="flex items-center gap-2">
+                                            <SaveIcon className="w-4 h-4" /> Save ID
+                                        </Button>
+                                    </>
+                                )}
+                            </div>
                         </div>
                     </div>
                     
                     {/* UPLINK EMAIL */}
                     <div className="flex justify-center md:justify-start">
-                        <div className="bg-primary/10 border border-primary/30 text-primary px-4 py-2.5 rounded-lg font-mono text-sm md:text-base flex items-center gap-3 shadow-[0_0_15px_rgba(14,165,233,0.1)]">
+                        <div 
+                            className="bg-primary/10 border border-primary/30 text-primary px-4 py-2.5 rounded-lg font-mono 
+                            text-sm md:text-base flex items-center gap-3 shadow-[0_0_15px_rgba(14,165,233,0.1)]">
                             <span className="text-[10px] font-black uppercase tracking-widest opacity-60 mt-0.5">Email //</span>
                             <span>{activeSession.user?.email || "ENCRYPTED_UPLINK"}</span>
                         </div>
@@ -178,7 +183,9 @@ export function DashboardClient({ session: initialSession, stats }: any) {
                     {/* PREVIEW */}
                     <div className="flex flex-col items-center gap-3">
                         <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Preview</label>
-                        <div className="relative w-32 h-32 rounded-2xl overflow-hidden border-2 border-primary/50 shadow-[0_0_15px_rgba(14,165,233,0.2)] bg-gray-950">
+                        <div 
+                            className="relative w-32 h-32 rounded-2xl overflow-hidden border-2 border-primary/50 shadow-[0_0_15px_rgba(14,165,233,0.2)] 
+                            bg-gray-950">
                             <img 
                                 src={tempUrl || "/placeholder.jpg"} 
                                 alt="Avatar Preview" 
@@ -197,7 +204,8 @@ export function DashboardClient({ session: initialSession, stats }: any) {
                             type="text" 
                             value={tempUrl}
                             onChange={(e) => setTempUrl(e.target.value)}
-                            className="w-full bg-gray-900 border border-gray-700 rounded-lg p-3 text-sm text-text focus:border-primary outline-none transition-colors"
+                            className="w-full bg-gray-900 border border-gray-700 rounded-lg p-3 text-sm text-text focus:border-primary outline-none 
+                            transition-colors"
                         />
                     </div>
 
@@ -240,7 +248,9 @@ export function DashboardClient({ session: initialSession, stats }: any) {
 
 function InsightCard({ label, value, subtext, icon }: any) {
     return (
-        <div className="bg-gray-900/40 border border-gray-800 p-6 rounded-2xl flex flex-col justify-between group hover:bg-gray-800/60 hover:border-gray-600 transition-all shadow-lg relative overflow-hidden">
+        <div 
+            className="bg-gray-900/40 border border-gray-800 p-6 rounded-2xl flex flex-col justify-between group hover:bg-gray-800/60 
+            hover:border-gray-600 transition-all shadow-lg relative overflow-hidden">
             <div className="flex items-center justify-between mb-4">
                 <div className="p-3 bg-gray-950 rounded-xl border border-gray-800 shadow-inner group-hover:scale-110 transition-transform">
                     {icon}
