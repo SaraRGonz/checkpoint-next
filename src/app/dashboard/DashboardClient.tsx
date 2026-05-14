@@ -7,7 +7,7 @@ import { Modal } from "@/components/ui/Modal";
 import { Button } from "@/components/ui/Button";
 import { EditIcon, SaveIcon, CrossIcon, ShieldCheckIcon, StarIcon, LogoIcon, TargetIcon, ActivityIcon, ClockIcon } from "@/components/ui/Icons";
 import { GridIcon } from "lucide-react"; 
-
+import { updateUserProfileAction } from "@/actions/user.actions";
 
 export function DashboardClient({ session: initialSession, stats }: any) {
     const { data: session, update } = useSession();
@@ -32,9 +32,16 @@ export function DashboardClient({ session: initialSession, stats }: any) {
 
     const handleSaveName = async () => {
         if (tempName.trim().length < 3) return setError("Runner ID too short.");
-        await update({ ...activeSession, user: { ...activeSession.user, name: tempName.trim() } });
-        setIsEditingName(false);
-        setError("");
+        
+        const response = await updateUserProfileAction({ name: tempName.trim() });
+        
+        if (response.success) {
+            await update(); 
+            setIsEditingName(false);
+            setError("");
+        } else {
+            setError(response.error || "System failure. Could not update ID.");
+        }
     };
 
     const handleDiscardName = () => {
@@ -47,8 +54,19 @@ export function DashboardClient({ session: initialSession, stats }: any) {
         if (tempUrl !== "/placeholder.jpg") {
             try { new URL(tempUrl); } catch { return setError("Invalid Uplink URL."); }
         }
-        await update({ ...activeSession, user: { ...activeSession.user, image: tempUrl, imagePosition: tempPos } });
-        setIsImageModalOpen(false);
+        
+        const response = await updateUserProfileAction({ 
+            image: tempUrl, 
+            imagePosition: tempPos 
+        });
+
+        if (response.success) {
+            await update(); 
+            setIsImageModalOpen(false);
+            setError("");
+        } else {
+            setError(response.error || "System failure. Could not update Avatar.");
+        }
     };
 
     return (
@@ -137,6 +155,11 @@ export function DashboardClient({ session: initialSession, stats }: any) {
                             <span>{activeSession.user?.email || "ENCRYPTED_UPLINK"}</span>
                         </div>
                     </div>
+                    {error && !isImageModalOpen && (
+                        <p className="text-danger text-xs font-bold text-left uppercase tracking-widest mt-2 animate-in fade-in">
+                            ⚠️ {error}
+                        </p>
+                    )}
                 </div>
             </section>
 
@@ -243,8 +266,6 @@ export function DashboardClient({ session: initialSession, stats }: any) {
         </div>
     );
 }
-
-// COMPONENTE AUXILIAR INSIGHT
 
 function InsightCard({ label, value, subtext, icon }: any) {
     return (

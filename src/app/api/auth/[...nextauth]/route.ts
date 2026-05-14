@@ -1,3 +1,4 @@
+// src/app/api/auth/[...nextauth]/route.ts
 import NextAuth, { NextAuthOptions } from "next-auth";
 import GithubProvider from "next-auth/providers/github";
 import CredentialsProvider from "next-auth/providers/credentials";
@@ -82,26 +83,23 @@ export const authOptions: NextAuthOptions = {
             }
             return true;
         },
-        async jwt({ token, user, trigger, session }) {
+        async jwt({ token, user, trigger }) {
             if (user) {
                 token.id = user.id;
                 const dbUser = await db.user.findUnique({ where: { id: user.id } });
-                token.imagePosition = dbUser?.imagePosition || "50% 50%";
+                if (dbUser) {
+                    token.name = dbUser.name;
+                    token.picture = dbUser.image;
+                    token.imagePosition = dbUser.imagePosition || "50% 50%";
+                }
             }
-            if (trigger === "update" && session) {
-                token.name = session.user.name;
-                token.picture = session.user.image;
-                token.imagePosition = session.user.imagePosition;
-
-                if (token.id) {
-                    await db.user.update({
-                        where: { id: token.id as string },
-                        data: {
-                            name: token.name,
-                            image: token.picture,
-                            imagePosition: token.imagePosition as string
-                        }
-                    });
+            
+            if (trigger === "update" && token.id) {
+                const freshUser = await db.user.findUnique({ where: { id: token.id as string } });
+                if (freshUser) {
+                    token.name = freshUser.name;
+                    token.picture = freshUser.image;
+                    token.imagePosition = freshUser.imagePosition;
                 }
             }
             return token;
