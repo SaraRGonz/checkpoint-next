@@ -61,10 +61,9 @@ export function useFilters(initialGames: Game[]) {
         return Array.from(platforms).sort(); 
     }, [initialGames]);
 
-    const filteredGames = useMemo(() => {
+    const baseFilteredGames = useMemo(() => {
         let result = initialGames;
         if (store.searchQuery) result = result.filter(g => g.title.toLowerCase().includes(store.searchQuery.toLowerCase()));
-        if (store.statusFilter !== 'all') result = result.filter(g => g.status === store.statusFilter);
         if (store.genreFilter !== 'all') result = result.filter(g => g.genres?.some(gen => gen.toLowerCase() === store.genreFilter.toLowerCase()));
         if (store.platformFilter !== 'all') {
             result = store.platformFilter === 'Not specified' 
@@ -82,7 +81,12 @@ export function useFilters(initialGames: Game[]) {
             }
         });
         return result;
-    }, [initialGames, store.searchQuery, store.statusFilter, store.genreFilter, store.platformFilter, store.ratingFilter, store.sortOption]);
+    }, [initialGames, store.searchQuery, store.genreFilter, store.platformFilter, store.ratingFilter, store.sortOption]);
+
+    const filteredGames = useMemo(() => {
+        if (store.statusFilter === 'all') return baseFilteredGames;
+        return baseFilteredGames.filter(g => g.status === store.statusFilter);
+    }, [baseFilteredGames, store.statusFilter]);
 
     const clearFilters = useCallback(() => {
         store.clearFilters();
@@ -90,5 +94,5 @@ export function useFilters(initialGames: Game[]) {
 
     const hasActiveFilters = store.searchQuery !== '' || store.sortOption !== 'added-desc' || store.statusFilter !== 'all' || store.genreFilter !== 'all' || store.platformFilter !== 'all' || store.ratingFilter !== 'all';
 
-    return { filteredGames, availableGenres, availablePlatforms, clearFilters, hasActiveFilters };
+    return { baseFilteredGames, filteredGames, availableGenres, availablePlatforms, clearFilters, hasActiveFilters };
 }

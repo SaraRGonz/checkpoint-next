@@ -29,6 +29,7 @@ export default function LibraryPage() {
     const libraryGames = games.filter(g => g.status !== 'Wishlist');
 
     const {
+        baseFilteredGames,
         filteredGames, 
         availableGenres, 
         availablePlatforms, 
@@ -236,7 +237,7 @@ export default function LibraryPage() {
                     </div>
                 ) : (
                     <div className="animate-in fade-in duration-500">
-                        <KanbanBoard games={filteredGames} />
+                        <KanbanBoard games={baseFilteredGames} />
                     </div>
                 )}
             </main>
