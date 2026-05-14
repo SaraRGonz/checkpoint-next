@@ -2,7 +2,8 @@
 ![React](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)
 ![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=for-the-badge&logo=TypeScript&logoColor=FFF)
 ![TailwindCSS](https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)
-![Framer Motion](https://img.shields.io/badge/Framer_Motion-0055FF?style=for-the-badge&logo=framer&logoColor=white)
+![Prisma](https://img.shields.io/badge/Prisma-3982CE?style=for-the-badge&logo=Prisma&logoColor=white)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-316192?style=for-the-badge&logo=postgresql&logoColor=white)
 
 # 📝 Checkpoint
 > Tu librería digital definitiva para rastrear, organizar y descubrir videojuegos.
@@ -13,21 +14,20 @@ Checkpoint es una plataforma web fullstack para la gestión de colecciones de vi
 
 | Despliegue | URL |
 |------------|-----|
-| Frontend / Backend | https://checkpoint-next-navy.vercel.app
+| Frontend / Backend | https://checkpoint-teal.vercel.app |
 | Repositorio | [GitHub - SaraRGonz/checkpoint-next](https://github.com/SaraRGonz/checkpoint-next) |
 
 ---
 
 ## Características Principales
 
+- **Persistencia y Aislamiento (Multi-tenant):** Arquitectura robusta con PostgreSQL y Prisma ORM. Cada usuario tiene su propia base de datos aislada, garantizando privacidad total.
+- **Autenticación Segura:** Sistema de login completo usando NextAuth, Firebase Authentication (Email/Password) y OAuth (GitHub).
 - **Búsqueda Integrada con RAWG:** Escaneo de la base de datos de RAWG API con filtros por plataforma, género y año para añadir juegos rápidamente.
-- **Tablero Kanban Interactivo:** Sistema *Drag and Drop* intuitivo para cambiar el estado de los juegos entre columnas (Playing, Queue, Completed, Dropped).
-- **HUD Personalizado:** Panel de estadísticas de estilo "Cyberpunk" y sistema de temas semántico completo (Light Mode y Dark Mode).
-- **Personalización de Librería:** Edición de metadatos del juego, sistema de puntuación por estrellas, notas enriquecidas y reposicionamiento manual de carátulas.
-- **Rendimiento Optimizado:** Uso de *Server Components*, *Incremental Static Regeneration* (ISR) y un *sitemap* dinámico.
+- **Tablero Kanban Interactivo:** Sistema *Drag and Drop* intuitivo con actualizaciones optimistas (Optimistic UI) para cambiar el estado de los juegos sin tiempos de carga.
+- **HUD Personalizado:** Panel de estadísticas en tiempo real y sistema de temas semántico completo (Light Mode y Dark Mode).
+- **Personalización de Librería:** Edición de metadatos del juego, sistema de puntuación por estrellas, notas enriquecidas y reposicionamiento manual de carátulas (Pan & Zoom).
 
-> **⚠️ Nota Técnica sobre el despliegue:** 
-> En este MVP, la persistencia de datos está simulada utilizando un archivo `library.json` local. Debido a la naturaleza *Serverless* y de sistema de archivos de solo lectura (*Read-Only*) de Vercel, las operaciones de escritura (Añadir, Editar, Borrar) no persistirán en producción. Para llevar este proyecto a un entorno de producción real, este módulo de almacenamiento se sustituiría por una base de datos real como **PlanetScale, Supabase o MongoDB Atlas**.
 ---
 
 ## Tecnologías
@@ -38,12 +38,14 @@ Checkpoint es una plataforma web fullstack para la gestión de colecciones de vi
 | **Tailwind CSS v4** | Estilizado semántico basado en utilidades y variables CSS |
 | **Framer Motion** | Animaciones fluidas, micro-interacciones y transiciones |
 | **Dnd-kit** | Lógica de arrastrar y soltar (Drag & Drop) para el tablero Kanban |
+| **TanStack Query (React Query)** | Sincronización de estado asíncrono y actualizaciones optimistas |
 
 | Backend & Core | Uso |
 |---------|-----|
-| **Next.js 16 (App Router)** | Framework fullstack, enrutamiento, ISR y Server Actions |
-| **TypeScript** | Tipado estricto para modelos de datos (Games) e interfaces |
-| **RAWG API** | Consumo de datos externos para el catálogo de videojuegos |
+| **Next.js 16 (App Router)** | Framework fullstack, enrutamiento seguro y Server Actions |
+| **Prisma ORM & PostgreSQL (Neon)** | Modelado de datos, migraciones y base de datos relacional serverless |
+| **NextAuth.js & Firebase** | Gestión de sesiones JWT, OAuth y autenticación de credenciales |
+| **Zod** | Validación estricta de esquemas y Server Actions |
 
 ---
 
@@ -51,31 +53,24 @@ Checkpoint es una plataforma web fullstack para la gestión de colecciones de vi
 
 ```text
 checkpoint-next/
-├── public/                 # Assets estáticos y placeholder de imágenes
+├── prisma/                 # Esquema de base de datos (schema.prisma) y migraciones
+├── public/                 # Assets estáticos, SVG y placeholder de imágenes
 ├── src/
-│   ├── actions/            # Server actions
-│   ├── api/                # Endpoints internos de comunicación
-│   ├── app/                # App Router de Next.js (Rutas y Páginas)
-│   │   ├── api/            # API Routes
-│   │   ├── game/           # Rutas dinámicas de detalles de juego
-│   │   ├── library/        # Vista principal de la librería
-│   │   ├── search/         # Buscador RAWG
-│   │   ├── wishlist/       # Lista de deseados
-│   │   └── globals.css     # Estilos globales y variables de tema
-│   ├── components/         # Componentes modulares
-│   │   ├── game/           # Tarjetas, modales, tablero Kanban y detalles
-│   │   ├── home/           # Layout de la portada y estadísticas
-│   │   ├── layout/         # Navbar adaptativo y Footer
-│   │   └── ui/             # Componentes base (Botones, Modales, ActionMenus)
-│   ├── context/            # Contextos de React (Theme, Library)
-│   ├── data/               # Base de datos local simulada (library.json)
-│   ├── hooks/              # Custom hooks (Filtros, Estado del juego)
-│   ├── lib/                # Utilidades de acceso a datos y utilidades generales
-│   ├── types/              # Interfaces de TypeScript
-│   └── utils/              # Constantes y formateadores
-├── .env.local              # Variables de entorno (ignorado en Git)
-├── package.json            # Dependencias del proyecto
-└── proxy.ts                # Middleware para intercepción de peticiones
+│   ├── actions/            # Server Actions para mutaciones seguras (Juegos, Usuarios)
+│   ├── api/                # Envoltorios de endpoints para llamadas del cliente
+│   ├── app/                # App Router de Next.js (Rutas, Páginas, Interceptores)
+│   │   ├── api/            # Rutas de API RESTful protegidas
+│   │   ├── dashboard/      # Panel de usuario y estadísticas
+│   │   ├── library/        # Vista principal de la librería y Kanban
+│   │   └── ...
+│   ├── components/         # Componentes modulares y reutilizables
+│   ├── hooks/              # Custom hooks (Gestión de juegos, Filtros)
+│   ├── lib/                # Configuración de Prisma, Firebase, RAWG y utilidades
+│   ├── stores/             # Estado global con Zustand (UI y Filtros)
+│   └── types/              # Interfaces de TypeScript estandarizadas
+├── .env / .env.local       # Variables de entorno (ignorado en Git)
+├── package.json            # Dependencias y scripts (incluye postinstall de Prisma)
+└── proxy.ts                # Middleware para protección de rutas privadas
 ```
 
 ---
@@ -98,12 +93,12 @@ npm install
 ### 3. Configurar variables de entorno
 Checkpoint requiere de varios servicios externos (RAWG, Firebase, NextAuth, OAuth). Por motivos de seguridad, los secretos **nunca** se suben al repositorio.
 
-1. Crea un archivo `.env.local` en la raíz del proyecto.
+1. Crea un archivo `.env.local` y `.env` en la raíz del proyecto.
 2. Solicita las claves de Firebase al equipo de DevOps o configura un proyecto propio en Firebase Console.
 3. Obtén tu API Key gratuita de [RAWG.io](https://rawg.io/apidocs).
 4. Genera una app de OAuth en GitHub para obtener el ID y el Secret.
 
-Añade las siguientes variables a tu archivo:
+#### Archivo .env.local (APIs y Auth):
 
 ```env
 # API de Videojuegos
@@ -128,7 +123,23 @@ NEXT_PUBLIC_FIREBASE_APP_ID="tu_app_id"
 FIREBASE_API_KEY_SERVER="tu_firebase_api_key_AQUI_TAMBIEN"
 ```
 
-### 4. Ejecutar el servidor de desarrollo
+#### Archivo .env (Base de Datos PostgreSQL):
+
+```
+DATABASE_URL="postgresql://usuario:password@host/neondb?sslmode=verify"
+DIRECT_URL="postgresql://usuario:password@host/neondb?sslmode=require"
+```
+
+### 4. Sincronizar la Base de Datos
+
+Ejecuta el siguiente comando para generar el cliente de Prisma y crear las tablas en tu base de datos:
+
+```
+npx prisma generate
+npx prisma db push
+```
+
+### 5. Ejecutar el servidor de desarrollo
 
 ```
 npm run dev
@@ -138,19 +149,18 @@ La aplicación estará disponible en http://localhost:3000
 ---
 
 ## Desplegar en Vercel
-Este proyecto está optimizado para su despliegue en Vercel.
+El proyecto incluye un script de postinstall en el package.json diseñado específicamente para garantizar la generación del cliente de Prisma en Vercel antes de la fase de compilación.
+
+Para desplegar:
 
 1. Inicia sesión en Vercel.
 
 2. Haz clic en Add New... > Project e importa tu repositorio de GitHub.
 
-3. En la sección Environment Variables, añade las claves de tu .env.local:
+3. Añade TODAS las variables de entorno de tus archivos .env y .env.local en la sección Environment Variables.
+    * IMPORTANTE: En Vercel, asegúrate de que NEXTAUTH_URL apunte a tu dominio de producción (ej. https://checkpoint-teal.vercel.app).
 
-    - RAWG_API_KEY
-
-    - NEXT_PUBLIC_BASE_URL (Usa la URL de producción proporcionada por Vercel).
-
-4. Haz clic en Deploy. Vercel detectará automáticamente Next.js y ejecutará npm run build.
+4. Haz clic en Deploy.
 
 --- 
 
