@@ -3,7 +3,6 @@
 import { useState, useEffect } from "react";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { auth } from "@/lib/firebase";
-import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { LogoIcon } from "@/components/ui/Icons";
 import { signIn, useSession } from "next-auth/react";
@@ -14,13 +13,12 @@ export default function RegisterPage() {
     const [password, setPassword] = useState("");
     const [error, setError] = useState("");
     const [loading, setLoading] = useState(false);
-    const router = useRouter();
 
     useEffect(() => {
         if (status === "authenticated") {
-            router.replace("/");
+            window.location.href = "/";
         }
-    }, [status, router]);
+    }, [status]);
 
     const handleRegister = async (e: React.SyntheticEvent<HTMLFormElement>) => {
         e.preventDefault();
@@ -54,9 +52,11 @@ export default function RegisterPage() {
             });
 
             if (loginResult?.error) {
-                router.push("/login?registered=true&error=session_failed");
+                // Si falla el login automático, le mandamos al login para que lo intente manual
+                window.location.href = "/login?registered=true&error=session_failed";
             } else {
-                router.push("/"); 
+                // Hard navigation directo al home tras registro exitoso
+                window.location.href = "/";
             }
         } catch (err: any) {
             setError(err.message);

@@ -1,7 +1,7 @@
 "use client";
 
 import { signIn, useSession } from "next-auth/react";
-import { useSearchParams, useRouter } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { Suspense, useState, useEffect } from "react";
 import Link from "next/link";
 import { LogoIcon } from "@/components/ui/Icons";
@@ -9,7 +9,6 @@ import { LogoIcon } from "@/components/ui/Icons";
 function LoginForm() {
     const { status } = useSession();
     const searchParams = useSearchParams();
-    const router = useRouter();
     const callbackUrl = searchParams.get("callbackUrl") || "/";
     const isRegistered = searchParams.get("registered") === "true";
 
@@ -20,9 +19,9 @@ function LoginForm() {
 
     useEffect(() => {
         if (status === "authenticated") {
-            router.replace(callbackUrl);
+            window.location.href = callbackUrl;
         }
-    }, [status, router, callbackUrl]);
+    }, [status, callbackUrl]);
 
     const handleSubmit = async (e: React.SyntheticEvent<HTMLFormElement>) => {
         e.preventDefault();
@@ -65,7 +64,8 @@ function LoginForm() {
             }
             setLoading(false);
         } else {
-            router.push(callbackUrl);
+            // Hard navigation para garantizar que la cookie llegue al servidor
+            window.location.href = callbackUrl;
         }
     };
 
