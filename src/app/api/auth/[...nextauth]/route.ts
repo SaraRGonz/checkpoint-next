@@ -1,6 +1,7 @@
 import NextAuth, { NextAuthOptions } from "next-auth";
 import GithubProvider from "next-auth/providers/github";
 import CredentialsProvider from "next-auth/providers/credentials";
+import { db } from "@/lib/db";
 
 export const authOptions: NextAuthOptions = {
     providers: [
@@ -32,11 +33,22 @@ export const authOptions: NextAuthOptions = {
                     const data = await res.json();
                     
                     if (!res.ok) {
-                        const errorMessage = data?.error?.message || "UNKNOWN_ERROR";
-                        throw new Error(errorMessage);
+                        throw new Error(data?.error?.message || "UNKNOWN_ERROR");
                     }
                     
-                    return { id: data.localId, email: data.email };
+                    await db.user.upsert({
+                        where: { id: data.localId },
+                        update: {},
+                        create: {
+                            id: data.localId,
+                            email: data.email,
+                            name: data.email.split('@')[0],
+                            image: "/placeholder.jpg",
+                            imagePosition: "50% 50%"
+                        }
+                    });
+
+                    return { id: data.localId, email: data.email, name: data.email.split('@')[0] };
                 } catch (error: any) {
                     throw new Error(error.message);
                 }
@@ -50,14 +62,47 @@ export const authOptions: NextAuthOptions = {
         signIn: "/login",
     },
     callbacks: {
+        async signIn({ user, account }) {
+            if (account?.provider === "github" && user?.id) {
+                await db.user.upsert({
+                    where: { id: user.id },
+                    update: {
+                        name: user.name || undefined,
+                        image: user.image || undefined,
+                        email: user.email || undefined
+                    },
+                    create: {
+                        id: user.id,
+                        name: user.name || "Runner",
+                        email: user.email,
+                        image: user.image || "/placeholder.jpg",
+                        imagePosition: "50% 50%"
+                    }
+                });
+            }
+            return true;
+        },
         async jwt({ token, user, trigger, session }) {
             if (user) {
                 token.id = user.id;
+                const dbUser = await db.user.findUnique({ where: { id: user.id } });
+                token.imagePosition = dbUser?.imagePosition || "50% 50%";
             }
             if (trigger === "update" && session) {
                 token.name = session.user.name;
                 token.picture = session.user.image;
                 token.imagePosition = session.user.imagePosition;
+
+                if (token.id) {
+                    await db.user.update({
+                        where: { id: token.id as string },
+                        data: {
+                            name: token.name,
+                            image: token.picture,
+                            imagePosition: token.imagePosition as string
+                        }
+                    });
+                }
             }
             return token;
         },

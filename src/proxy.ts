@@ -15,10 +15,13 @@ export default withAuth(
     {
         callbacks: {
             authorized: ({ req, token }) => {
-                if (req.nextUrl.pathname.startsWith("/dashboard")) {
-                    return token !== null;
+                const path = req.nextUrl.pathname;
+                
+                if (path.startsWith("/login") || path.startsWith("/register") || path.startsWith("/api/auth")) {
+                    return true;
                 }
-                return true;
+                
+                return token !== null;
             }
         },
         pages: {
