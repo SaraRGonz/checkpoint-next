@@ -3,13 +3,13 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { useTheme } from '@/hooks/useTheme';
+// import { useTheme } from '@/hooks/useTheme'; // Oculto temporalmente
 import { motion } from 'framer-motion'; 
 import { LogoIcon, HomeIcon, LibraryIcon, WishlistNavIcon, CrossIcon, MenuIcon } from '@/components/ui/Icons';
 import { UserMenu } from './UserMenu';
 
 export function Navbar() {
-    const { theme, toggleTheme } = useTheme();
+    // const { theme, toggleTheme } = useTheme(); // Oculto temporalmente
     const pathname = usePathname();
     
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -42,9 +42,11 @@ export function Navbar() {
                     </div>
                 </div>
 
-                {/* DERECHA TOGGLE TEMA Y USER MENU desktop visible, móvil oculto */}
+                {/* DERECHA USER MENU desktop visible, móvil oculto */}
                 <div className="hidden md:flex items-center gap-4">
                     <UserMenu />
+                    
+                    {/* TOGGLE TEMA OCULTO TEMPORALMENTE 
                     <button 
                         onClick={toggleTheme} 
                         aria-label="Toggle theme" 
@@ -53,10 +55,12 @@ export function Navbar() {
                     >
                         {theme === 'dark' ? "☀️" : "🌙"}
                     </button>
+                    */}
                 </div>
 
                 {/* CONTROLES MÓVILES desktop oculto, móvil visible */}
                 <div className="flex items-center gap-3 md:hidden">
+                    {/* TOGGLE TEMA OCULTO TEMPORALMENTE 
                     <button 
                         onClick={toggleTheme} 
                         aria-label="Toggle theme" 
@@ -65,6 +69,7 @@ export function Navbar() {
                     >
                         {theme === 'dark' ? "☀️" : "🌙"}
                     </button>
+                    */}
                     <button 
                         onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
                         aria-label={isMobileMenuOpen ? "Close menu" : "Open menu"} 
@@ -84,7 +89,7 @@ export function Navbar() {
                     className="md:hidden absolute top-full left-0 w-full bg-gray-900 border-b border-gray-800 shadow-2xl 
                     py-4 px-4 flex flex-col gap-2 z-40"
                 >
-                    {/* INFO DE USUARIO MÓVIL */}
+                    {/* INFO DE USUARIO EN MÓVIL */}
                     <div className="flex items-center justify-between pb-4 mb-2 border-b border-gray-800 px-2">
                         <UserMenu />
                     </div>
