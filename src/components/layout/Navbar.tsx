@@ -57,7 +57,6 @@ export function Navbar() {
 
                 {/* CONTROLES MÓVILES desktop oculto, móvil visible */}
                 <div className="flex items-center gap-3 md:hidden">
-                    <UserMenu />
                     <button 
                         onClick={toggleTheme} 
                         aria-label="Toggle theme" 
@@ -85,6 +84,11 @@ export function Navbar() {
                     className="md:hidden absolute top-full left-0 w-full bg-gray-900 border-b border-gray-800 shadow-2xl 
                     py-4 px-4 flex flex-col gap-2 z-40"
                 >
+                    {/* INFO DE USUARIO MÓVIL */}
+                    <div className="flex items-center justify-between pb-4 mb-2 border-b border-gray-800 px-2">
+                        <UserMenu />
+                    </div>
+
                     <NavItem href="/" active={isActive('/')} label="Home" icon={HomeIcon} onClick={closeMenu} />
                     <NavItem href="/library" active={isActive('/library')} label="Library" icon={LibraryIcon} onClick={closeMenu} />
                     <NavItem href="/wishlist" active={isActive('/wishlist')} label="Wishlist" icon={WishlistNavIcon} onClick={closeMenu} />

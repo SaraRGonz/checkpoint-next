@@ -30,8 +30,8 @@ export function UserMenu() {
 
     // Avatar + Logout
     return (
-        <div className="flex items-center gap-4">
-            <Link href="/dashboard" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
+        <div className="flex items-center gap-4 w-full justify-between md:justify-start">
+            <Link href="/dashboard" className="flex items-center gap-3 hover:opacity-80 transition-opacity">
                 {session.user?.image ? (
                     <img 
                         src={session.user.image} 
@@ -44,7 +44,7 @@ export function UserMenu() {
                         {session.user?.email?.[0].toUpperCase() || <User size={16} />}
                     </div>
                 )}
-                <span className="hidden md:block text-sm font-medium text-text">
+                <span className="block text-sm font-medium text-text truncate max-w-45 md:max-w-37.5">
                     {session.user?.name || "Anonymous_Runner"}
                 </span>
             </Link>
