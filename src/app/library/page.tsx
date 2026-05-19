@@ -198,7 +198,7 @@ export default function LibraryPage() {
                             onClick={() => setStatusFilter('all')}
                             className={`px-4 py-1.5 rounded-full cursor-pointer text-xs font-bold uppercase tracking-wider transition-all duration-200 hover:scale-105 active:scale-95 border ${
                                 statusFilter === 'all' 
-                                    ? 'bg-primary text-white border-primary shadow-lg shadow-primary/20' 
+                                    ? 'bg-primarybutton-bg text-white border-primary shadow-lg shadow-primary/20' 
                                     : 'bg-gray-900/50 text-gray-400 border-gray-800 hover:bg-gray-800 hover:text-white'
                             }`}
                         >
@@ -210,7 +210,7 @@ export default function LibraryPage() {
                                 onClick={() => setStatusFilter(s.value)}
                                 className={`px-4 py-1.5 rounded-full cursor-pointer text-xs font-bold uppercase tracking-wider transition-all duration-200 hover:scale-105 active:scale-95 border ${
                                     statusFilter === s.value 
-                                        ? 'bg-primary text-white border-primary shadow-lg shadow-primary/20' 
+                                        ? 'bg-primarybutton-bg text-white border-primary shadow-lg shadow-primary/20' 
                                         : 'bg-gray-900/50 text-gray-400 border-gray-800 hover:bg-gray-800 hover:text-white'
                                 }`}
                             >
