@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { DndContext, DragOverlay, closestCorners, PointerSensor, TouchSensor, useSensor, useSensors } from '@dnd-kit/core';
 import type { DragStartEvent, DragEndEvent } from '@dnd-kit/core';
 import { STATUS_LIST } from '@/utils/constants';
@@ -17,6 +17,12 @@ interface Props {
 export function KanbanBoard({ games }: Props) {
     const { updateGame } = useGames(); 
     const [activeGame, setActiveGame] = useState<Game | null>(null);
+    
+    const [localGames, setLocalGames] = useState<Game[]>(games);
+
+    useEffect(() => {
+        setLocalGames(games);
+    }, [games]);
 
     const columns = STATUS_LIST.filter(s => s.value !== 'Wishlist');
 
@@ -26,7 +32,7 @@ export function KanbanBoard({ games }: Props) {
     );
 
     const handleDragStart = (event: DragStartEvent) => {
-        const game = games.find(g => g.id === event.active.id);
+        const game = localGames.find(g => g.id === event.active.id);
         if (game) setActiveGame(game);
     };
 
@@ -36,9 +42,13 @@ export function KanbanBoard({ games }: Props) {
         if (over) {
             const gameId = active.id as string;
             const newStatus = over.id as Game['status'];
-            const draggedGame = games.find(g => g.id === gameId);
+            const draggedGame = localGames.find(g => g.id === gameId);
 
             if (draggedGame && draggedGame.status !== newStatus) {
+                setLocalGames(prev => prev.map(g => 
+                    g.id === gameId ? { ...g, status: newStatus } : g
+                ));
+                
                 updateGame(gameId, { status: newStatus });
             }
         }
@@ -56,7 +66,7 @@ export function KanbanBoard({ games }: Props) {
         >
             <div className="flex gap-6 overflow-x-auto pb-6 snap-x w-full">
                 {columns.map(col => {
-                    const columnGames = games.filter(g => g.status === col.value);
+                    const columnGames = localGames.filter(g => g.status === col.value);
                     return (
                         <div key={col.value} className="w-68 shrink-0 snap-center">
                             <KanbanColumn status={col.value as any} label={col.label} count={columnGames.length}>
