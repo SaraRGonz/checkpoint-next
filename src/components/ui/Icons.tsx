@@ -1,13 +1,13 @@
 import type { SVGProps } from 'react';
 
 // permite que a cualquier icono se le pueda pasar clases de tailwind o propiedades nativas de un svg como onclick
-interface IconProps extends SVGProps<SVGSVGElement> {}
+interface IconProps extends SVGProps<SVGSVGElement> { }
 
 // logo de checkpoint
 export function LogoIcon(props: IconProps) {
     return (
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" {...props}>
-            <path d="M6 12h4M8 10v4M15 11v.01M18 13v.01M21 15a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4V9a4 4 0 0 1 4-4h10a4 4 0 0 1 4 4v6Z" strokeLinecap="round" strokeLinejoin="round"/>
+            <path d="M6 12h4M8 10v4M15 11v.01M18 13v.01M21 15a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4V9a4 4 0 0 1 4-4h10a4 4 0 0 1 4 4v6Z" strokeLinecap="round" strokeLinejoin="round" />
         </svg>
     );
 }
@@ -89,7 +89,7 @@ export function AddGameIcon(props: IconProps) {
 export function StarIcon(props: IconProps) {
     return (
         <svg viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" {...props}>
-            <path strokeLinecap="round" strokeLinejoin="round" d="M11.48 3.499a.562.562 0 0 1 1.04 0l2.125 5.111a.563.563 0 0 0 .475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 0 0-.182.557l1.285 5.385a.562.562 0 0 1-.84.61l-4.725-2.885a.562.562 0 0 0-.586 0L6.982 20.54a.562.562 0 0 1-.84-.61l1.285-5.386a.562.562 0 0 0-.182-.557l-4.204-3.602a.562.562 0 0 1 .321-.988l5.518-.442a.563.563 0 0 0 .475-.345L11.48 3.5Z"/> 
+            <path strokeLinecap="round" strokeLinejoin="round" d="M11.48 3.499a.562.562 0 0 1 1.04 0l2.125 5.111a.563.563 0 0 0 .475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 0 0-.182.557l1.285 5.385a.562.562 0 0 1-.84.61l-4.725-2.885a.562.562 0 0 0-.586 0L6.982 20.54a.562.562 0 0 1-.84-.61l1.285-5.386a.562.562 0 0 0-.182-.557l-4.204-3.602a.562.562 0 0 1 .321-.988l5.518-.442a.563.563 0 0 0 .475-.345L11.48 3.5Z" />
         </svg>
     );
 }
@@ -98,7 +98,7 @@ export function StarIcon(props: IconProps) {
 export function EditIcon(props: IconProps) {
     return (
         <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" {...props}>
-            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
         </svg>
     );
 }
@@ -277,11 +277,11 @@ export function ClockIcon(props: IconProps) {
     );
 }
 
-// icono de actividad 
-export function ActivityIcon(props: IconProps) {
+// icono de checklist
+export function ChecklistIcon(props: IconProps) {
     return (
-        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}>
-            <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
+        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" {...props}>
+            <path d="M15 4h3a1 1 0 0 1 1 1v15a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1h3m0 3h6m-3 5h3m-6 0h.01M12 16h3m-6 0h.01M10 3v4h4V3h-4Z" />
         </svg>
     );
 }

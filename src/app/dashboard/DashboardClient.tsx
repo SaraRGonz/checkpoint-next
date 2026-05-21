@@ -5,7 +5,7 @@ import { useSession } from "next-auth/react";
 import Image from "next/image";
 import { Modal } from "@/components/ui/Modal";
 import { Button } from "@/components/ui/Button";
-import { EditIcon, SaveIcon, CrossIcon, ShieldCheckIcon, StarIcon, LogoIcon, TargetIcon, ActivityIcon, ClockIcon } from "@/components/ui/Icons";
+import { EditIcon, SaveIcon, CrossIcon, ShieldCheckIcon, StarIcon, LogoIcon, TargetIcon, ClockIcon, ChecklistIcon } from "@/components/ui/Icons";
 import { GridIcon } from "lucide-react"; 
 import { updateUserProfileAction } from "@/actions/user.actions";
 
@@ -68,6 +68,22 @@ export function DashboardClient({ session: initialSession, stats }: any) {
             setError(response.error || "System failure. Could not update Avatar.");
         }
     };
+
+    const avgNum = parseFloat(stats.avgRating) || 0;
+    
+    const visualPercent = avgNum > 0 ? (avgNum / 5) * 76 + 12 : 0;
+
+    const StarAvgIcon = (
+        <div className="relative w-6 h-6">
+            <StarIcon className="w-6 h-6 text-accent/30 absolute inset-0" />
+            <div
+                className="absolute inset-0"
+                style={{ clipPath: `inset(0 ${100 - visualPercent}% 0 0)` }}
+            >
+                <StarIcon className="w-6 h-6 text-accent fill-current absolute inset-0" />
+            </div>
+        </div>
+    );
 
     return (
         <div className="max-w-6xl mx-auto space-y-12 animate-in fade-in duration-700">
@@ -168,26 +184,32 @@ export function DashboardClient({ session: initialSession, stats }: any) {
                 <InsightCard 
                     label="Specialization" value={stats.topGenre} subtext="Top Genre" 
                     icon={<LogoIcon className="w-6 h-6 text-primary" />} 
+                    tooltip="Dominant genre in your library. Your primary simulation type."
                 />
                 <InsightCard 
                     label="Interface" value={stats.topPlatform} subtext="Top Platform" 
                     icon={<GridIcon className="w-6 h-6 text-tertiary" />} 
+                    tooltip="Hardware or platform where you own the most games."
                 />
                 <InsightCard 
                     label="Affinity" value={stats.avgRating} subtext="Average Game Score" 
-                    icon={<StarIcon className="w-6 h-6 text-accent" />} 
+                    icon={StarAvgIcon} 
+                    tooltip="Average rating across all your evaluated games."
                 />
                 <InsightCard 
                     label="Efficiency" value={stats.completionRate} subtext="Completion Rate" 
                     icon={<TargetIcon className="w-6 h-6 text-secondary" />} 
+                    tooltip="Percentage of library games successfully completed."
                 />
                 <InsightCard 
                     label="Temporal Focus" value={stats.temporalFocus} subtext="Era Preference" 
                     icon={<ClockIcon className="w-6 h-6 text-gray-400" />} 
+                    tooltip="The era/decade your library is mostly focused on."
                 />
                 <InsightCard 
                     label="Active Threads" value={stats.activeThreads} subtext="Current Sessions" 
-                    icon={<ActivityIcon className="w-6 h-6 text-danger" />} 
+                    icon={<ChecklistIcon className="w-6 h-6 text-danger" />} 
+                    tooltip="Number of games you are currently playing."
                 />
             </div>
 
@@ -267,11 +289,20 @@ export function DashboardClient({ session: initialSession, stats }: any) {
     );
 }
 
-function InsightCard({ label, value, subtext, icon }: any) {
+function InsightCard({ label, value, subtext, icon, tooltip }: any) {
     return (
         <div 
             className="bg-gray-900/40 border border-gray-800 p-6 rounded-2xl flex flex-col justify-between group hover:bg-gray-800/60 
-            hover:border-gray-600 transition-all shadow-lg relative overflow-hidden">
+            hover:border-gray-600 transition-all shadow-lg relative">
+            
+            {/* TOOLTIP */}
+            {tooltip && (
+                <div className="absolute -top-12 left-1/2 -translate-x-1/2 bg-gray-950 border border-primary/50 text-gray-300 text-[10px] uppercase tracking-widest px-4 py-2 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none w-max max-w-62.5 text-center shadow-xl z-50">
+                    {tooltip}
+                    <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-2 h-2 bg-gray-950 border-b border-r border-primary/50 rotate-45"></div>
+                </div>
+            )}
+
             <div className="flex items-center justify-between mb-4">
                 <div className="p-3 bg-gray-950 rounded-xl border border-gray-800 shadow-inner group-hover:scale-110 transition-transform">
                     {icon}
