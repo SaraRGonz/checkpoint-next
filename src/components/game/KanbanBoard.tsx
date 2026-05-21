@@ -68,7 +68,7 @@ export function KanbanBoard({ games }: Props) {
                 {columns.map(col => {
                     const columnGames = localGames.filter(g => g.status === col.value);
                     return (
-                        <div key={col.value} className="w-68 shrink-0 snap-center">
+                        <div key={col.value} className="w-71.5 shrink-0 snap-center"> 
                             <KanbanColumn status={col.value as any} label={col.label} count={columnGames.length}>
                                 {columnGames.map((game) => (
                                     <KanbanItem 
