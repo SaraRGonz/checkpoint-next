@@ -1,4 +1,5 @@
-// define los 5 estados posibles 
+import type { Playthrough } from './playthrough';
+
 export type GameStatus = 'Wishlist' | 'Queue' | 'Playing' | 'Completed' | 'Dropped';
 
 export interface Game {
@@ -16,4 +17,5 @@ export interface Game {
     releaseYear?: number;
     addedAt?: string;
     updatedAt?: string;
+    playthroughs?: Playthrough[];
 }

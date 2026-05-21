@@ -80,8 +80,8 @@ model Playthrough {
   gameId        String
   game          Game      @relation(fields: [gameId], references: [id], onDelete: Cascade)
   
-  platformId    String    
-  platform      Platform  @relation(fields: [platformId], references: [id], onDelete: Restrict)
+  platformId    String?    
+  platform      Platform?  @relation(fields: [platformId], references: [id], onDelete: SetNull)
 
   @@map("playthroughs")
 }
