@@ -11,6 +11,7 @@ import { GameNotes } from '@/components/game/GameNotes';
 import { Spinner } from '@/components/ui/Spinner';
 import { Modal, type ModalButton } from '@/components/ui/Modal';
 import type { Game } from '@/types/game';
+import { PlaythroughSection } from './PlaythroughSection';
 
 interface GameDetailClientProps {
     initialGame: Game;
@@ -126,6 +127,8 @@ export function GameDetailClient({ initialGame }: GameDetailClientProps) {
                     />
                 </div>
             </div>
+
+            <PlaythroughSection gameId={initialGame.id} initialPlaythroughs={initialGame.playthroughs || []} />
 
             <Modal isOpen={isDeleteModalOpen} onClose={() => setIsDeleteModalOpen(false)} title="Delete Game" footerButtons={deleteModalButtons}>
                 <div className="space-y-4">
