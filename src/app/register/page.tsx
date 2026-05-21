@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { auth } from "@/lib/firebase";
 import Link from "next/link";
-import { LogoIcon } from "@/components/ui/Icons";
+import { LogoIcon, EyeIcon, EyeOffIcon } from "@/components/ui/Icons";
 import { signIn, useSession } from "next-auth/react";
 
 export default function RegisterPage() {
@@ -13,6 +13,7 @@ export default function RegisterPage() {
     const [password, setPassword] = useState("");
     const [error, setError] = useState("");
     const [loading, setLoading] = useState(false);
+    const [showPassword, setShowPassword] = useState(false);
 
     useEffect(() => {
         if (status === "authenticated") {
@@ -52,10 +53,8 @@ export default function RegisterPage() {
             });
 
             if (loginResult?.error) {
-                // Si falla el login automático, le mandamos al login para que lo intente manual
                 window.location.href = "/login?registered=true&error=session_failed";
             } else {
-                // Hard navigation directo al home tras registro exitoso
                 window.location.href = "/";
             }
         } catch (err: any) {
@@ -74,7 +73,7 @@ export default function RegisterPage() {
             <div className="absolute bottom-1/3 right-1/3 w-75 h-75 bg-tertiary/10 blur-[100px] rounded-full pointer-events-none -z-10"></div>
 
             <div className="relative w-full max-w-md p-8 bg-gray-900/60 backdrop-blur-xl border border-gray-800 shadow-2xl overflow-hidden rounded-xl z-10">
-                <div className="absolute top-0 left-0 w-full h-1 bg-linear-to-r from-accent via-tertiary to-primary"></div>
+                <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-accent via-tertiary to-primary"></div>
 
                 <div className="flex flex-col items-center mb-8 space-y-3">
                     <div className="text-primary animate-pulse duration-3000">
@@ -96,20 +95,32 @@ export default function RegisterPage() {
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
                             placeholder="user@mail.com"
+                            autoComplete="username"
                             className="w-full bg-black/50 border border-gray-800 rounded px-4 py-3 text-text placeholder:text-gray-600 focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent/50 transition-all duration-300"
                             required
                         />
                     </div>
                     <div className="space-y-1.5">
                         <label className="text-xs font-rajdhani font-bold uppercase tracking-widest text-gray-400">Password</label>
-                        <input
-                            type="password"
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
-                            placeholder="Min 8 chars, 1 uppercase, 1 number"
-                            className="w-full bg-black/50 border border-gray-800 rounded px-4 py-3 text-text placeholder:text-gray-600 focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent/50 transition-all duration-300"
-                            required
-                        />
+                        <div className="relative">
+                            <input
+                                type={showPassword ? "text" : "password"}
+                                value={password}
+                                onChange={(e) => setPassword(e.target.value)}
+                                placeholder="Min 8 chars, 1 uppercase, 1 number"
+                                autoComplete="new-password"
+                                className="w-full bg-black/50 border border-gray-800 rounded px-4 py-3 pr-12 text-text placeholder:text-gray-600 focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent/50 transition-all duration-300"
+                                required
+                            />
+                            <button
+                                type="button"
+                                onClick={() => setShowPassword(!showPassword)}
+                                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-accent transition-colors outline-none cursor-pointer"
+                                aria-label={showPassword ? "Hide password" : "Show password"}
+                            >
+                                {showPassword ? <EyeOffIcon className="w-5 h-5" /> : <EyeIcon className="w-5 h-5" />}
+                            </button>
+                        </div>
                     </div>
                     
                     {error && (
@@ -121,7 +132,7 @@ export default function RegisterPage() {
                     <button
                         type="submit"
                         disabled={loading}
-                        className="w-full relative group overflow-hidden bg-accent/10 text-accent font-rajdhani font-bold text-lg tracking-widest uppercase py-3 rounded border border-accent/50 hover:bg-accent hover:text-black transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed mt-2"
+                        className="w-full relative group overflow-hidden bg-accent/10 text-accent font-rajdhani font-bold text-lg tracking-widest uppercase py-3 rounded border border-accent/50 hover:bg-accent hover:text-black transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed mt-2 cursor-pointer"
                     >
                         {loading ? "Registering..." : "Create account"}
                     </button>
