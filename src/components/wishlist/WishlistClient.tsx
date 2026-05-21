@@ -117,7 +117,7 @@ export function WishlistClient({ initialGames }: WishlistClientProps) {
                 <div className="flex justify-between items-center">
                     <h2 className="text-xl font-black text-primary uppercase tracking-tighter">Filters</h2>
                     {hasActiveFilters && (
-                        <button onClick={clearFilters} className="text-[10px] font-bold text-gray-300 hover:text-white uppercase transition-colors">
+                        <button onClick={clearFilters} className="text-[13px] font-bold text-gray-300 hover:text-white bg-gray-800 px-2 py-0.5 rounded-md uppercase cursor-pointer transition-all duration-200 hover:scale-105 active:scale-95">
                             Reset
                         </button>
                     )}
