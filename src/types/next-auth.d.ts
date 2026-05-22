@@ -8,10 +8,12 @@ declare module "next-auth" {
             email?: string | null;
             image?: string | null;
             imagePosition?: string | null; 
+            hasSeenTutorial?: boolean;
         };
     }
 
     interface User {
         id: string;
+        hasSeenTutorial?: boolean;
     }
 }

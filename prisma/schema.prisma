@@ -12,6 +12,7 @@ model User {
   email         String?       @unique
   image         String?
   imagePosition String?
+  hasSeenTutorial Boolean       @default(false)
   createdAt     DateTime      @default(now())
 
   games         Game[]
