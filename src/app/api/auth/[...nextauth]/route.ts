@@ -37,7 +37,7 @@ export const authOptions: NextAuthOptions = {
                         throw new Error(data?.error?.message || "UNKNOWN_ERROR");
                     }
                     
-                    await db.user.upsert({
+                    const dbUser = await db.user.upsert({
                         where: { id: data.localId },
                         update: {},
                         create: {
@@ -45,11 +45,12 @@ export const authOptions: NextAuthOptions = {
                             email: data.email,
                             name: data.email.split('@')[0],
                             image: "/placeholder.jpg",
-                            imagePosition: "50% 50%"
+                            imagePosition: "50% 50%",
+                            hasSeenTutorial: false 
                         }
                     });
 
-                    return { id: data.localId, email: data.email, name: data.email.split('@')[0] };
+                    return { id: data.localId, email: data.email, name: dbUser.name };
                 } catch (error: any) {
                     throw new Error(error.message);
                 }
@@ -77,7 +78,8 @@ export const authOptions: NextAuthOptions = {
                         name: user.name || "Runner",
                         email: user.email,
                         image: user.image || "/placeholder.jpg",
-                        imagePosition: "50% 50%"
+                        imagePosition: "50% 50%",
+                        hasSeenTutorial: false
                     }
                 });
             }
@@ -91,6 +93,7 @@ export const authOptions: NextAuthOptions = {
                     token.name = dbUser.name;
                     token.picture = dbUser.image;
                     token.imagePosition = dbUser.imagePosition || "50% 50%";
+                    token.hasSeenTutorial = dbUser.hasSeenTutorial; 
                 }
             }
             
@@ -100,6 +103,7 @@ export const authOptions: NextAuthOptions = {
                     token.name = freshUser.name;
                     token.picture = freshUser.image;
                     token.imagePosition = freshUser.imagePosition;
+                    token.hasSeenTutorial = freshUser.hasSeenTutorial; 
                 }
             }
             return token;
@@ -110,6 +114,7 @@ export const authOptions: NextAuthOptions = {
                 session.user.imagePosition = token.imagePosition as string | null;
                 if (token.name) session.user.name = token.name;
                 if (token.picture) session.user.image = token.picture as string;
+                session.user.hasSeenTutorial = token.hasSeenTutorial as boolean; 
             }
             return session;
         }

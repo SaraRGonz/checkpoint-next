@@ -35,3 +35,21 @@ export async function updateUserProfileAction(data: { name?: string, image?: str
         return { success: false, error: "Database transaction failed." };
     }
 }
+
+export async function markTutorialAsSeenAction() {
+    try {
+        const session = await getServerSession(authOptions);
+        if (!session?.user?.id) {
+            return { success: false, error: "Unauthorized access detected." };
+        }
+
+        await db.user.update({
+            where: { id: session.user.id },
+            data: { hasSeenTutorial: true }
+        });
+
+        return { success: true };
+    } catch (error) {
+        return { success: false, error: "Database transaction failed." };
+    }
+}
