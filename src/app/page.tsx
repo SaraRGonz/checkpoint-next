@@ -7,6 +7,7 @@ import { HomeColumn } from '@/components/home/HomeColumn';
 import { HomeGameItem } from '@/components/home/HomeGameItem';
 import { HomeStats } from '@/components/home/HomeStats';
 import { GameCardSkeleton } from '@/components/ui/GameCardSkeleton';
+import { TutorialModal } from '@/components/home/TutorialModal'; 
 
 export const dynamic = 'force-dynamic';
 
@@ -135,6 +136,8 @@ export default async function Home() {
 
     return (
         <div className="max-w-7xl mx-auto py-10 animate-in fade-in duration-700">
+            <TutorialModal /> 
+            
             <div className="grid grid-cols-1 md:grid-cols-3 gap-12 items-stretch">
                 <HomeColumn title="Playing">
                     <Suspense fallback={<HomeColumnSkeleton />}>
