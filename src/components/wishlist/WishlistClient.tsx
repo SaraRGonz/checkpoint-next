@@ -20,10 +20,10 @@ interface WishlistClientProps {
 
 export function WishlistClient({ initialGames }: WishlistClientProps) {
     const router = useRouter();
-    const { games, updateGame, deleteGame } = useGames();
+    const { games, updateGame, deleteGame, isLoading } = useGames(); 
     const [gameToDelete, setGameToDelete] = useState<Game | null>(null);
 
-    const liveGames = games.length > 0 ? games.filter(g => g.status === 'Wishlist') : initialGames;
+    const liveGames = games.length > 0 ? games.filter(g => g.status === 'Wishlist') : initialGames.filter(g => g.status === 'Wishlist');
 
     const {
         sortOption, setSortOption,
@@ -64,8 +64,8 @@ export function WishlistClient({ initialGames }: WishlistClientProps) {
         { content: 'Remove', variant: 'danger', onClick: handleDeleteConfirm }
     ];
 
-    if (initialGames.length === 0) {
-        return (
+    if (!isLoading && liveGames.length === 0) {
+    return (
             <EmptyState
                 title="Your wishlist is empty"
                 message="Discover new adventures and add them here to keep track of what you want to play next!"
