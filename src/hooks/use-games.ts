@@ -22,7 +22,7 @@ export function useGames() {
         queryKey: ['games', filters],
         queryFn: async () => {
             const res = await getLibrary();
-            return res.data;
+            return res.data || []; 
         }
     });
 
@@ -60,7 +60,7 @@ export function useGames() {
         games,
         isLoading,
         error,
-        updateGame: (id: string, updates: Partial<Game>) => updateMutation.mutateAsync({ id, updates }),
-        deleteGame: (id: string) => deleteMutation.mutateAsync(id)
+        updateGame: (id: string, updates: Partial<Game>) => updateMutation.mutate({ id, updates }),
+        deleteGame: (id: string) => deleteMutation.mutate(id)
     };
 }

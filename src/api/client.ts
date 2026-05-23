@@ -11,7 +11,7 @@ export async function fetchApi<T>(endpoint: string, options?: RequestInit): Prom
 
     if (!response.ok) {
         if (response.status !== 204) {
-            const data = await response.json().catch(() => ({})); // Captura si el error es HTML
+            const data = await response.json().catch(() => ({})); 
             throw new Error(data.error?.message || 'Error en la petición a la API');
         }
         throw new Error(`Error HTTP: ${response.status}`);
