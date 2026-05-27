@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Modal, type ModalButton } from '@/components/ui/Modal';
 import { ActionMenu } from '@/components/ui/ActionMenu/ActionMenu';
@@ -32,14 +32,16 @@ export function AddGameFromRawgModal({ isOpen, onClose, game, initialPlatformId,
     const [saveSuccess, setSaveSuccess] = useState(false);
     const [newGameId, setNewGameId] = useState<string | null>(null);
 
-    useEffect(() => {
-        if (isOpen) {
-            setPlatform(initialPlatformLabel);
-            setStatus(initialStatus);
-            setSaveSuccess(false);
-            setNewGameId(null);
-        }
-    }, [isOpen, initialPlatformLabel, initialStatus]);
+    const [prevIsOpen, setPrevIsOpen] = useState(isOpen);
+    if (isOpen && !prevIsOpen) {
+        setPlatform(initialPlatformLabel);
+        setStatus(initialStatus);
+        setSaveSuccess(false);
+        setNewGameId(null);
+        setPrevIsOpen(true);
+    } else if (!isOpen && prevIsOpen) {
+        setPrevIsOpen(false);
+    }
 
     if (!game) return null;
 
