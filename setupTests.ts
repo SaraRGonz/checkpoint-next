@@ -1,5 +1,6 @@
 import '@testing-library/jest-dom';
 import { beforeAll, afterEach, afterAll, vi } from 'vitest';
+import { ReactNode } from 'react';
 import { server } from './src/mocks/server';
 
 beforeAll(() => server.listen({ onUnhandledRequest: 'error' }));
@@ -14,5 +15,5 @@ vi.mock('next/navigation', () => ({
 
 vi.mock('next-auth/react', () => ({
     useSession: () => ({ data: { user: { id: 'runner-1', name: 'Runner' } }, status: 'authenticated' }),
-    SessionProvider: ({ children }: any) => children
+    SessionProvider: ({ children }: { children: ReactNode }) => children
 }));
