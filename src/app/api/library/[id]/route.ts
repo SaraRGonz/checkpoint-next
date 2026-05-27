@@ -41,7 +41,7 @@ export async function GET(req: Request, { params }: { params: Promise<{ id: stri
         };
 
         return NextResponse.json(formattedGame, { status: 200 });
-    } catch (error) {
+    } catch {
         return NextResponse.json({ error: { code: 'SERVER_ERROR', message: 'Internal server error' } }, { status: 500 });
     }
 }
@@ -129,7 +129,7 @@ export async function DELETE(req: Request, { params }: { params: Promise<{ id: s
         await db.game.delete({ where: { id } });
         
         return new NextResponse(null, { status: 204 });
-    } catch (error) {
+    } catch {
         return NextResponse.json({ error: { code: 'SERVER_ERROR', message: 'Internal server error' } }, { status: 500 });
     }
 }

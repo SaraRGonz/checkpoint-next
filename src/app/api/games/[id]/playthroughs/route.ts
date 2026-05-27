@@ -19,7 +19,7 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
         });
         
         return NextResponse.json(p, { status: 201 });
-    } catch (error) {
+    } catch {
         return NextResponse.json({ error: { message: 'Server error' } }, { status: 500 });
     }
 }

@@ -21,7 +21,7 @@ export async function GET(req: Request, { params }: { params: Promise<{ id: stri
         });
         if (!playthrough) return NextResponse.json({ error: { code: 'NOT_FOUND' } }, { status: 404 });
         return NextResponse.json(playthrough, { status: 200 });
-    } catch (error) {
+    } catch {
         return NextResponse.json({ error: { code: 'SERVER_ERROR' } }, { status: 500 });
     }
 }
@@ -51,7 +51,7 @@ export async function PUT(req: Request, { params }: { params: Promise<{ id: stri
         });
         
         return NextResponse.json(updatedPlaythrough, { status: 200 });
-    } catch (error) {
+    } catch {
         return NextResponse.json({ error: { message: 'Server error' } }, { status: 500 });
     }
 }
@@ -61,7 +61,7 @@ export async function DELETE(req: Request, { params }: { params: Promise<{ id: s
         const { id } = await params;
         await db.playthrough.delete({ where: { id } });
         return new NextResponse(null, { status: 204 });
-    } catch (error) {
+    } catch {
         return NextResponse.json({ error: { message: 'Error' } }, { status: 500 });
     }
 }

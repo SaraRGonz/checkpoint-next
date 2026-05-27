@@ -43,7 +43,7 @@ export async function GET(req: Request) {
         }));
 
         return NextResponse.json({ data: formattedGames, total: formattedGames.length }, { status: 200 });
-    } catch (error) {
+    } catch {
         return NextResponse.json({ error: { code: 'SERVER_ERROR', message: 'Internal server error' } }, { status: 500 });
     }
 }

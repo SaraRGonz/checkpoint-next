@@ -22,7 +22,7 @@ export function PlaythroughSection({ gameId, initialPlaythroughs }: Props) {
         try {
             const newP = await addPlaythrough();
             setAutoOpenId(newP.id);
-        } catch (error) {}
+        } catch {}
     };
 
     return (

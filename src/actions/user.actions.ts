@@ -49,7 +49,7 @@ export async function markTutorialAsSeenAction() {
         });
 
         return { success: true };
-    } catch (error) {
+    } catch {
         return { success: false, error: "Database transaction failed." };
     }
 }
