@@ -38,14 +38,14 @@ export async function addGameAction(data: unknown) {
 
         const parsedData = await CreateGameSchema.parseAsync(data);
         
-        let platformId;
         const platformName = parsedData.platform || "Not specified";
+
         let platformRecord = await db.platform.findUnique({ where: { name: platformName } });
         if (!platformRecord) {
             platformRecord = await db.platform.create({ data: { name: platformName } });
         }
-        platformId = platformRecord.id;
-
+        const platformId = platformRecord.id;
+        
         let genresUpdate = {};
         if (parsedData.genres && parsedData.genres.length > 0) {
             const genreConnections = [];
