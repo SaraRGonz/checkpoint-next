@@ -3,6 +3,30 @@ import type { RawgSearchResult, RawgGameDetails } from '@/types/rawg';
 const RAWG_API_KEY = process.env.RAWG_API_KEY;
 const RAWG_BASE_URL = 'https://api.rawg.io/api';
 
+interface RawgApiGenre {
+    name: string;
+}
+
+interface RawgApiPlatform {
+    platform: {
+        name: string;
+    };
+}
+
+interface RawgApiGame {
+    id: number;
+    name: string;
+    background_image: string;
+    released?: string | null;
+    genres?: RawgApiGenre[];
+    platforms?: RawgApiPlatform[];
+    description_raw?: string;
+}
+
+interface RawgApiSearchResponse {
+    results: RawgApiGame[];
+}
+
 export const searchRawgGames = async (
     query: string,
     platform?: string,
@@ -25,15 +49,15 @@ export const searchRawgGames = async (
         throw new Error(`Error fetching data from RAWG API: ${response.status} ${response.statusText}`);
     }
     
-    const data = await response.json();
+    const data = (await response.json()) as RawgApiSearchResponse;
     
-    return data.results.map((game: any) => ({
+    return data.results.map((game) => ({
         rawgId: game.id,
         title: game.name,
         coverUrl: game.background_image,
         releaseYear: game.released ? parseInt(game.released.split('-')[0]) : undefined,
-        genres: game.genres ? game.genres.map((g: any) => g.name) : [],
-        platforms: game.platforms ? game.platforms.map((p: any) => p.platform.name) : []
+        genres: game.genres ? game.genres.map((g) => g.name) : [],
+        platforms: game.platforms ? game.platforms.map((p) => p.platform.name) : []
     }));
 };
 
@@ -48,15 +72,15 @@ export const getRawgGameDetails = async (rawgId: string): Promise<RawgGameDetail
         throw new Error(`Error fetching game details from RAWG API: ${response.status} ${response.statusText}`);
     }
     
-    const data = await response.json();
+    const data = (await response.json()) as RawgApiGame;
     
     return {
         rawgId: data.id,
         title: data.name,
         coverUrl: data.background_image,
         releaseYear: data.released ? parseInt(data.released.split('-')[0]) : undefined,
-        genres: data.genres ? data.genres.map((g: any) => g.name) : [],
-        description: data.description_raw,
-        platforms: data.platforms ? data.platforms.map((p: any) => p.platform.name) : []
+        genres: data.genres ? data.genres.map((g) => g.name) : [],
+        description: data.description_raw || '',
+        platforms: data.platforms ? data.platforms.map((p) => p.platform.name) : []
     };
 };
