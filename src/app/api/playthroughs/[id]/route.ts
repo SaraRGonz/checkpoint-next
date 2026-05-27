@@ -35,7 +35,7 @@ export async function PUT(req: Request, { params }: { params: Promise<{ id: stri
         const updatedPlaythrough = await db.playthrough.update({
             where: { id },
             data: {
-                ...(data.status && { status: data.status.toUpperCase() as any }),
+                ...(data.status && { status: data.status.toUpperCase() as "QUEUE" | "PLAYING" | "COMPLETED" | "DROPPED" }),
                 ...(data.rating !== undefined && { rating: data.rating }),
                 ...(data.notes !== undefined && { notes: data.notes }),
                 ...(data.characterName !== undefined && { characterName: data.characterName }),

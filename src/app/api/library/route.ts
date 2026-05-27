@@ -3,6 +3,8 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { z } from 'zod';
 import { db } from '@/lib/db';
+import { Status } from '@prisma/client';
+
 
 const createGameSchema = z.object({
     title: z.string().min(1, 'El título es requerido'),
@@ -35,7 +37,7 @@ export async function GET(req: Request) {
             orderBy: { addedAt: 'desc' }
         });
 
-        const formattedGames = games.map((game: any) => ({
+        const formattedGames = games.map((game) => ({
             ...game,
             status: game.status.charAt(0) + game.status.slice(1).toLowerCase(), 
             platform: game.platform?.name || 'Unknown',
@@ -73,7 +75,7 @@ export async function POST(req: Request) {
             }
         }
 
-        const mappedStatus = data.status ? data.status.toUpperCase() as any : 'QUEUE';
+        const mappedStatus = data.status ? data.status.toUpperCase() as Status : 'QUEUE';
 
         const newGame = await db.game.create({
             data: {
