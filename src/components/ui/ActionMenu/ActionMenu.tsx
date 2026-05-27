@@ -1,7 +1,7 @@
 'use client'
 
-import { useState, useRef, useEffect } from 'react';
-import type { ReactNode } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
+import type { ReactNode, SetStateAction } from 'react';
 import { ActionMenuContext } from './ActionMenuContext';
 import { ActionMenuButton } from './ActionMenuButton';
 import { ActionMenuOverlay } from './ActionMenuOverlay';
@@ -20,23 +20,27 @@ export function ActionMenu({ children, onSelect, value, position = 'bottom' }: A
     const [searchQuery, setSearchQuery] = useState('');
     const menuRef = useRef<HTMLDivElement>(null);
 
+    const handleSetIsOpen = useCallback((value: SetStateAction<boolean>) => {
+        setIsOpen(prev => {
+            const next = typeof value === 'function' ? value(prev) : value;
+            if (!next) setSearchQuery('');
+            return next;
+        });
+    }, []);
+
     useEffect(() => {
         function handleClickOutside(event: MouseEvent) {
             if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
-                setIsOpen(false);
+                handleSetIsOpen(false);
             }
         }
         document.addEventListener('mousedown', handleClickOutside);
         return () => document.removeEventListener('mousedown', handleClickOutside);
-    }, []);
-
-    useEffect(() => {
-        if (!isOpen) setSearchQuery('');
-    }, [isOpen]);
+    }, [handleSetIsOpen]);
 
     return (
         <ActionMenuContext.Provider value={{ 
-            isOpen, setIsOpen, onSelect, selectedValue: value, position,
+            isOpen, setIsOpen: handleSetIsOpen, onSelect, selectedValue: value, position,
             searchQuery, setSearchQuery 
         }}>
             <div className="relative inline-block text-left w-full" ref={menuRef}>
