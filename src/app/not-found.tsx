@@ -8,11 +8,11 @@ export default function NotFound() {
             <h1 className="text-9xl font-extrabold text-primary mb-4">404</h1>
             
             <h2 className="text-3xl font-bold text-text mb-6">
-                Oops! You've gone off the map.
+                {"Oops! You've gone off the map."}
             </h2>
             
             <p className="text-gray-400 max-w-md mb-10 mx-auto">
-                It seems the page you're looking for doesn't exist, has been moved, or is in another dimension.
+                {"It seems the page you're looking for doesn't exist, has been moved, or is in another dimension."}
             </p>
             
             <Link href="/">

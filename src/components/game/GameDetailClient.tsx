@@ -132,7 +132,11 @@ export function GameDetailClient({ initialGame }: GameDetailClientProps) {
 
             <Modal isOpen={isDeleteModalOpen} onClose={() => setIsDeleteModalOpen(false)} title="Delete Game" footerButtons={deleteModalButtons}>
                 <div className="space-y-4">
-                    <p>Are you sure you want to banish <span className="font-bold text-white">"{game.title}" </span>from your library?</p>
+                    <p>
+                        {"Are you sure you want to banish "}
+                        <span className="font-bold text-white">"{game.title}"</span>
+                        {" from your library?"}
+                    </p>
                     <p className="text-sm text-gray-400">Permadeath is on: this action cannot be undone.</p>
                 </div>
             </Modal>

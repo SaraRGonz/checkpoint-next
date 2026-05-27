@@ -197,7 +197,11 @@ export function WishlistClient({ initialGames }: WishlistClientProps) {
 
             <Modal isOpen={gameToDelete !== null} onClose={() => setGameToDelete(null)} title="Remove from Wishlist" footerButtons={modalButtons}>
                 <div className="space-y-4">
-                    <p>Discard <span className="font-bold text-white">"{gameToDelete?.title}"</span> from your loot list?</p>
+                    <p>
+                        {"Discard "}
+                        <span className="font-bold text-white">"{gameToDelete?.title}"</span>
+                        {" from your loot list?"}
+                    </p>
                     <p className="text-sm text-gray-400">No worries! You can always find this legendary item again using the search radar.</p>
                 </div>
             </Modal>
