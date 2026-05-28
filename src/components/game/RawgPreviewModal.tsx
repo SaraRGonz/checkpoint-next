@@ -23,7 +23,7 @@ export function RawgPreviewModal({ isOpen, onClose, game }: Props) {
         >
             <div className="flex flex-col md:flex-row gap-6">
                 <div className="shrink-0 w-32 md:w-40 relative">
-                    <div className="aspect-[3/4] rounded-xl overflow-hidden border-2 border-gray-700 shadow-2xl bg-gray-950 relative w-full h-full">
+                    <div className="aspect-3/4 rounded-xl overflow-hidden border-2 border-gray-700 shadow-2xl bg-gray-950 relative w-full h-full">
                         <Image 
                             src={game.coverUrl || '/placeholder.jpg'} 
                             alt={game.title} 

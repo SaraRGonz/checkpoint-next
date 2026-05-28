@@ -66,7 +66,6 @@ export default function AddGamePage() {
             });
             
             if (result.success && result.gameId) {
-                // Invalidar la caché para que la librería se refresque
                 queryClient.invalidateQueries({ queryKey: ['games'] });
                 router.push(`/game/${result.gameId}`);
             } else {
@@ -78,8 +77,9 @@ export default function AddGamePage() {
                 }
             }
             
-        } catch (err: any) {
-            setError(err.message || 'Failed to save the game. Please try again.');
+        } catch (err) {
+            const errorMessage = err instanceof Error ? err.message : 'Failed to save the game. Please try again.';
+            setError(errorMessage);
         } finally {
             setIsSaving(false);
         }

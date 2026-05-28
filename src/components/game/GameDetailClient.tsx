@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useGameDetail } from '@/hooks/useGameDetail';
 import { useGames } from '@/hooks/use-games';
@@ -35,14 +35,15 @@ export function GameDetailClient({ initialGame }: GameDetailClientProps) {
     const [tempCoverPosition, setTempCoverPosition] = useState('50% 50%'); 
     const [imageError, setImageError] = useState<string | null>(null);
 
-    useEffect(() => {
+    const handleOpenImageModal = () => {
         if (draft) {
             const isPlaceholder = draft.coverUrl === DEFAULT_COVER_URL || draft.coverUrl.includes('placeholder');
             setTempImageUrl(isPlaceholder ? '' : draft.coverUrl);
             setTempCoverPosition(draft.coverPosition || '50% 50%');
-            setImageError(null); 
+            setImageError(null);
         }
-    }, [isImageModalOpen, draft]);
+        setIsImageModalOpen(true);
+    };
 
     if (!game || !draft) return <div className="p-20 flex justify-center"><Spinner /></div>;
 
@@ -110,7 +111,7 @@ export function GameDetailClient({ initialGame }: GameDetailClientProps) {
                     <GameCoverColumn 
                         draft={draft} 
                         isEditing={isEditing} 
-                        onOpenImageModal={() => setIsImageModalOpen(true)} 
+                        onOpenImageModal={handleOpenImageModal} 
                     />
                 </div>
 

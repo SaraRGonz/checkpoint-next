@@ -88,8 +88,9 @@ export default function SearchPage() {
             }));
 
             setResults(mappedResults);
-        } catch (err: any) {
-            setError(err.message || "¡Glitch in the system! We couldn't fetch those games.");
+        } catch (err) {
+            const errorMessage = err instanceof Error ? err.message : "¡Glitch in the system! We couldn't fetch those games.";
+            setError(errorMessage);
             setResults([]);
         } finally {
             setIsLoading(false);
@@ -106,14 +107,14 @@ export default function SearchPage() {
             setIsSaving(true);
             const res = await addGameAction(gameData);
             
-            // Si tiene éxito, invalidamos la caché de juegos
             if (res.success && res.gameId) {
                 queryClient.invalidateQueries({ queryKey: ['games'] });
                 return res.gameId; 
             }
             return null;
-        } catch (err: any) {
-            alert(err.message || 'Error saving the game. Try again.');
+        } catch (err) {
+            const errorMessage = err instanceof Error ? err.message : 'Error saving the game. Try again.';
+            alert(errorMessage);
             return null; 
         } finally {
             setIsSaving(false);

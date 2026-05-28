@@ -3,6 +3,7 @@ import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { redirect } from "next/navigation";
 import { db } from '@/lib/db';
 import { WishlistClient } from '@/components/wishlist/WishlistClient';
+import type { Game } from '@/types/game';
 
 export const dynamic = 'force-dynamic';
 
@@ -19,12 +20,12 @@ export default async function WishlistPage() {
         orderBy: { addedAt: 'desc' }
     });
 
-    const formattedGames = wishlistGames.map((game: any) => ({
+    const formattedGames = wishlistGames.map((game) => ({
         ...game,
-        status: 'Wishlist' as any,
+        status: 'Wishlist' as Game['status'],
         platform: game.platform?.name || '',
         genres: game.genres.map((g: { name: string }) => g.name) || []
     }));
 
-    return <WishlistClient initialGames={formattedGames as any} />;
+    return <WishlistClient initialGames={formattedGames as unknown as Game[]} />;
 }
