@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Badge } from '../ui/Badge';
 import { Modal } from '../ui/Modal';
 import { StarRating } from './StarRating';
@@ -26,15 +26,20 @@ export function PlaythroughCard({ playthrough, onUpdate, onDelete, isNew }: Prop
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
     const [hasSaved, setHasSaved] = useState(false);
 
-    useEffect(() => {
+    const [prevIsNew, setPrevIsNew] = useState(isNew);
+
+    if (isNew !== prevIsNew) {
+        setPrevIsNew(isNew);
         if (isNew && !hasSaved) {
             setDraft(playthrough);
             setIsModalOpen(true);
             setIsEditing(true);
         }
-    }, [isNew, playthrough, hasSaved]);
+    }
 
-    const updateDraft = (key: keyof Playthrough, val: any) => setDraft(prev => ({ ...prev, [key]: val }));
+    const updateDraft = <K extends keyof Playthrough>(key: K, val: Playthrough[K]) => {
+        setDraft(prev => ({ ...prev, [key]: val }));
+    };
     
     const save = () => {
         setHasSaved(true);
@@ -149,7 +154,6 @@ export function PlaythroughCard({ playthrough, onUpdate, onDelete, isNew }: Prop
                     </div>
 
                     <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-                        {/* Columna izquierda data */}
                         <div className="lg:col-span-4 space-y-6 bg-gray-950/80 p-6 rounded-xl border border-primary/10 shadow-inner">
                             <h3 className="text-xs uppercase tracking-[0.2em] text-primary/70 font-bold mb-4 flex items-center gap-2">
                                 <span className="w-2 h-2 bg-primary rounded-full animate-pulse"></span> Network Data
@@ -161,7 +165,7 @@ export function PlaythroughCard({ playthrough, onUpdate, onDelete, isNew }: Prop
                                     <StarRating rating={draft.rating || 0} onChange={(r) => updateDraft('rating', r)} disabled={!isEditing} />
                                 </div>
                             </div>
-                            
+
                             {/* PLATFORM SELECTOR
 
                             <div className="space-y-2">
@@ -224,7 +228,6 @@ export function PlaythroughCard({ playthrough, onUpdate, onDelete, isNew }: Prop
                             </div>
                         </div>
 
-                        {/* Columna derecha notas */}
                         <div className="lg:col-span-8 flex flex-col h-full min-h-100">
                             <h3 className="text-xs uppercase tracking-[0.2em] text-primary/70 font-bold mb-4 flex items-center gap-2">
                                 <svg className="w-4 h-4 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
