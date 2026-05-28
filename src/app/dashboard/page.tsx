@@ -6,18 +6,6 @@ import { db } from "@/lib/db";
 
 export const dynamic = 'force-dynamic';
 
-type DbGameResult = {
-    id: string;
-    title: string;
-    status: string;
-    rating: number | null;
-    releaseYear: number | null;
-    addedAt: Date;
-    updatedAt: Date;
-    platform: { name: string } | null;
-    genres: { name: string }[];
-};
-
 export default async function DashboardPage() {
     const session = await getServerSession(authOptions);
 
