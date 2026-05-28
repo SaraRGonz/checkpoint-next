@@ -1,7 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useState, type ReactNode } from "react";
 import { useSession } from "next-auth/react";
+import type { Session } from "next-auth";
 import Image from "next/image";
 import { Modal } from "@/components/ui/Modal";
 import { Button } from "@/components/ui/Button";
@@ -9,16 +10,30 @@ import { EditIcon, SaveIcon, CrossIcon, ShieldCheckIcon, StarIcon, LogoIcon, Tar
 import { GridIcon } from "lucide-react"; 
 import { updateUserProfileAction } from "@/actions/user.actions";
 
-export function DashboardClient({ session: initialSession, stats }: any) {
+export interface DashboardStats {
+    avgRating: string;
+    topGenre: string;
+    topPlatform: string;
+    completionRate: string;
+    temporalFocus: string;
+    activeThreads: string;
+}
+
+interface DashboardClientProps {
+    session: Session | null;
+    stats: DashboardStats;
+}
+
+export function DashboardClient({ session: initialSession, stats }: DashboardClientProps) {
     const { data: session, update } = useSession();
     const activeSession = session || initialSession;
 
     const [isImageModalOpen, setIsImageModalOpen] = useState(false);
     const [isEditingName, setIsEditingName] = useState(false);
     
-    const currentName = activeSession.user?.name || "Anonymous_Runner";
-    const currentImage = activeSession.user?.image || "/placeholder.jpg";
-    const currentPan = activeSession.user?.imagePosition || "50% 50%";
+    const currentName = activeSession?.user?.name || "Anonymous_Runner";
+    const currentImage = activeSession?.user?.image || "/placeholder.jpg";
+    const currentPan = activeSession?.user?.imagePosition || "50% 50%";
 
     const [tempName, setTempName] = useState(currentName);
     const [tempUrl, setTempUrl] = useState(currentImage);
@@ -168,7 +183,7 @@ export function DashboardClient({ session: initialSession, stats }: any) {
                             className="bg-primary/10 border border-primary/30 text-primary px-4 py-2.5 rounded-lg font-mono 
                             text-sm md:text-base flex items-center gap-3 shadow-[0_0_15px_rgba(14,165,233,0.1)]">
                             <span className="text-[10px] font-black uppercase tracking-widest opacity-60 mt-0.5">Email //</span>
-                            <span>{activeSession.user?.email || "ENCRYPTED_UPLINK"}</span>
+                            <span>{activeSession?.user?.email || "ENCRYPTED_UPLINK"}</span>
                         </div>
                     </div>
                     {error && !isImageModalOpen && (
@@ -231,13 +246,16 @@ export function DashboardClient({ session: initialSession, stats }: any) {
                         <div 
                             className="relative w-32 h-32 rounded-2xl overflow-hidden border-2 border-primary/50 shadow-[0_0_15px_rgba(14,165,233,0.2)] 
                             bg-gray-950">
-                            <img 
+                            <Image 
                                 src={tempUrl || "/placeholder.jpg"} 
                                 alt="Avatar Preview" 
-                                className="w-full h-full object-cover transition-all duration-300"
+                                fill
+                                sizes="128px"
+                                className="object-cover transition-all duration-300"
                                 style={{ objectPosition: tempPos }}
                                 onError={(e) => {
                                     (e.target as HTMLImageElement).src = "/placeholder.jpg";
+                                    (e.target as HTMLImageElement).srcset = "";
                                 }}
                             />
                         </div>
@@ -289,7 +307,15 @@ export function DashboardClient({ session: initialSession, stats }: any) {
     );
 }
 
-function InsightCard({ label, value, subtext, icon, tooltip }: any) {
+interface InsightCardProps {
+    label: string;
+    value: string | number;
+    subtext: string;
+    icon: ReactNode;
+    tooltip?: string;
+}
+
+function InsightCard({ label, value, subtext, icon, tooltip }: InsightCardProps) {
     return (
         <div 
             className="bg-gray-900/40 border border-gray-800 p-6 rounded-2xl flex flex-col justify-between group hover:bg-gray-800/60 
