@@ -2,7 +2,7 @@ import { describe, it, expect, beforeEach } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
 import { WishlistClient } from './WishlistClient';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { ThemeProvider } from '@/context/ThemeContext';
+import { ThemeProvider } from 'next-themes'; 
 import { SessionProvider } from 'next-auth/react';
 import { useUIStore } from '@/stores/ui-store';
 
