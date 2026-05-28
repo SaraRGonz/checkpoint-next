@@ -12,6 +12,7 @@ import { Spinner } from '@/components/ui/Spinner';
 import { Modal, type ModalButton } from '@/components/ui/Modal';
 import type { Game } from '@/types/game';
 import { PlaythroughSection } from './PlaythroughSection';
+import Image from 'next/image';
 
 interface GameDetailClientProps {
     initialGame: Game;
@@ -169,12 +170,14 @@ export function GameDetailClient({ initialGame }: GameDetailClientProps) {
                     <div className="pt-2">
                         <p className="text-[10px] uppercase text-gray-600 font-bold mb-3 tracking-[0.2em] text-center">Preview</p>
                         <div className="w-32 mx-auto aspect-3/4 rounded-xl overflow-hidden border-2 border-gray-700 shadow-2xl bg-gray-950 relative">
-                            <img 
+                            <Image 
                                 src={isValidUrl(tempImageUrl) && tempImageUrl.trim() !== '' ? tempImageUrl : DEFAULT_COVER_URL} 
                                 alt="Preview" 
-                                className="w-full h-full object-cover" 
+                                fill
+                                sizes="128px"
+                                className="object-cover" 
                                 style={{ objectPosition: tempCoverPosition }}
-                                onError={(e) => (e.currentTarget.src = DEFAULT_COVER_URL)} 
+                                onError={() => setTempImageUrl(DEFAULT_COVER_URL)} 
                             />
                         </div>
                         {tempImageUrl.trim() !== '' && isValidUrl(tempImageUrl) && (
