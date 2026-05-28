@@ -342,7 +342,7 @@ function InsightCard({ label, value, subtext, icon, tooltip }: InsightCardProps)
                     {value}
                 </p>
                 <p className="text-xs font-mono text-primary/60 mt-1 uppercase tracking-widest">
-                    // {subtext}
+                    {`// ${subtext}`}
                 </p>
             </div>
         </div>
