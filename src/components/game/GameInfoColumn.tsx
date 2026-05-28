@@ -11,7 +11,7 @@ import { GameMetadataSection } from './GameMetadataSection';
 interface GameInfoColumnProps {
     draft: Game;
     isEditing: boolean;
-    updateDraftField: (field: keyof Game, value: any) => void;
+    updateDraftField: <K extends keyof Game>(field: K, value: Game[K]) => void;
 }
 
 export function GameInfoColumn({ draft, isEditing, updateDraftField }: GameInfoColumnProps) {
@@ -20,8 +20,8 @@ export function GameInfoColumn({ draft, isEditing, updateDraftField }: GameInfoC
             <div className="space-y-4">
                 {/* PLATFORM con ActionMenu */}
                 <EditableInfoRow label="Platform" isEditing={isEditing} valueDisplay={draft.platform}>
-                    <ActionMenu value={draft.platform} onSelect={(val) => updateDraftField('platform', val)}>
-                        <ActionMenu.Button>{draft.platform}</ActionMenu.Button>
+                    <ActionMenu value={draft.platform || ''} onSelect={(val) => updateDraftField('platform', val)}>
+                        <ActionMenu.Button>{draft.platform || ''}</ActionMenu.Button>
                         <ActionMenu.Overlay>
 
                             <ActionMenu.Search />

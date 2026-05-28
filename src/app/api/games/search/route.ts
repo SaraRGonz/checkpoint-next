@@ -43,9 +43,10 @@ export async function GET(req: Request) {
         const results = await searchRawgGames(q, platform, genre, year);
         
         return NextResponse.json({ results, count: results.length }, { status: 200 });
-    } catch (error: any) {
+    } catch (error) {
+        const message = error instanceof Error ? error.message : 'Error fetching from RAWG';
         return NextResponse.json({ 
-            error: { code: 'RAWG_ERROR', message: error.message || 'Error fetching from RAWG' } 
+            error: { code: 'RAWG_ERROR', message } 
         }, { status: 502 });
     }
 }

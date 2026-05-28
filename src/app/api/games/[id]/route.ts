@@ -7,9 +7,10 @@ export async function GET(req: Request, { params }: { params: Promise<{ id: stri
         const data = await getRawgGameDetails(id);
         
         return NextResponse.json(data, { status: 200 });
-    } catch (error: any) {
+    } catch (error) {
+        const message = error instanceof Error ? error.message : 'Error fetching from RAWG';
         return NextResponse.json({ 
-            error: { code: 'RAWG_ERROR', message: error.message || 'Error fetching from RAWG' } 
+            error: { code: 'RAWG_ERROR', message } 
         }, { status: 502 });
     }
 }

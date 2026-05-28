@@ -3,6 +3,8 @@ import { useSearchParams, useRouter, usePathname } from 'next/navigation';
 import { useUIStore } from '@/stores/ui-store';
 import type { Game } from '@/types/game';
 
+type SortOption = 'title-asc' | 'title-desc' | 'updated-desc' | 'added-desc';
+
 export function useFilters(initialGames: Game[]) {
     const searchParams = useSearchParams();
     const router = useRouter();
@@ -12,7 +14,7 @@ export function useFilters(initialGames: Game[]) {
     useEffect(() => {
         const state = useUIStore.getState();
         const q = searchParams.get('q') || '';
-        const sort = (searchParams.get('sort') as any) || 'added-desc';
+        const sort = (searchParams.get('sort') as SortOption) || 'added-desc';
         const status = searchParams.get('status') || 'all';
         const genre = searchParams.get('genre') || 'all';
         const platform = searchParams.get('platform') || 'all';
