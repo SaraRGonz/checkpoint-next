@@ -4,6 +4,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { GameDetailClient } from '../../../components/game/GameDetailClient';
 import { db } from '../../../lib/db';
+import type { Game } from '@/types/game';
 
 export const dynamic = 'force-dynamic';
 
@@ -46,10 +47,11 @@ export default async function GamePage({ params }: Props) {
 
     const formattedGame = {
         ...game,
+        status: (game.status.charAt(0) + game.status.slice(1).toLowerCase()) as Game['status'],
         platform: game.platform?.name || '',
-        genres: game.genres.map((g: { name: string }) => g.name),
+        genres: game.genres.map((g) => g.name),
         review: game.review || ''
     };
 
-    return <GameDetailClient initialGame={formattedGame as any} />;
+    return <GameDetailClient initialGame={formattedGame as unknown as Game} />;
 }

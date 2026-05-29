@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useParams } from 'next/navigation';
 import { useGames } from '@/hooks/use-games';
 import type { Game } from '@/types/game';
@@ -15,15 +15,18 @@ export function useGameDetail(initialGame?: Game) {
     const originalGame = storeGame || initialGame;
 
     const [isEditing, setIsEditing] = useState(false);
+    
     const [draft, setDraft] = useState<Game | undefined>(originalGame);
+    const [prevOriginalGame, setPrevOriginalGame] = useState<Game | undefined>(originalGame);
 
-    useEffect(() => {
-        if (originalGame) setDraft(originalGame);
-    }, [originalGame]);
+    if (originalGame !== prevOriginalGame) {
+        setPrevOriginalGame(originalGame);
+        setDraft(originalGame);
+    }
 
     const toggleEdit = () => setIsEditing(!isEditing);
 
-    const updateDraftField = (field: keyof Game, value: any) => {
+    const updateDraftField = <K extends keyof Game>(field: K, value: Game[K]) => {
         setDraft(prev => prev ? { ...prev, [field]: value } : undefined);
     };
 

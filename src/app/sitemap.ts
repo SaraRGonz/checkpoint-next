@@ -1,6 +1,5 @@
 import { MetadataRoute } from 'next';
-import { getAllGames } from '@/lib/library';
-import { Game } from '@/types/game';
+import { db } from '@/lib/db';
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     const baseUrl = 'https://checkpoint-next-navy.vercel.app'; 
@@ -13,9 +12,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     }));
 
     try {
-        const games: Game[] = await getAllGames();
+        const games = await db.game.findMany({
+            select: { id: true, updatedAt: true }
+        });
 
-        const gameRoutes = games.map((game: Game) => ({
+        const gameRoutes = games.map((game) => ({
             url: `${baseUrl}/game/${game.id}`,
             lastModified: game.updatedAt ? new Date(game.updatedAt) : new Date(),
             changeFrequency: 'weekly' as const,

@@ -8,6 +8,7 @@ import { HomeGameItem } from '@/components/home/HomeGameItem';
 import { HomeStats } from '@/components/home/HomeStats';
 import { GameCardSkeleton } from '@/components/ui/GameCardSkeleton';
 import { TutorialModal } from '@/components/home/TutorialModal'; 
+import type { Game } from '@/types/game';
 
 export const dynamic = 'force-dynamic';
 
@@ -29,14 +30,14 @@ async function PlayingSection({ userId }: { userId: string }) {
         );
     }
 
-    const formattedGames = playingGames.map((game: any) => ({
+    const formattedGames = playingGames.map((game) => ({
         ...game,
-        status: 'Playing' as any,
+        status: 'Playing' as Game['status'],
         platform: game.platform?.name || '',
         genres: game.genres.map((g: { name: string }) => g.name) || []
     }));
 
-    return <>{formattedGames.map((game: any) => <HomeGameItem key={game.id} game={game as any} />)}</>;
+    return <>{formattedGames.map((game) => <HomeGameItem key={game.id} game={game as unknown as Game} />)}</>;
 }
 
 async function WishlistSection({ userId }: { userId: string }) {
@@ -57,14 +58,14 @@ async function WishlistSection({ userId }: { userId: string }) {
         );
     }
 
-    const formattedGames = wishlistGames.map((game: any) => ({
+    const formattedGames = wishlistGames.map((game) => ({
         ...game,
-        status: 'Wishlist' as any,
+        status: 'Wishlist' as Game['status'],
         platform: game.platform?.name || '',
         genres: game.genres.map((g: { name: string }) => g.name) || []
     }));
 
-    return <>{formattedGames.map((game: any) => <HomeGameItem key={game.id} game={game as any} />)}</>;
+    return <>{formattedGames.map((game) => <HomeGameItem key={game.id} game={game as unknown as Game} />)}</>;
 }
 
 async function StatsSection({ userId }: { userId: string }) {
@@ -77,7 +78,7 @@ async function StatsSection({ userId }: { userId: string }) {
 
     const totalGames = nonWishlistGames.length;
 
-    const rawStats = nonWishlistGames.reduce((acc: Record<string, number>, game: any) => {
+    const rawStats = nonWishlistGames.reduce((acc: Record<string, number>, game) => {
         const statusStr = game.status.charAt(0) + game.status.slice(1).toLowerCase();
         acc[statusStr] = (acc[statusStr] || 0) + 1;
         return acc;

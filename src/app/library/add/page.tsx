@@ -10,6 +10,7 @@ import { STATUS_LIST, PLATFORM_LIST } from '@/utils/constants';
 import type { GameStatus } from '@/types/game';
 import { PlusIcon, ArrowLeftIcon } from '@/components/ui/Icons';
 import { useQueryClient } from '@tanstack/react-query';
+import Image from 'next/image';
 
 const DEFAULT_COVER_URL = '/placeholder.jpg';
 
@@ -66,7 +67,6 @@ export default function AddGamePage() {
             });
             
             if (result.success && result.gameId) {
-                // Invalidar la caché para que la librería se refresque
                 queryClient.invalidateQueries({ queryKey: ['games'] });
                 router.push(`/game/${result.gameId}`);
             } else {
@@ -78,8 +78,9 @@ export default function AddGamePage() {
                 }
             }
             
-        } catch (err: any) {
-            setError(err.message || 'Failed to save the game. Please try again.');
+        } catch (err) {
+            const errorMessage = err instanceof Error ? err.message : 'Failed to save the game. Please try again.';
+            setError(errorMessage);
         } finally {
             setIsSaving(false);
         }
@@ -122,12 +123,14 @@ export default function AddGamePage() {
                 
                 <div className="relative flex flex-col justify-center h-full bg-gray-900/40 p-4 rounded-2xl border border-gray-800 shadow-xl min-w-0">
                     <div className="relative rounded-2xl overflow-hidden border-2 border-gray-800 shadow-2xl aspect-3/4 w-full bg-gray-950">
-                        <img 
+                        <Image 
                             src={isValidUrl(coverUrl) ? coverUrl : DEFAULT_COVER_URL} 
                             alt="Cover Preview" 
-                            className="w-full h-full object-cover transition-opacity" 
+                            fill
+                            sizes="(max-width: 768px) 100vw, 300px"
+                            className="object-cover transition-opacity" 
                             style={{ objectPosition: coverPosition }}
-                            onError={(e) => (e.currentTarget.src = DEFAULT_COVER_URL)}
+                            onError={() => setCoverUrl(DEFAULT_COVER_URL)}
                         />
                     </div>
                     

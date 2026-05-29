@@ -1,7 +1,7 @@
 import type { SVGProps } from 'react';
 
 // permite que a cualquier icono se le pueda pasar clases de tailwind o propiedades nativas de un svg como onclick
-interface IconProps extends SVGProps<SVGSVGElement> { }
+export type IconProps = SVGProps<SVGSVGElement>;
 
 // logo de checkpoint
 export function LogoIcon(props: IconProps) {

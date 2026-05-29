@@ -1,8 +1,13 @@
-// src/app/api/auth/[...nextauth]/route.ts
 import NextAuth, { NextAuthOptions } from "next-auth";
 import GithubProvider from "next-auth/providers/github";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { db } from "@/lib/db";
+
+interface FirebaseAuthResponse {
+    localId: string;
+    email: string;
+    error?: { message: string };
+}
 
 export const authOptions: NextAuthOptions = {
     providers: [
@@ -31,7 +36,7 @@ export const authOptions: NextAuthOptions = {
                         }),
                     });
                     
-                    const data = await res.json();
+                    const data = (await res.json()) as FirebaseAuthResponse;
                     
                     if (!res.ok) {
                         throw new Error(data?.error?.message || "UNKNOWN_ERROR");
@@ -51,8 +56,11 @@ export const authOptions: NextAuthOptions = {
                     });
 
                     return { id: data.localId, email: data.email, name: dbUser.name };
-                } catch (error: any) {
-                    throw new Error(error.message);
+                } catch (error) {
+                    if (error instanceof Error) {
+                        throw new Error(error.message);
+                    }
+                    throw new Error("Unknown error");
                 }
             }
         })
@@ -76,7 +84,7 @@ export const authOptions: NextAuthOptions = {
                     create: {
                         id: user.id,
                         name: user.name || "Runner",
-                        email: user.email,
+                        email: user.email!,
                         image: user.image || "/placeholder.jpg",
                         imagePosition: "50% 50%",
                         hasSeenTutorial: false

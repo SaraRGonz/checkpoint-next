@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useSession } from 'next-auth/react';
 import { Modal } from '@/components/ui/Modal';
 import { Button } from '@/components/ui/Button';
@@ -12,11 +12,13 @@ export function TutorialModal() {
     const [isOpen, setIsOpen] = useState(false);
     const [step, setStep] = useState(0);
 
-    useEffect(() => {
+    const [prevSession, setPrevSession] = useState(session);
+    if (session !== prevSession) {
+        setPrevSession(session);
         if (session?.user && session.user.hasSeenTutorial === false) {
             setIsOpen(true);
         }
-    }, [session]);
+    }
 
     const completeTutorial = async () => {
         setIsOpen(false);

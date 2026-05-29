@@ -57,8 +57,9 @@ export default function RegisterPage() {
             } else {
                 window.location.href = "/";
             }
-        } catch (err: any) {
-            setError(err.message);
+        } catch (err) {
+            const errorMessage = err instanceof Error ? err.message : "Unknown error occurred.";
+            setError(errorMessage);
             setLoading(false);
         }
     };
@@ -73,7 +74,7 @@ export default function RegisterPage() {
             <div className="absolute bottom-1/3 right-1/3 w-75 h-75 bg-tertiary/10 blur-[100px] rounded-full pointer-events-none -z-10"></div>
 
             <div className="relative w-full max-w-md p-8 bg-gray-900/60 backdrop-blur-xl border border-gray-800 shadow-2xl overflow-hidden rounded-xl z-10">
-                <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-accent via-tertiary to-primary"></div>
+                <div className="absolute top-0 left-0 w-full h-1 bg-linear-to-r from-accent via-tertiary to-primary"></div>
 
                 <div className="flex flex-col items-center mb-8 space-y-3">
                     <div className="text-primary animate-pulse duration-3000">

@@ -3,6 +3,7 @@
 import { useSession, signOut } from "next-auth/react";
 import Link from "next/link";
 import { LogOut, User } from "lucide-react";
+import Image from "next/image";
 
 export function UserMenu() {
     const { data: session, status } = useSession();
@@ -33,10 +34,12 @@ export function UserMenu() {
         <div className="flex items-center gap-4 w-full justify-between md:justify-start">
             <Link href="/dashboard" className="flex items-center gap-3 hover:opacity-80 transition-opacity">
                 {session.user?.image ? (
-                    <img 
+                    <Image 
                         src={session.user.image} 
                         alt="Avatar" 
-                        className="h-9 w-9 rounded-full border-2 border-primary object-cover" 
+                        width={36}
+                        height={36}
+                        className="h-9 w-9 rounded-full border-2 border-primary object-cover shrink-0" 
                         style={{ objectPosition: safePosition }}
                     />
                 ) : (

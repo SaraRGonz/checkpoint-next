@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useGameDetail } from '@/hooks/useGameDetail';
 import { useGames } from '@/hooks/use-games';
@@ -12,6 +12,7 @@ import { Spinner } from '@/components/ui/Spinner';
 import { Modal, type ModalButton } from '@/components/ui/Modal';
 import type { Game } from '@/types/game';
 import { PlaythroughSection } from './PlaythroughSection';
+import Image from 'next/image';
 
 interface GameDetailClientProps {
     initialGame: Game;
@@ -21,7 +22,7 @@ const DEFAULT_COVER_URL = '/placeholder.jpg';
 
 export function GameDetailClient({ initialGame }: GameDetailClientProps) {
     const { 
-        game, draft, isEditing, isLoading, 
+        game, draft, isEditing,
         toggleEdit, updateDraftField, saveChanges, discardChanges 
     } = useGameDetail(initialGame);
 
@@ -35,14 +36,15 @@ export function GameDetailClient({ initialGame }: GameDetailClientProps) {
     const [tempCoverPosition, setTempCoverPosition] = useState('50% 50%'); 
     const [imageError, setImageError] = useState<string | null>(null);
 
-    useEffect(() => {
+    const handleOpenImageModal = () => {
         if (draft) {
             const isPlaceholder = draft.coverUrl === DEFAULT_COVER_URL || draft.coverUrl.includes('placeholder');
             setTempImageUrl(isPlaceholder ? '' : draft.coverUrl);
             setTempCoverPosition(draft.coverPosition || '50% 50%');
-            setImageError(null); 
+            setImageError(null);
         }
-    }, [isImageModalOpen, draft]);
+        setIsImageModalOpen(true);
+    };
 
     if (!game || !draft) return <div className="p-20 flex justify-center"><Spinner /></div>;
 
@@ -110,7 +112,7 @@ export function GameDetailClient({ initialGame }: GameDetailClientProps) {
                     <GameCoverColumn 
                         draft={draft} 
                         isEditing={isEditing} 
-                        onOpenImageModal={() => setIsImageModalOpen(true)} 
+                        onOpenImageModal={handleOpenImageModal} 
                     />
                 </div>
 
@@ -132,7 +134,11 @@ export function GameDetailClient({ initialGame }: GameDetailClientProps) {
 
             <Modal isOpen={isDeleteModalOpen} onClose={() => setIsDeleteModalOpen(false)} title="Delete Game" footerButtons={deleteModalButtons}>
                 <div className="space-y-4">
-                    <p>Are you sure you want to banish <span className="font-bold text-white">"{game.title}" </span>from your library?</p>
+                    <p>
+                        {"Are you sure you want to banish \""}
+                        <span className="font-bold text-white">{game.title}</span>
+                        {"\" from your library?"}
+                    </p>
                     <p className="text-sm text-gray-400">Permadeath is on: this action cannot be undone.</p>
                 </div>
             </Modal>
@@ -164,12 +170,14 @@ export function GameDetailClient({ initialGame }: GameDetailClientProps) {
                     <div className="pt-2">
                         <p className="text-[10px] uppercase text-gray-600 font-bold mb-3 tracking-[0.2em] text-center">Preview</p>
                         <div className="w-32 mx-auto aspect-3/4 rounded-xl overflow-hidden border-2 border-gray-700 shadow-2xl bg-gray-950 relative">
-                            <img 
+                            <Image 
                                 src={isValidUrl(tempImageUrl) && tempImageUrl.trim() !== '' ? tempImageUrl : DEFAULT_COVER_URL} 
                                 alt="Preview" 
-                                className="w-full h-full object-cover" 
+                                fill
+                                sizes="128px"
+                                className="object-cover" 
                                 style={{ objectPosition: tempCoverPosition }}
-                                onError={(e) => (e.currentTarget.src = DEFAULT_COVER_URL)} 
+                                onError={() => setTempImageUrl(DEFAULT_COVER_URL)} 
                             />
                         </div>
                         {tempImageUrl.trim() !== '' && isValidUrl(tempImageUrl) && (

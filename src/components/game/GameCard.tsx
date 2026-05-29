@@ -7,7 +7,7 @@ import Image from 'next/image';
 
 function CardTooltip({ text }: { text: string }) {
     return (
-        <div className="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 bg-gray-950 border border-primary/50 text-gray-300 text-[10px] uppercase tracking-widest px-4 py-2 rounded-lg opacity-0 group-hover/tooltip:opacity-100 transition-opacity duration-300 pointer-events-none w-max max-w-[250px] text-center shadow-xl z-50 whitespace-normal leading-relaxed">
+        <div className="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 bg-gray-950 border border-primary/50 text-gray-300 text-[10px] uppercase tracking-widest px-4 py-2 rounded-lg opacity-0 group-hover/tooltip:opacity-100 transition-opacity duration-300 pointer-events-none w-max max-w-62.5 text-center shadow-xl z-50 whitespace-normal leading-relaxed">
             {text}
             <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-2 h-2 bg-gray-950 border-b border-r border-primary/50 rotate-45"></div>
         </div>

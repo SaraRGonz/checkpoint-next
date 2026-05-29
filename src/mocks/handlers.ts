@@ -9,7 +9,15 @@ export const handlers = [
             ]
         });
     }),
-    
+
+    http.put(/\/api\/library\/.*/, () => {
+        return HttpResponse.json({ success: true });
+    }),
+
+    http.delete(/\/api\/library\/.*/, () => {
+        return new HttpResponse(null, { status: 204 });
+    }),
+
     http.post(/\/api\/games\/.*\/playthroughs/, () => {
         return HttpResponse.json({
             id: 'new-p-1',

@@ -18,47 +18,47 @@ export default async function DashboardPage() {
         include: { platform: true, genres: true }
     });
 
-    const allGames = gamesData.map((game: any) => ({
+    const allGames = gamesData.map((game) => ({
         ...game,
         status: game.status.charAt(0) + game.status.slice(1).toLowerCase(),
         platform: game.platform?.name || '',
-        genres: game.genres.map((g: { name: string }) => g.name) || []
+        genres: game.genres.map((g) => g.name) || []
     }));
     
-    const libraryGames = allGames.filter((g: any) => g.status !== 'Wishlist');
+    const libraryGames = allGames.filter((g) => g.status !== 'Wishlist');
 
-    const ratedGames = allGames.filter((g: any) => typeof g.rating === 'number' && g.rating > 0);
+    const ratedGames = allGames.filter((g) => typeof g.rating === 'number' && g.rating > 0);
 
-    const genreCounts = libraryGames.flatMap((g: any) => g.genres || []).reduce((acc: Record<string, number>, val: string) => {
+    const genreCounts = libraryGames.flatMap((g) => g.genres || []).reduce((acc: Record<string, number>, val: string) => {
         if (val) acc[val] = (acc[val] || 0) + 1;
         return acc;
     }, {} as Record<string, number>);
 
-    const platformCounts = libraryGames.reduce((acc: Record<string, number>, g: any) => {
+    const platformCounts = libraryGames.reduce((acc: Record<string, number>, g) => {
         if (g.platform) acc[g.platform] = (acc[g.platform] || 0) + 1;
         return acc;
     }, {} as Record<string, number>);
 
-    const completed = libraryGames.filter((g: any) => g.status === 'Completed').length;
+    const completed = libraryGames.filter((g) => g.status === 'Completed').length;
     const completionRate = libraryGames.length > 0 ? Math.round((completed / libraryGames.length) * 100) : 0;
 
-    const releaseYears = libraryGames.map((g: any) => g.releaseYear).filter((y: any): y is number => typeof y === 'number' && !isNaN(y));
+    const releaseYears = libraryGames.map((g) => g.releaseYear).filter((y): y is number => typeof y === 'number' && !isNaN(y));
     const avgYear = releaseYears.length > 0 ? Math.round(releaseYears.reduce((a: number, b: number) => a + b, 0) / releaseYears.length) : 0;
     const temporalFocus = avgYear > 0 ? `${Math.floor(avgYear / 10) * 10}s` : 'Unknown';
 
     const stats = {
         avgRating: ratedGames.length > 0 
-            ? (ratedGames.reduce((acc: number, g: any) => acc + g.rating, 0) / ratedGames.length).toFixed(1)
+            ? (ratedGames.reduce((acc: number, g) => acc + (g.rating || 0), 0) / ratedGames.length).toFixed(1)
             : "0.0",
         topGenre: Object.keys(genreCounts).length > 0
-            ? Object.entries(genreCounts).sort((a: any, b: any) => b[1] - a[1])[0][0]
+            ? Object.entries(genreCounts).sort((a, b) => b[1] - a[1])[0][0]
             : 'None',
         topPlatform: Object.keys(platformCounts).length > 0
-            ? Object.entries(platformCounts).sort((a: any, b: any) => b[1] - a[1])[0][0]
+            ? Object.entries(platformCounts).sort((a, b) => b[1] - a[1])[0][0]
             : 'None',
         completionRate: `${completionRate}%`,
         temporalFocus,
-        activeThreads: allGames.filter((g: any) => g.status === 'Playing').length.toString()
+        activeThreads: allGames.filter((g) => g.status === 'Playing').length.toString()
     };
 
     return (

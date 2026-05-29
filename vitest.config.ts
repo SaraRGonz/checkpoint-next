@@ -8,8 +8,17 @@ export default defineConfig({
         environment: 'jsdom',
         globals: true,
         setupFiles: ['./setupTests.ts'],
+        exclude: ['e2e/**', '**/node_modules/**'], 
         alias: {
             '@': path.resolve(__dirname, './src')
+        },
+        coverage: {
+            exclude: [
+                'e2e/**',
+                '**/node_modules/**',
+                'src/app/api/auth/**',  
+                'src/mocks/**',
+            ]
         }
     }
 });

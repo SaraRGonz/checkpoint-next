@@ -1,4 +1,4 @@
-import { describe, it, expect, vi } from 'vitest';
+import { describe, it, expect, vi, type Mock } from 'vitest';
 import { GET } from './route';
 import { db } from '@/lib/db';
 
@@ -24,7 +24,7 @@ describe('GET /api/library', () => {
             platform: { name: 'Xbox' },
             genres: [{ name: 'Shooter' }]
         }];
-        (db.game.findMany as any).mockResolvedValue(mockGames);
+        (db.game.findMany as Mock).mockResolvedValue(mockGames);
 
         const req = new Request('http://localhost:3000/api/library?search=');
         const res = await GET(req);

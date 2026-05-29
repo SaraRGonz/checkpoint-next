@@ -5,6 +5,7 @@ import { z } from 'zod';
 import { db } from '@/lib/db';
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import { Status } from '@prisma/client';
 
 const CreateGameSchema = z.object({
     title: z.string().min(1, 'Title is required'),
@@ -38,13 +39,13 @@ export async function addGameAction(data: unknown) {
 
         const parsedData = await CreateGameSchema.parseAsync(data);
         
-        let platformId;
         const platformName = parsedData.platform || "Not specified";
+
         let platformRecord = await db.platform.findUnique({ where: { name: platformName } });
         if (!platformRecord) {
             platformRecord = await db.platform.create({ data: { name: platformName } });
         }
-        platformId = platformRecord.id;
+        const platformId = platformRecord.id;
 
         let genresUpdate = {};
         if (parsedData.genres && parsedData.genres.length > 0) {
@@ -62,7 +63,7 @@ export async function addGameAction(data: unknown) {
         const newGame = await db.game.create({
             data: {
                 title: parsedData.title,
-                status: parsedData.status.toUpperCase() as any,
+                status: parsedData.status.toUpperCase() as Status,
                 coverUrl: parsedData.coverUrl || '/placeholder.jpg',
                 coverPosition: parsedData.coverPosition || '50% 50%',
                 platformId: platformId,

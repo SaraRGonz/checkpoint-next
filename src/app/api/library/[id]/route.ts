@@ -3,6 +3,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { z } from 'zod';
 import { db } from '@/lib/db';
+import { Status } from '@prisma/client';
 
 const updateGameSchema = z.object({
     title: z.string().min(1, 'El título es requerido').optional(),
@@ -41,7 +42,7 @@ export async function GET(req: Request, { params }: { params: Promise<{ id: stri
         };
 
         return NextResponse.json(formattedGame, { status: 200 });
-    } catch (error) {
+    } catch {
         return NextResponse.json({ error: { code: 'SERVER_ERROR', message: 'Internal server error' } }, { status: 500 });
     }
 }
@@ -87,7 +88,7 @@ export async function PUT(req: Request, { params }: { params: Promise<{ id: stri
                 ...(data.title !== undefined && { title: data.title }),
                 ...(data.coverUrl !== undefined && { coverUrl: data.coverUrl }),
                 ...(data.coverPosition !== undefined && { coverPosition: data.coverPosition }), 
-                ...(data.status !== undefined && { status: data.status!.toUpperCase() as any }),
+                ...(data.status !== undefined && { status: data.status!.toUpperCase() as Status }),
                 ...(data.rating !== undefined && { rating: data.rating }),
                 ...(data.review !== undefined && { review: data.review }), 
                 ...(data.releaseYear !== undefined && { releaseYear: data.releaseYear }),
@@ -129,7 +130,7 @@ export async function DELETE(req: Request, { params }: { params: Promise<{ id: s
         await db.game.delete({ where: { id } });
         
         return new NextResponse(null, { status: 204 });
-    } catch (error) {
+    } catch {
         return NextResponse.json({ error: { code: 'SERVER_ERROR', message: 'Internal server error' } }, { status: 500 });
     }
 }

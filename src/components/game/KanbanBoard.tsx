@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { DndContext, DragOverlay, closestCorners, PointerSensor, TouchSensor, useSensor, useSensors } from '@dnd-kit/core';
 import type { DragStartEvent, DragEndEvent } from '@dnd-kit/core';
 import { STATUS_LIST } from '@/utils/constants';
@@ -19,10 +19,12 @@ export function KanbanBoard({ games }: Props) {
     const [activeGame, setActiveGame] = useState<Game | null>(null);
     
     const [localGames, setLocalGames] = useState<Game[]>(games);
+    const [prevGames, setPrevGames] = useState<Game[]>(games);
 
-    useEffect(() => {
+    if (games !== prevGames) {
+        setPrevGames(games);
         setLocalGames(games);
-    }, [games]);
+    }
 
     const columns = STATUS_LIST.filter(s => s.value !== 'Wishlist');
 
@@ -69,7 +71,7 @@ export function KanbanBoard({ games }: Props) {
                     const columnGames = localGames.filter(g => g.status === col.value);
                     return (
                         <div key={col.value} className="w-71.5 shrink-0 snap-center"> 
-                            <KanbanColumn status={col.value as any} label={col.label} count={columnGames.length}>
+                            <KanbanColumn status={col.value as Game['status']} label={col.label} count={columnGames.length}>
                                 {columnGames.map((game) => (
                                     <KanbanItem 
                                         key={game.id} 
