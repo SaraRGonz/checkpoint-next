@@ -43,7 +43,7 @@ export const searchRawgGames = async (
     if (genre) url += `&genres=${genre}`;
     if (year) url += `&dates=${year}-01-01,${year}-12-31`;
 
-    const response = await fetch(url);
+    const response = await fetch(url, { next: { revalidate: 86400 } });
     
     if (!response.ok) {
         throw new Error(`Error fetching data from RAWG API: ${response.status} ${response.statusText}`);
@@ -66,7 +66,7 @@ export const getRawgGameDetails = async (rawgId: string): Promise<RawgGameDetail
         throw new Error('No se ha configurado RAWG_API_KEY en las variables de entorno');
     }
 
-    const response = await fetch(`${RAWG_BASE_URL}/games/${rawgId}?key=${RAWG_API_KEY}`);
+    const response = await fetch(`${RAWG_BASE_URL}/games/${rawgId}?key=${RAWG_API_KEY}`, { next: { revalidate: 86400 } });
     
     if (!response.ok) {
         throw new Error(`Error fetching game details from RAWG API: ${response.status} ${response.statusText}`);
