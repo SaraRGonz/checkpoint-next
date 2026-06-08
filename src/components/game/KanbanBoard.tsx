@@ -15,16 +15,9 @@ interface Props {
 }
 
 export function KanbanBoard({ games }: Props) {
-    const { updateGame } = useGames(); 
+    const { updateGame } = useGames();
     const [activeGame, setActiveGame] = useState<Game | null>(null);
-    
-    const [localGames, setLocalGames] = useState<Game[]>(games);
-    const [prevGames, setPrevGames] = useState<Game[]>(games);
-
-    if (games !== prevGames) {
-        setPrevGames(games);
-        setLocalGames(games);
-    }
+    const [pendingMove, setPendingMove] = useState<{ id: string; status: Game['status'] } | null>(null);
 
     const columns = STATUS_LIST.filter(s => s.value !== 'Wishlist');
 
@@ -33,8 +26,12 @@ export function KanbanBoard({ games }: Props) {
         useSensor(TouchSensor, { activationConstraint: { delay: 250, tolerance: 5 } })
     );
 
+    const displayGames = pendingMove
+        ? games.map(g => g.id === pendingMove.id ? { ...g, status: pendingMove.status } : g)
+        : games;
+
     const handleDragStart = (event: DragStartEvent) => {
-        const game = localGames.find(g => g.id === event.active.id);
+        const game = games.find(g => g.id === event.active.id);
         if (game) setActiveGame(game);
     };
 
@@ -44,39 +41,38 @@ export function KanbanBoard({ games }: Props) {
         if (over) {
             const gameId = active.id as string;
             const newStatus = over.id as Game['status'];
-            const draggedGame = localGames.find(g => g.id === gameId);
+            const draggedGame = games.find(g => g.id === gameId);
 
             if (draggedGame && draggedGame.status !== newStatus) {
-                setLocalGames(prev => prev.map(g => 
-                    g.id === gameId ? { ...g, status: newStatus } : g
-                ));
-                
-                updateGame(gameId, { status: newStatus });
+                setPendingMove({ id: gameId, status: newStatus }); 
+                updateGame(gameId, { status: newStatus });          
             }
         }
-        
+
         setActiveGame(null);
     };
 
+    const prevGames = games;
+    if (pendingMove && games.find(g => g.id === pendingMove.id)?.status === pendingMove.status) {
+        setPendingMove(null);
+    }
+
     return (
-        <DndContext 
-            sensors={sensors} 
-            collisionDetection={closestCorners} 
-            onDragStart={handleDragStart} 
-            onDragEnd={handleDragEnd} 
-            onDragCancel={() => setActiveGame(null)}
+        <DndContext
+            sensors={sensors}
+            collisionDetection={closestCorners}
+            onDragStart={handleDragStart}
+            onDragEnd={handleDragEnd}
+            onDragCancel={() => { setActiveGame(null); setPendingMove(null); }}
         >
             <div className="flex gap-6 overflow-x-auto pb-6 snap-x w-full">
                 {columns.map(col => {
-                    const columnGames = localGames.filter(g => g.status === col.value);
+                    const columnGames = displayGames.filter(g => g.status === col.value);
                     return (
-                        <div key={col.value} className="w-71.5 shrink-0 snap-center"> 
+                        <div key={col.value} className="w-71.5 shrink-0 snap-center">
                             <KanbanColumn status={col.value as Game['status']} label={col.label} count={columnGames.length}>
                                 {columnGames.map((game) => (
-                                    <KanbanItem 
-                                        key={game.id} 
-                                        game={game} 
-                                    />
+                                    <KanbanItem key={game.id} game={game} />
                                 ))}
                             </KanbanColumn>
                         </div>
