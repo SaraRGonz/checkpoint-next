@@ -13,6 +13,8 @@ export default defineConfig({
             '@': path.resolve(__dirname, './src')
         },
         coverage: {
+            provider: 'v8',
+            reporter: ['text', 'json', 'html', 'lcov'],
             exclude: [
                 'e2e/**',
                 '**/node_modules/**',
