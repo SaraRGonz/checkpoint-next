@@ -15,7 +15,7 @@ Checkpoint es una plataforma web fullstack para la gestión de colecciones de vi
 ## Demo en vivo
 
 * **Aplicación:** https://checkpoint-teal.vercel.app
-* **Video demo técnica:**
+* **Video demo técnica:** https://www.loom.com/share/0e402917550645679cf2402a6904da4e
 * **Repositorio:** [GitHub - SaraRGonz/checkpoint-next](https://github.com/SaraRGonz/checkpoint-next)
 
 ---
@@ -26,20 +26,32 @@ El sistema utiliza una arquitectura *Serverless* orientada a componentes, donde 
 
 ```mermaid
 graph TD
-    Client[Navegador del Usuario\nReact + Zustand + React Query] -->|HTTP/REST| Vercel[Vercel Serverless\nNext.js App Router]
-    
-    subgraph Vercel
-        ServerActions[Server Actions]
-        ApiRoutes[API Routes]
+    %% Cliente
+    Client[Cliente / Navegador<br/>React 19 + Zustand + TanStack]
+
+    %% Servidor
+    subgraph Vercel [Backend Serverless - Vercel]
+        NextApp[Next.js App Router<br/>Server Actions & API Routes]
+        NextAuth[NextAuth.js]
     end
+
+    %% Recursos Externos
+    DB[(Neon PostgreSQL<br/>+ Prisma ORM)]
+    Auth[Proveedores Auth<br/>Firebase & GitHub]
+    RAWG[RAWG.io API<br/>Catálogo e Imágenes]
+
+    %% Flujos principales
+    Client -->|Peticiones / RPC| NextApp
+    Client -->|Autenticación| NextAuth
     
-    Client -->|Autenticación| FirebaseAuth[Firebase Auth]
-    Vercel -->|Prisma ORM| NeonDB[(Neon PostgreSQL\nBase de Datos Serverless)]
-    Vercel -->|Fetch Data| RAWG[RAWG API\nCatálogo de Juegos]
-    Vercel -.->|Sesiones| NextAuth[NextAuth.js]
+    NextApp -->|Lectura / Escritura| DB
+    NextApp -.->|Fetch Datos| RAWG
+    
+    NextAuth -->|Verificación| Auth
+    NextAuth -.->|Gestión de Usuarios| DB
 ```
 
-*(Nota: Disponible la versión en imagen en ``docs/arquitectura/diagrama.png``)*
+Disponible la versión detallada del diagrama aquí: ``docs/arquitectura/diagrama.png``
 
 | Servicio | Tecnología | Despliegue |
 | :--- | :--- | :--- |
