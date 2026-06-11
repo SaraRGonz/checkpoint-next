@@ -32,17 +32,6 @@ export function AddGameFromRawgModal({ isOpen, onClose, game, initialPlatformId,
     const [saveSuccess, setSaveSuccess] = useState(false);
     const [newGameId, setNewGameId] = useState<string | null>(null);
 
-    const [prevIsOpen, setPrevIsOpen] = useState(isOpen);
-    if (isOpen && !prevIsOpen) {
-        setPlatform(initialPlatformLabel);
-        setStatus(initialStatus);
-        setSaveSuccess(false);
-        setNewGameId(null);
-        setPrevIsOpen(true);
-    } else if (!isOpen && prevIsOpen) {
-        setPrevIsOpen(false);
-    }
-
     if (!game) return null;
 
     const isWishlistFlow = initialStatus === 'Wishlist';
@@ -87,7 +76,7 @@ export function AddGameFromRawgModal({ isOpen, onClose, game, initialPlatformId,
             closeIconClassName="text-gray-400 hover:text-danger transition-colors"
         >
             {!saveSuccess && (
-                <div className="space-y-6 animate-in fade-in duration-300">
+                <div className="space-y-6 pb-48 animate-in fade-in duration-300">
                     <div className="flex gap-4 items-center mb-6">
                         <div className="relative w-16 h-24 shrink-0 rounded shadow-md border border-gray-700 overflow-hidden">
                             <Image

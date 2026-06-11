@@ -307,6 +307,7 @@ export default function SearchPage() {
             )}
             
             <AddGameFromRawgModal 
+                key={selectedGame ? `modal-open-${selectedGame.id}` : 'modal-closed'}
                 isOpen={!!selectedGame}
                 onClose={() => setSelectedGame(null)}
                 game={selectedGame}
