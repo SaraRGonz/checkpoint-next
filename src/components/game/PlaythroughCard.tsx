@@ -20,22 +20,17 @@ interface Props {
 }
 
 export function PlaythroughCard({ playthrough, onUpdate, onDelete, isNew }: Props) {
-    const [isModalOpen, setIsModalOpen] = useState(false);
-    const [isEditing, setIsEditing] = useState(false);
+    // 1. Estado manual (solo interacciones del usuario)
+    const [isManualModalOpen, setIsManualModalOpen] = useState(false);
+    const [isManualEditing, setIsManualEditing] = useState(false);
     const [draft, setDraft] = useState(playthrough);
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
     const [hasSaved, setHasSaved] = useState(false);
 
-    const [prevIsNew, setPrevIsNew] = useState(isNew);
-
-    if (isNew !== prevIsNew) {
-        setPrevIsNew(isNew);
-        if (isNew && !hasSaved) {
-            setDraft(playthrough);
-            setIsModalOpen(true);
-            setIsEditing(true);
-        }
-    }
+    // 2. Estado derivado puro (Sincrónico, cero useEffect/prevIsNew)
+    const isPendingDraft = !!(isNew && !hasSaved);
+    const isModalOpen = isPendingDraft || isManualModalOpen;
+    const isEditing = isPendingDraft || isManualEditing;
 
     const updateDraft = <K extends keyof Playthrough>(key: K, val: Playthrough[K]) => {
         setDraft(prev => ({ ...prev, [key]: val }));
@@ -43,6 +38,8 @@ export function PlaythroughCard({ playthrough, onUpdate, onDelete, isNew }: Prop
     
     const save = () => {
         setHasSaved(true);
+        setIsManualModalOpen(false);
+        setIsManualEditing(false);
         onUpdate({ 
             status: draft.status, 
             platformName: draft.platform?.name || null, 
@@ -51,16 +48,15 @@ export function PlaythroughCard({ playthrough, onUpdate, onDelete, isNew }: Prop
             characterName: draft.characterName,
             serverName: draft.serverName
         });
-        setIsEditing(false);
     };
 
     const handleCloseModal = () => {
-        setIsModalOpen(false);
-        setIsEditing(false);
-        if (isNew && !hasSaved) {
-            onDelete();
+        setIsManualModalOpen(false);
+        setIsManualEditing(false);
+        if (isPendingDraft) {
+            onDelete(); // Borrador cancelado -> Destruir
         } else {
-            setDraft(playthrough); 
+            setDraft(playthrough); // Edición cancelada -> Revertir cambios
         }
     };
 
@@ -68,57 +64,56 @@ export function PlaythroughCard({ playthrough, onUpdate, onDelete, isNew }: Prop
 
     return (
         <>
-            <div 
-                onClick={() => { setDraft(playthrough); setIsModalOpen(true); }}
-                className="bg-gray-900 border border-gray-800 rounded-xl p-5 flex flex-col gap-4 shadow-sm relative group cursor-pointer transition-all duration-300 hover:border-primary/50 hover:shadow-[0_0_15px_rgba(var(--color-primary),0.1)] hover:-translate-y-1"
-            >
-                <div className="flex justify-between items-start">
-                    <Badge variant={playthrough.status}>{playthrough.status}</Badge>
-                    <div className="text-right">
-                        <p className="text-[10px] text-gray-500 uppercase font-bold tracking-widest">{formatDate(playthrough.startDate)}</p>
+            {/* Ocultar base de tarjeta si es borrador no guardado */}
+            {!isPendingDraft && (
+                <div 
+                    onClick={() => { setDraft(playthrough); setIsManualModalOpen(true); }}
+                    className="bg-gray-900 border border-gray-800 rounded-xl p-5 flex flex-col gap-4 shadow-sm relative group cursor-pointer transition-all duration-300 hover:border-primary/50 hover:shadow-[0_0_15px_rgba(var(--color-primary),0.1)] hover:-translate-y-1"
+                >
+                    <div className="flex justify-between items-start">
+                        <Badge variant={playthrough.status}>{playthrough.status}</Badge>
+                        <div className="text-right">
+                            <p className="text-[10px] text-gray-500 uppercase font-bold tracking-widest">{formatDate(playthrough.startDate)}</p>
+                        </div>
                     </div>
+
+                    {playthrough.platform?.name && (
+                        <p className="text-sm text-gray-400">Platform: <span className="text-gray-200">{playthrough.platform.name}</span></p>
+                    )}
+
+                    {playthrough.rating !== null && playthrough.rating !== undefined && (
+                        <StarRating rating={playthrough.rating} disabled />
+                    )}
+
+                    {(playthrough.characterName || playthrough.serverName) && (
+                        <div className="flex flex-wrap gap-2">
+                            {playthrough.characterName && (
+                                <span className="text-xs font-bold text-emerald-400 bg-emerald-400/10 border border-emerald-400/20 px-2 py-1 rounded">
+                                    {playthrough.characterName}
+                                </span>
+                            )}
+                            {playthrough.serverName && (
+                                <span className="text-xs font-bold text-purple-400 bg-purple-400/10 border border-purple-400/20 px-2 py-1 rounded">
+                                    {playthrough.serverName}
+                                </span>
+                            )}
+                        </div>
+                    )}
+
+                    {playthrough.notes && (
+                        <div className="text-sm text-gray-300 wrap-break-word mt-2">
+                            {isNotesLong ? (
+                                <>
+                                    {playthrough.notes.substring(0, 150)}...
+                                    <span className="text-primary text-xs font-bold uppercase ml-2 tracking-wider group-hover:underline">Show more</span>
+                                </>
+                            ) : (
+                                playthrough.notes
+                            )}
+                        </div>
+                    )}
                 </div>
-
-                {playthrough.platform?.name && (
-                    <p className="text-sm text-gray-400">Platform: <span className="text-gray-200">{playthrough.platform.name}</span></p>
-                )}
-
-                {playthrough.rating !== null && playthrough.rating !== undefined && (
-                    <StarRating rating={playthrough.rating} disabled />
-                )}
-
-                {(playthrough.characterName || playthrough.serverName) && (
-                    <div className="flex flex-wrap gap-2">
-                        {playthrough.characterName && (
-                            <span className="text-xs font-bold text-emerald-400 bg-emerald-400/10 border border-emerald-400/20 px-2 py-1 rounded">
-                                {// Character name
-                                }
-                                {playthrough.characterName}
-                            </span>
-                        )}
-                        {playthrough.serverName && (
-                            <span className="text-xs font-bold text-purple-400 bg-purple-400/10 border border-purple-400/20 px-2 py-1 rounded">
-                                {// Server name
-                                }
-                                {playthrough.serverName}
-                            </span>
-                        )}
-                    </div>
-                )}
-
-                {playthrough.notes && (
-                    <div className="text-sm text-gray-300 wrap-break-word mt-2">
-                        {isNotesLong ? (
-                            <>
-                                {playthrough.notes.substring(0, 150)}...
-                                <span className="text-primary text-xs font-bold uppercase ml-2 tracking-wider group-hover:underline">Show more</span>
-                            </>
-                        ) : (
-                            playthrough.notes
-                        )}
-                    </div>
-                )}
-            </div>
+            )}
 
             <Modal 
                 isOpen={isModalOpen} 
@@ -148,7 +143,7 @@ export function PlaythroughCard({ playthrough, onUpdate, onDelete, isNew }: Prop
                                     <button onClick={save} className="p-2 bg-primary/20 text-primary rounded-md hover:bg-primary/40 transition border border-primary/50" title="Save Log"><SaveIcon className="w-5 h-5"/></button>
                                 </>
                             ) : (
-                                <button onClick={() => setIsEditing(true)} className="p-2 bg-gray-900 text-primary rounded-md hover:bg-primary/20 hover:text-white transition cursor-pointer border border-primary/30" title="Edit Log"><EditIcon className="w-5 h-5"/></button>
+                                <button onClick={() => setIsManualEditing(true)} className="p-2 bg-gray-900 text-primary rounded-md hover:bg-primary/20 hover:text-white transition cursor-pointer border border-primary/30" title="Edit Log"><EditIcon className="w-5 h-5"/></button>
                             )}
                         </div>
                     </div>
@@ -248,7 +243,7 @@ export function PlaythroughCard({ playthrough, onUpdate, onDelete, isNew }: Prop
 
             <Modal isOpen={isDeleteModalOpen} onClose={() => setIsDeleteModalOpen(false)} title="Confirm Deletion" footerButtons={[
                 { content: 'Abort', variant: 'secondary', onClick: () => setIsDeleteModalOpen(false) },
-                { content: 'Purge', variant: 'danger', onClick: () => { onDelete(); setIsDeleteModalOpen(false); setIsModalOpen(false); } }
+                { content: 'Purge', variant: 'danger', onClick: () => { onDelete(); setIsDeleteModalOpen(false); setIsManualModalOpen(false); } }
             ]}>
                 <p className="text-gray-300">Are you sure you want to permanently delete this system log? This action cannot be undone.</p>
             </Modal>
