@@ -170,4 +170,13 @@ describe('PlaythroughCard', () => {
         expect(onDelete).not.toHaveBeenCalled();
         expect(screen.queryByText(/Confirm Deletion/i)).not.toBeInTheDocument();
     });
+
+    it('hides base card layout in draft mode to prevent UI flash', () => {
+        render(<PlaythroughCard playthrough={mockPlaythrough} onUpdate={vi.fn()} onDelete={vi.fn()} isNew={true} />);
+        
+        expect(screen.getByText(/System Log/i)).toBeInTheDocument();
+        
+        const queueElements = screen.getAllByText('Queue');
+        expect(queueElements).toHaveLength(1); 
+    });
 });

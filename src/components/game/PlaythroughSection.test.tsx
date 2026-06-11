@@ -4,21 +4,26 @@ import { PlaythroughSection } from './PlaythroughSection';
 import Providers from '@/components/Providers';
 
 describe('PlaythroughSection Integration', () => {
-    it('creates a new playthrough optimistically', async () => {
+    it('completes full lifecycle: add -> modal draft -> save -> card', async () => {
         render(
             <Providers>
                 <PlaythroughSection gameId="game-1" initialPlaythroughs={[]} />
             </Providers>
         );
 
-        const toggleBtn = screen.getByText(/Playthroughs/i);
-        fireEvent.click(toggleBtn);
+        fireEvent.click(screen.getByText(/Playthroughs/i));
 
-        const addBtn = await screen.findByText(/Add Playthrough/i);
-        fireEvent.click(addBtn);
+        fireEvent.click(await screen.findByText(/Add Playthrough/i));
 
         await waitFor(() => {
-            expect(screen.getByText('Queue')).toBeInTheDocument();
+            expect(screen.getByText(/System Log \/\/ Playthrough/i)).toBeInTheDocument();
+        });
+
+        fireEvent.click(screen.getByTitle('Save Log'));
+
+        await waitFor(() => {
+            expect(screen.queryByText(/System Log \/\/ Playthrough/i)).not.toBeInTheDocument();
+            expect(screen.getAllByText('Queue').length).toBeGreaterThan(0);
         });
     });
 });
