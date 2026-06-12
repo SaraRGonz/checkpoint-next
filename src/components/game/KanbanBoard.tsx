@@ -52,7 +52,6 @@ export function KanbanBoard({ games }: Props) {
         setActiveGame(null);
     };
 
-    const prevGames = games;
     if (pendingMove && games.find(g => g.id === pendingMove.id)?.status === pendingMove.status) {
         setPendingMove(null);
     }
