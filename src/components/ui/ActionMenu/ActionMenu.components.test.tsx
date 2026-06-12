@@ -188,7 +188,7 @@ describe('ActionMenu wrapper', () => {
     });
 
     it('closes and clears searchQuery on outside click', async () => {
-        const { container } = render(
+        render(
             <div>
                 <div data-testid="outside">outside</div>
                 <ActionMenu value="" onSelect={vi.fn()}>
