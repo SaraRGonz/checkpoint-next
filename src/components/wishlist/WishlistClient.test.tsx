@@ -139,7 +139,7 @@ describe('WishlistClient Integration', () => {
             back: vi.fn(),
             forward: vi.fn(),
             prefetch: vi.fn(),
-        } as any);
+        } as unknown as ReturnType<typeof useRouter>);
 
         renderWishlist(queryClient);
         await waitFor(() => screen.getByRole('heading', { name: 'Cyberpunk 2077' }));
@@ -156,7 +156,7 @@ describe('WishlistClient Integration', () => {
             back: vi.fn(),
             forward: vi.fn(),
             prefetch: vi.fn(),
-        } as any);
+        } as unknown as ReturnType<typeof useRouter>);
 
         renderWishlist(queryClient);
         await waitFor(() => screen.getByRole('heading', { name: 'Cyberpunk 2077' }));
