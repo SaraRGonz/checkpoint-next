@@ -20,7 +20,9 @@ vi.mock('@/api/playthroughs', () => ({
 
 const makeWrapper = () => {
     const qc = new QueryClient({ defaultOptions: { queries: { retry: false }, mutations: { networkMode: 'always' } } });
-    return ({ children }: { children: ReactNode }) => React.createElement(QueryClientProvider, { client: qc }, children);
+    return function QueryWrapper({ children }: { children: ReactNode }) {
+        return React.createElement(QueryClientProvider, { client: qc }, children);
+    };
 };
 
 const initialPlaythroughs: Playthrough[] = [
